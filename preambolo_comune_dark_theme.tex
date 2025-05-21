@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PREAMBOLO COMUNE PER APPUNTI (Stile Chiaro)
+% PREAMBOLO COMUNE PER APPUNTI (Stile Scuro)
 %
 % Questo file contiene tutte le impostazioni e i pacchetti comuni.
 % NON contiene \begin{document} o \end{document}.
@@ -42,36 +42,36 @@
 
 % Stili TikZ
 \tikzset{
-    actor/.style={rectangle, draw, fill=blue!20, text=black, minimum height=1cm, minimum width=2cm, text centered},
+    actor/.style={rectangle, draw, fill=blue!20, text=white, minimum height=1cm, minimum width=2cm, text centered},
     arrow/.style={-{Stealth[length=3mm, width=2mm]}, thick, orange},
-    block/.style={rectangle, draw, fill=gray!20, text=black, minimum height=0.8cm, minimum width=2.5cm, text centered},
+    block/.style={rectangle, draw, fill=gray!20, text=white, minimum height=0.8cm, minimum width=2.5cm, text centered},
     channel/.style={draw, thick, loosely dashed, blue!50},
     cloud/.style={ellipse, draw=gray, fill=gray!10, minimum height=3em, minimum width=5em, text=lighttext},
     computer/.style={rectangle, draw, fill=blue!30, minimum width=0.8cm, minimum height=0.6cm, text centered},
     dataflow/.style={->, >=Stealth, thick, rounded corners},
     datagram/.style={rectangle, draw=yellow, fill=yellow!10, minimum width=2.5cm, text=black, font=\small, align=center},
     host/.style={rectangle, rounded corners, draw=cyan, fill=blue!20, minimum height=2em, minimum width=3em, text=lighttext},
-    intruder/.style={star, star points=7, star point ratio=0.5, draw, fill=red!50, text=black, minimum size=1.5cm, text centered},
+    intruder/.style={star, star points=7, star point ratio=0.5, draw, fill=red!50, text=white, minimum size=1.5cm, text centered},
     % Custom key shape that doesn't rely on the built-in key shape
     key/.style={rectangle, rounded corners=0.15cm, draw, fill=yellow!50, minimum size=0.5cm, font=\tiny},
     line/.style={thick, gray!80},
     message_l/.style={<-, >=Stealth, thick},
     message_r/.style={->, >=Stealth, thick},
-    process/.style={rectangle, draw, fill=green!20, text=black, rounded corners, minimum height=0.8cm, text centered},
+    process/.style={rectangle, draw, fill=green!20, text=white, rounded corners, minimum height=0.8cm, text centered},
     r_arrow/.style={{Stealth[length=3mm, width=2mm]}-, thick, orange},
     server/.style={rectangle, draw, fill=green!50, minimum width=0.8cm, minimum height=1cm, text centered},
     servernode/.style={cylinder, shape border rotate=90, draw=orange, fill=orange!20, aspect=0.5, minimum height=2.5em, text=lighttext},
-    % Light theme styles
-    nodo_base/.style={rectangle, rounded corners, draw=black, fill=gray!20, text=black, minimum height=1.5em, minimum width=4em, text centered},
-    nodo_testo/.style={text=black, font=\footnotesize},
-    linea/.style={draw=black, -{Stealth[length=2mm, width=1.5mm]}},
-    linea_doppia/.style={draw=black, <->, Stealth-Stealth},
-    blocco_tempo/.style={rectangle, draw=black, fill=blue!30, text=black, minimum height=0.6cm, font=\tiny, anchor=south west},
-    blocco_tempo_verde/.style={rectangle, draw=black, fill=green!30, text=black, minimum height=0.6cm, font=\tiny, anchor=south west},
-    blocco_tempo_rosso/.style={rectangle, draw=black, fill=red!30, text=black, minimum height=0.6cm, font=\tiny, anchor=south west},
-    blocco_tempo_hatch/.style={rectangle, draw=black, pattern=north east lines, pattern color=gray!50, text=black, minimum height=0.6cm, font=\tiny, anchor=south west},
-    % Additional light theme styles
-    node_style/.style={circle, draw=accentcolor, fill=nodecolor, text=black, minimum size=7mm, font=\sffamily\small},
+    % Dark theme styles
+    nodo_base/.style={rectangle, rounded corners, draw=white, fill=gray!60!black, text=white, minimum height=1.5em, minimum width=4em, text centered},
+    nodo_testo/.style={text=white, font=\footnotesize},
+    linea/.style={draw=white, -{Stealth[length=2mm, width=1.5mm]}},
+    linea_doppia/.style={draw=white, <->, Stealth-Stealth},
+    blocco_tempo/.style={rectangle, draw=white, fill=blue!70!black, text=white, minimum height=0.6cm, font=\tiny, anchor=south west},
+    blocco_tempo_verde/.style={rectangle, draw=white, fill=green!70!black, text=white, minimum height=0.6cm, font=\tiny, anchor=south west},
+    blocco_tempo_rosso/.style={rectangle, draw=white, fill=red!70!black, text=white, minimum height=0.6cm, font=\tiny, anchor=south west},
+    blocco_tempo_hatch/.style={rectangle, draw=white, pattern=north east lines, pattern color=gray, text=white, minimum height=0.6cm, font=\tiny, anchor=south west},
+    % Additional dark theme styles
+    node_style/.style={circle, draw=accentcolor, fill=nodecolor, text=white, minimum size=7mm, font=\sffamily\small},
     important_node_style/.style={node_style, fill=highlightcolor!60!nodecolor, text=black, font=\sffamily\small\bfseries},
     link_style/.style={-{Stealth[length=2mm, width=1.5mm]}, draw=linkcolor, thick},
     highlight_link_style/.style={-{Stealth[length=2mm, width=1.5mm]}, draw=highlightcolor, very thick},
@@ -92,21 +92,19 @@
 \usepackage{graphicx}
 
 \usepackage{xcolor}
-
 \definecolor{lighttext}{rgb}{0.98,0.98,0.98}
-\definecolor{darktext}{rgb}{0.1,0.1,0.1}
-\definecolor{bgcolor}{RGB}{250,250,250}
-\definecolor{maintext}{RGB}{30,30,30}
-\definecolor{accentcolor}{RGB}{0,100,200}
-\definecolor{nodecolor}{RGB}{200,220,240}
-\definecolor{linkcolor}{RGB}{80,80,80}
-\definecolor{highlightcolor}{RGB}{255,180,0}
+\definecolor{bgcolor}{RGB}{20,20,20}
+\definecolor{maintext}{RGB}{230,230,230}
+\definecolor{accentcolor}{RGB}{70,170,255}
+\definecolor{nodecolor}{RGB}{60,100,160}
+\definecolor{linkcolor}{RGB}{150,150,150}
+\definecolor{highlightcolor}{RGB}{255,220,100}
 
 \hypersetup{
     colorlinks=true,
-    linkcolor=darktext,
+    linkcolor=white,
     filecolor=magenta,
-    urlcolor=darktext,
+    urlcolor=cyan,
     citecolor=green,
     % pdftitle, pdfauthor, ecc. verranno impostati nel file principale
     pdfpagemode=FullScreen,
@@ -121,10 +119,10 @@
   version={4.0},
 ]{doclicense}
 
-% --- Colori e Sfondo Bianco ---
+% --- Colori e Sfondo Nero ---
 \usepackage{xcolor}
-\pagecolor{white}
-\color{black}
+\pagecolor{black}
+\color{white}
 
 % --- Evidenziazione del Codice ---
 \usepackage{minted}
@@ -133,7 +131,7 @@
     framesep=2mm,
     fontsize=\small,
     breaklines=true,
-    style=default,
-    bgcolor=gray!10
+    style=monokai,
+    bgcolor=black!80
 }
-\usemintedstyle{default}
+\usemintedstyle{monokai}

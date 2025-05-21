@@ -4,12 +4,11 @@
     pdftitle={Spettro Fisico, Canali Logici, Modulazione Digitale},
 }
 
-\definecolor{lightgray}{rgb}{0.83, 0.83, 0.83}
-\definecolor{darkergray}{rgb}{0.2, 0.2, 0.2}
-
 \title{Spettro Fisico, Canali Logici, Modulazione Digitale}
 \author{Basato sulle slide del Prof. Luciano Bononi}
 \date{\today}
+
+\usetikzlibrary{decorations.pathmorphing}
 
 \begin{document}
 
@@ -112,7 +111,7 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
     \node (PC_B3) [scale=0.5] at (B3.center) {\includegraphics[width=0.8cm]{example-image-b}};
     \shade[ball color=yellow!30, opacity=0.3] (B3.center) circle (1cm);
     \draw[latex-latex, thick, red] (A3) -- (B3);
-    \node at (1.5,-9.5) {(c) Link Bidirezionale};
+    \node at (1.5,-9.   5) {(c) Link Bidirezionale};
 \end{tikzpicture}
 \caption{Scenari di copertura radio. (Le icone PC sono placeholder)}
 \label{fig:coverage_scenarios}
@@ -344,7 +343,7 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \draw[->] (0,0) -- (4,0) node[below]{f};
     \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
      \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-      \fill[\col!50, mychannel, yshift=\i*0.5*0.1cm, xshift=\i*(-0.25)cm] (0.2, 0.2+\i*0.25) rectangle (0.2+3, 0.2+\i*0.25+0.2);
+      \fill[\col!50, mychannel, yshift=\i*0.05cm, xshift=-\i*0.25cm] (0.2, 0.2+\i*0.25) rectangle (0.2+3, 0.2+\i*0.25+0.2);
        \node at (3.5, 0.3+\i*0.25) {$k_{\i+1}$};
     }
 \end{tikzpicture}
@@ -368,7 +367,7 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
      \foreach \row in {0,...,3}{
         \foreach \colidx/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-           \fill[\col!50, mychannel, yshift=\row*0.5*0.3cm + \colidx*0.5*0.1cm, xshift=\row*(-0.25)cm + \colidx*0.5*0.5cm]
+           \fill[\col!50, mychannel, yshift=\row*0.5*0.3cm + \colidx*0.5*0.1cm, xshift=-0.25*\row cm + \colidx*0.5*0.5cm]
             (0.2+\colidx*0.6, 0.2+\row*0.5) rectangle (0.2+\colidx*0.6+0.5, 0.2+\row*0.5+0.4);
         }
      }
@@ -393,7 +392,7 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \draw[->] (0,0) -- (4,0) node[below]{f};
     \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
      \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-      \fill[\col!50, mychannel, yshift=\i*0.2*0.5cm, xshift=\i*(-0.15)cm] (0.2, 0.2+\i*0.25) rectangle (0.2+3.5, 0.2+\i*0.25+0.2);
+      \fill[\col!50, mychannel, yshift=\i*0.1cm, xshift=-\i*0.15cm] (0.2, 0.2+\i*0.25) rectangle (0.2+3.5, 0.2+\i*0.25+0.2);
       \node at (4, 0.3+\i*0.25) {$k_{\i+1}$};
     }
 \end{tikzpicture}
@@ -442,8 +441,8 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \centering
 \begin{tikzpicture}[node distance=1.5cm, auto,
     block/.style={rectangle, draw, fill=blue!20, text width=7em, text centered, rounded corners, minimum height=2em},
-    line/.style={draw, -latex'},
-    waveln/.style={decorate, decoration={snake, segment length=3mm, amplitude=0.5mm}}]
+    line/.style={draw, -latex},
+    wave/.style={draw, -latex, decorate, decoration={snake}}]
 
     \node [text width=6em] (info_in) {Info Digitale 101101001};
     \node [block, right=of info_in] (dig_mod) {Modulazione Digitale};
@@ -453,9 +452,9 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \node [coordinate, below=0.5cm of ana_mod] (carrier_mid) {};
 
     \draw [line] (info_in) -- (dig_mod);
-    \draw [line, waveln] (dig_mod.east) -- node[midway,above,yshift=0.1cm] {\tiny Analog (baseband)} (ana_mod.west);
-    \draw [line, waveln] (ana_mod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\tiny Carrier} (carrier_mid);
-    \draw [line, waveln] (ana_mod.east) -- (radio_out.west);
+    \draw [line, dashed] (dig_mod.east) -- node[midway,above,yshift=0.1cm] {\tiny Analog (baseband)} (ana_mod.west);
+    \draw [line, dashed] (ana_mod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\tiny Carrier} (carrier_mid);
+    \draw [line, dashed] (ana_mod.east) -- (radio_out.west);
 
     % Ricezione
     \node [text width=6em, below=3cm of radio_out] (radio_in) {Segnale RF ricevuto};
@@ -466,12 +465,12 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \node [coordinate, below=0.5cm of dig_demod] (baseband_mid_rx) {};
 
     \draw [line] (radio_in.west) -- (ana_demod.east);
-    \draw [line, waveln] (ana_demod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\tiny Carrier} (carrier_mid_rx);
-    \draw [line, waveln] (ana_demod.west) -- node[midway,above,yshift=0.1cm] {\tiny Analog (baseband)} (dig_demod.east);
+    \draw [line, dashed] (ana_demod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\tiny Carrier} (carrier_mid_rx);
+    \draw [line, dashed] (ana_demod.west) -- node[midway,above,yshift=0.1cm] {\tiny Analog (baseband)} (dig_demod.east);
     \draw [line] (dig_demod.west) -- (info_out.east);
 
     % Canale con problemi
-    \path (radio_out.south) edge[line, bend right=20, waveln, red] node[midway, below, yshift=-0.2cm, text width=5em] {Canale (Rumore, Interferenze)} (radio_in.north);
+    \path (radio_out.south) edge[line, bend right=20, dashed, red] node[midway, below, yshift=-0.2cm, text width=5em] {Canale (Rumore, Interferenze)} (radio_in.north);
 
 \end{tikzpicture}
 \caption{Processo di modulazione e demodulazione.}
@@ -717,8 +716,8 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 48 & 64-QAM & 6 & 2/3 & $48 \times 6 = 288$ & $288 \times 2/3 = 192$ \\
 54 & 64-QAM & 6 & 3/4 & $48 \times 6 = 288$ & $288 \times 3/4 = 216$ \\
 \hline
-\end{multicolumn{6}{l}{\footnotesize Basato su 48 data subcarriers, simbolo OFDM di $4\mu s$. Bit Dati = Subcarriers * Bit/simbolo.} \\
-\multicolumn{6}{l}{\footnotesize Bit Utili = Bit Dati * Coding Rate.}
+\multicolumn{6}{l}{\footnotesize Basato su 48 data subcarriers, simbolo OFDM di $4\mu s$. Bit Dati = Subcarriers * Bit/simbolo.} \\
+\multicolumn{6}{l}{\footnotesize Bit Utili = Bit Dati * Coding Rate.} \\
 \end{tabular}
 \end{table}
 

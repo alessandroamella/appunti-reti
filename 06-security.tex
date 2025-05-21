@@ -8,19 +8,6 @@
 \title{Appunti su Sicurezza nelle Reti di Calcolatori \\ (Capitolo 8)}
 \author{Basato sulle slide del Prof.} % Nome del prof. omesso come da richiesta
 \date{\today}
-
-% Comandi personalizzati per diagrammi
-\tikzstyle{actor} = [rectangle, draw, fill=blue!20, text=white,
-    minimum height=1cm, minimum width=2cm, text centered]
-\tikzstyle{message_r} = [->, >=Stealth, thick]
-\tikzstyle{message_l} = [<-, >=Stealth, thick]
-\tikzstyle{channel} = [draw, thick, loosely dashed, blue!50]
-\tikzstyle{intruder} = [star, star points=7, star point ratio=0.5, draw, fill=red!50, text=white, minimum size=1.5cm, text centered]
-\tikzstyle{key} = [shape=key, shape border rotate=0, draw, fill=yellow!50, minimum size=0.5cm, font=\tiny]
-\tikzstyle{dataflow} = [->, >=Stealth, thick, rounded corners]
-\tikzstyle{block} = [rectangle, draw, fill=gray!20, text=white, minimum height=0.8cm, minimum width=2.5cm, text centered]
-\tikzstyle{process} = [rectangle, draw, fill=green!20, text=white, rounded corners, minimum height=0.8cm, text centered]
-
 \begin{document}
 
 \maketitle
@@ -420,8 +407,9 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
         \draw[<->, green!70!black, thick, dashed] ($(client.south east) + (0,-0.5)$) -- node[midway, below, font=\scriptsize] {Record SSL} ($(server.south west) + (0,-0.5)$);
 
         % Vertical lines for phases
-        \draw[dotted, gray] ($(client)!0.5!(server) + (0,1.5cm)$) -- ($(client)!0.5!(server) + (0,-2.5cm)$);
-        \node[above=0.1cm of $(client)!0.5!(server) + (0,1.5cm)$, font=\small\bfseries] {Handshake};
+        \coordinate (midpoint) at ($(client)!0.5!(server)$);
+        \draw[dotted, gray] (midpoint) ++(0,1.5cm) -- (midpoint) ++(0,-2.5cm);
+        \node[above=2.5cm of $(client)!0.5!(server)$, font=\small\bfseries] {Handshake};
     \end{tikzpicture}
     \caption{Schema semplificato dell'Handshake SSL/TLS.}
 \end{figure}
@@ -435,7 +423,7 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
     Client verifica certificato server, genera PMS, lo crittografa con chiave pubblica server. Entrambi calcolano MS e chiavi di sessione. Client invia MAC di tutti i messaggi handshake finora, crittografato (Finished).
     \item \textbf{Server: ChangeCipherSpec, EncryptedHandshakeMessage (Finished):}
     Server invia il suo messaggio Finished crittografato.
-\end{itemize}
+\end{enumerate}
 Gli ultimi due messaggi (Finished) proteggono l'handshake da manomissioni. I due nonce prevengono replay di sessioni.
 
 \subsection{SSL Record Protocol}

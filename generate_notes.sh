@@ -1,9 +1,24 @@
 #!/bin/bash
 
+# Parse command line arguments
+DARK_MODE=false
+for arg in "$@"; do
+  if [ "$arg" = "--dark" ]; then
+    DARK_MODE=true
+  fi
+done
+
 # Versione completa per la generazione del documento finale
 echo "==================================================================="
 echo "= Script per generare un documento LaTeX unificato da file multipli ="
 echo "==================================================================="
+
+# Show theme information
+if [ "$DARK_MODE" = true ]; then
+  echo "📝 Tema scuro selezionato"
+else
+  echo "📝 Tema chiaro selezionato (default)"
+fi
 
 # Prima verifica che tutti i file esistano
 echo "Verifico che tutti i file necessari siano presenti..."
@@ -23,6 +38,11 @@ FILES=(
   "preambolo_comune.tex"
 )
 
+# Add dark theme preambolo to the verification list
+if [ "$DARK_MODE" = true ]; then
+  FILES+=("preambolo_comune_dark_theme.tex")
+fi
+
 MISSING=false
 for FILE in "${FILES[@]}"; do
   if [ ! -f "$FILE" ]; then
@@ -41,13 +61,9 @@ echo "✅ Tutti i file necessari sono presenti."
 # 1. Crea il documento master
 echo "Creando il documento master 'appunti_completi.tex'..."
 
-cat >appunti_completi.tex <<'EOT'
-\documentclass{report}
-
-% Importa tutte le configurazioni dal preambolo comune modificato
-\input{preambolo_comune_modificato}
-
-% Hyperref configurazione globale (sovrascrive quella nel preambolo)
+# Choose the appropriate hypersetup based on theme
+if [ "$DARK_MODE" = true ]; then
+  HYPERSETUP='
 \hypersetup{
     colorlinks=true,
     linkcolor=white,
@@ -56,10 +72,31 @@ cat >appunti_completi.tex <<'EOT'
     pdftitle={Appunti Completi di Reti di Calcolatori},
     pdfauthor={Alessandro Amella},
     pdfpagemode=FullScreen,
-}
+}'
+else
+  HYPERSETUP='
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darktext,
+    filecolor=magenta,
+    urlcolor=darktext,
+    pdftitle={Appunti Completi di Reti di Calcolatori},
+    pdfauthor={Alessandro Amella},
+    pdfpagemode=FullScreen,
+}'
+fi
+
+cat >appunti_completi.tex <<EOT
+\documentclass{report}
+
+% Importa tutte le configurazioni dal preambolo comune
+\input{preambolo_comune_modificato}
+
+% Hyperref configurazione globale (sovrascrive quella nel preambolo)
+$HYPERSETUP
 
 % Titolo del documento unificato
-\title{\Appunti Completi di Reti di Calcolatori\\
+\title{Appunti Completi di Reti di Calcolatori\\
   \large Basati sulle dispense del Prof. Luciano Bononi}
 \author{Alessandro Amella, Gemini e Claude}
 \date{\today}
@@ -108,10 +145,10 @@ Sentiti libero di utilizzare, condividere o contribuire a questi appunti attrave
 \chapter{Sicurezza nelle Reti di Calcolatori}
 \input{06-security-content}
 
-\chapter{Sistemi Wireless: Livello Fisico e Segnali}
+\chapter{Wireless: Livello Fisico e Segnali}
 \input{07-wireless-1-content}
 
-\chapter{Sistemi Wireless: Spettro Fisico, Canali Logici, Modulazione Digitale}
+\chapter{Wireless: Spettro Fisico, Canali Logici, Modulazione Digitale}
 \input{07-wireless-2-content}
 
 \chapter{Protocolli MAC Wireless}
@@ -130,13 +167,18 @@ echo "✅ appunti_completi.tex creato."
 
 # 2. Crea preambolo_comune_modificato.tex senza la riga \documentclass
 echo "Creando preambolo_comune_modificato.tex..."
-sed '/\\documentclass/d' preambolo_comune.tex >preambolo_comune_modificato.tex
-echo "✅ preambolo_comune_modificato.tex creato."
+if [ "$DARK_MODE" = true ]; then
+  sed '/\\documentclass/d' preambolo_comune_dark_theme.tex >preambolo_comune_modificato.tex
+  echo "✅ preambolo_comune_modificato.tex creato dal tema scuro."
+else
+  sed '/\\documentclass/d' preambolo_comune.tex >preambolo_comune_modificato.tex
+  echo "✅ preambolo_comune_modificato.tex creato dal tema chiaro."
+fi
 
 # 3. Per ogni file .tex, estrai il contenuto e correggi l'indentazione minted
 echo "Estraendo contenuto dai file e correggendo l'indentazione minted..."
 
-for FILE in "${FILES[@]:0:10}"; do
+for FILE in "${FILES[@]:0:11}"; do
   CONTENT_FILE="${FILE%.tex}-content.tex"
   TEMP_FILE="${FILE%.tex}-temp.tex"
   echo "Elaborazione di $FILE -> $CONTENT_FILE"

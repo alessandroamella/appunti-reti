@@ -4,8 +4,6 @@
     pdftitle={Appunti sul Livello Applicazione - Reti di Calcolatori},
 }
 
-\definecolor{lighttext}{rgb}{0.98,0.98,0.98} % Testo leggermente più chiaro per contrasto
-
 % --- Titolo ---
 \title{\textbf{Appunti sul Livello Applicazione}}
 \author{Basato sulle slide del Corso di Reti di Calcolatori}
@@ -20,6 +18,18 @@
 \tikzstyle{arrow} = [-{Stealth[length=3mm, width=2mm]}, thick, orange]
 \tikzstyle{line} = [thick, gray!80]
 \tikzstyle{r_arrow} = [{Stealth[length=3mm, width=2mm]}-, thick, orange] % Reversed arrow
+
+% Comandi personalizzati per diagrammi
+\tikzstyle{actor} = [rectangle, draw, fill=blue!20, text=white,
+    minimum height=1cm, minimum width=2cm, text centered]
+\tikzstyle{message_r} = [->, >=Stealth, thick]
+\tikzstyle{message_l} = [<-, >=Stealth, thick]
+\tikzstyle{channel} = [draw, thick, loosely dashed, blue!50]
+\tikzstyle{intruder} = [star, star points=7, star point ratio=0.5, draw, fill=red!50, text=white, minimum size=1.5cm, text centered]
+\tikzstyle{key} = [shape=key, shape border rotate=0, draw, fill=yellow!50, minimum size=0.5cm, font=\tiny]
+\tikzstyle{dataflow} = [->, >=Stealth, thick, rounded corners]
+\tikzstyle{block} = [rectangle, draw, fill=gray!20, text=white, minimum height=0.8cm, minimum width=2.5cm, text centered]
+\tikzstyle{process} = [rectangle, draw, fill=green!20, text=white, rounded corners, minimum height=0.8cm, text centered]
 
 \begin{document}
 
