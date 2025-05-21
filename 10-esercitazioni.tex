@@ -1,0 +1,494 @@
+\documentclass{article}
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% --- Margini e layout ---
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% --- Font sans-serif ---
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% --- Matematica ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts} % Per simboli matematici aggiuntivi
+
+% --- Liste personalizzate ---
+\usepackage{enumitem}
+
+% --- Immagini ---
+\usepackage{float}
+\usepackage{tikz} % per disegni
+\usepackage{graphicx} % per immagini
+\usetikzlibrary{shapes.geometric, positioning, arrows.meta, calc} % arrows.meta per stili di freccia moderni
+
+% --- Hyperlink ---
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={Appunti di Reti di Calcolatori},
+    pdfauthor={Basato sulle slide del Prof. Luciano Bononi},
+    colorlinks=true,
+    linkcolor=cyan, % Colore per link interni (es. ToC)
+    urlcolor=magenta, % Colore per URL esterni
+    citecolor=green   % Colore per citazioni (se usate)
+}
+
+% --- Colori e sfondo nero ---
+\usepackage{xcolor}
+\definecolor{darkbackground}{rgb}{0.1,0.1,0.1} % Sfondo leggermente meno nero per leggibilità
+\definecolor{lighttext}{rgb}{0.95,0.95,0.95}   % Testo leggermente meno bianco
+\pagecolor{darkbackground}
+\color{lighttext}
+
+% --- Evidenziazione del codice (richiede -shell-escape) ---
+% Compilare con: pdflatex -shell-escape nomefile.tex
+\usepackage{minted}
+\setminted{
+    frame=lines,         % Cornice attorno al codice
+    framesep=2mm,
+    fontsize=\small,
+    breaklines=true,     % A capo automatico per linee lunghe
+    style=monokai,       % Stile di highlighting (dark)
+    bgcolor=black!80,    % Sfondo per i blocchi minted
+    baselinestretch=1.1
+}
+\newminted{text}{fontsize=\small, bgcolor=black!80} % Per testo semplice formattato come codice
+
+% --- Titolo ---
+\title{Appunti di Reti di Calcolatori}
+\author{Basato sulle slide del Prof. Luciano Bononi}
+\date{\today}
+
+% Stili per TikZ per tema scuro
+\tikzstyle{actor}=[rectangle, draw=lighttext, fill=black!70, text=lighttext,
+                    minimum height=1cm, minimum width=2.5cm, text width=2.3cm, align=center, rounded corners=3pt]
+\tikzstyle{arrow_sec}=[-Latex, thick, lighttext] % Latex è una punta di freccia da arrows.meta
+\tikzstyle{msg_sec}=[midway, above, sloped, text=lighttext, font=\scriptsize]
+\tikzstyle{msg_sec_below}=[midway, below, sloped, text=lighttext, font=\scriptsize]
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Indirizzamento IPv4 e Sottoreti}
+L'indirizzamento IPv4 utilizza indirizzi a 32 bit, solitamente rappresentati in notazione decimale puntata (es. \texttt{192.168.1.1}).
+
+\subsection{Classi di Indirizzi}
+Concetto storico, ma utile per comprendere le basi:
+\begin{itemize}
+    \item \textbf{Classe A:} Primo ottetto da 1 a 126 (es. \texttt{97.0.0.0}). Maschera di default \texttt{255.0.0.0} (/8). Primi 8 bit per la rete, restanti 24 per gli host.
+    \item \textbf{Classe B:} Primo ottetto da 128 a 191 (es. \texttt{130.136.0.0}). Maschera di default \texttt{255.255.0.0} (/16). Primi 16 bit per la rete, restanti 16 per gli host.
+    \item \textbf{Classe C:} Primo ottetto da 192 a 223 (es. \texttt{192.168.1.0}). Maschera di default \texttt{255.255.255.0} (/24). Primi 24 bit per la rete, restanti 8 per gli host.
+\end{itemize}
+
+\subsection{Maschera di Sottorete (Netmask)}
+Indica quale parte dell'indirizzo IP identifica la rete e quale l'host.
+\begin{itemize}
+    \item È una sequenza di bit '1' seguiti da bit '0'.
+    \item Esempio: \texttt{/11} significa 11 bit a '1' iniziali.
+    \begin{itemize}
+        \item Binario: \texttt{11111111.11100000.00000000.00000000}
+        \item Decimale: \texttt{255.224.0.0}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Subnetting}
+Dividere una rete più grande in sottoreti più piccole. Permette una gestione più efficiente degli indirizzi e una migliore organizzazione della rete.
+\begin{itemize}
+    \item Si "prendono in prestito" bit dalla parte host per creare bit di sottorete.
+    \item Esempio: Rete Classe A \texttt{97.0.0.0/8}. Se usiamo una maschera \texttt{/11}, abbiamo $11 - 8 = 3$ bit per le sottoreti.
+    \begin{itemize}
+        \item Questo permette $2^3 = 8$ sottoreti.
+        \item La maschera \texttt{/11} (\texttt{255.224.0.0}) indica che i primi 11 bit sono per la rete/sottorete.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Calcolo Indirizzo di Rete/Sottorete}
+Si ottiene applicando un'operazione di AND logico bit a bit tra l'indirizzo IP dell'host e la maschera di sottorete.
+\begin{itemize}
+    \item \textbf{Esempio Es.1 (slide 1):} Host \texttt{97.14.18.27} con maschera \texttt{/11} (\texttt{255.224.0.0})
+    \begin{itemize}
+        \item Host IP (binario, focus sui primi due ottetti): \texttt{01100001.00001110...}
+        \item Maschera /11 (binario): \texttt{11111111.11100000...}
+        \item Risultato dell'AND logico: \texttt{01100001.00000000...} $\rightarrow$ \texttt{97.0.0.0}
+        \item Quindi, l'indirizzo di rete e sottorete è \texttt{97.0.0.0/11}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Indirizzo di Broadcast}
+L'ultimo indirizzo in una sottorete. Tutti i bit della parte host sono impostati a '1'.
+\begin{itemize}
+    \item \textbf{Esempio (continuazione Es.1):} Per la rete \texttt{97.0.0.0/11}:
+    \begin{itemize}
+        \item I bit di rete/sottorete sono i primi 11. I restanti $32 - 11 = 21$ bit sono per gli host.
+        \item Rete (binario): \texttt{01100001.000xxxxx.xxxxxxxx.xxxxxxxx} (dove \texttt{x} sono bit host)
+        \item Broadcast (binario): \texttt{01100001.00011111.11111111.11111111}
+        \begin{itemize}
+            \item \texttt{01100001} = 97
+            \item \texttt{00011111} = 31
+            \item \texttt{11111111} = 255
+            \item \texttt{11111111} = 255
+        \end{itemize}
+        \item Indirizzo di broadcast (decimale): \texttt{97.31.255.255}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Indirizzi Utilizzabili per Host}
+In una sottorete, il primo indirizzo è l'indirizzo di rete e l'ultimo è l'indirizzo di broadcast. Questi non possono essere assegnati a host.
+\begin{itemize}
+    \item \textbf{Primo host utilizzabile:} Indirizzo di rete + 1.
+    \item \textbf{Ultimo host utilizzabile:} Indirizzo di broadcast - 1.
+    \item \textbf{Numero di host utilizzabili:} $2^h - 2$, dove $h$ è il numero di bit dedicati agli host.
+\end{itemize}
+
+\subsection{Indirizzo del Router (Gateway)}
+Solitamente è il primo o l'ultimo indirizzo IP utilizzabile nella sottorete. Nell'Es.1 delle slide, si usa "l'ultimo host prima del broadcast", cioè \texttt{97.31.255.254}.
+
+\subsection{CIDR (Classless Inter-Domain Routing)}
+Notazione che indica il numero di bit della maschera di rete (es. \texttt{/11}). Supera il concetto di classi.
+
+\subsection{Trovare una Maschera Comune (Es.2 slide 1)}
+Perché due host A e B appartengano alla stessa sottorete, applicando la stessa maschera devono risultare nello stesso indirizzo di rete/sottorete.
+\begin{itemize}
+    \item Host A: \texttt{97.14.18.27} $\rightarrow$ \texttt{97.00001110...}
+    \item Host B: \texttt{97.18.11.127} $\rightarrow$ \texttt{97.00010010...}
+    \item Per trovare la maschera più specifica che li includa entrambi, si cerca il prefisso binario comune più lungo.
+    \begin{itemize}
+        \item \texttt{97} è comune.
+        \item Secondo ottetto: \texttt{14 = 00001110}, \texttt{18 = 00010010}.
+        \item Il prefisso comune è \texttt{000}. Il bit successivo diverge.
+        \item Quindi, i bit di rete/sottorete devono coprire \texttt{97} (8 bit) e i primi 3 bit del secondo ottetto. Totale $8 + 3 = 11$ bit.
+        \item Maschera comune: \texttt{/11} (\texttt{255.224.0.0}).
+    \end{itemize}
+\end{itemize}
+
+\subsection{VLSM (Variable Length Subnet Masking)}
+Utilizzare maschere di sottorete di lunghezza variabile per diverse sottoreti all'interno della stessa rete. Permette di allocare gli indirizzi in modo più efficiente.
+\begin{itemize}
+    \item \textbf{Esempio (Es.3 slide 2):}
+    \begin{itemize}
+        \item Subnet A (max 120 host): Servono $2^7 = 128$ indirizzi (7 bit per host). Maschera $32 - 7 = \texttt{/25}$.
+        \item Subnet A1 (max 12 host): Servono $2^4 = 16$ indirizzi (4 bit per host). Maschera $32 - 4 = \texttt{/28}$.
+        \item Si allocano i blocchi di indirizzi partendo dai più grandi per evitare frammentazione.
+    \end{itemize}
+\end{itemize}
+
+\section{Sicurezza nelle Comunicazioni}
+
+\subsection{Non Replay (NONCE)}
+Per evitare che un messaggio intercettato venga riutilizzato (attacco di replay).
+\begin{itemize}
+    \item \textbf{NONCE:} "Number used ONCE". Un numero casuale generato e incluso nel messaggio.
+    \item Flusso tipico (vedi Figura \ref{fig:nonce_flow}):
+    \begin{enumerate}
+        \item Bob (B) invia un NONCE ad Alice (A).
+        \item Alice include questo NONCE nel messaggio che invia a Bob.
+        \item Bob verifica che il NONCE ricevuto sia quello che aveva inviato e che non sia già stato usato.
+    \end{enumerate}
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=3cm and 2.5cm, % Aumentata distanza per chiarezza
+    actor/.style={rectangle, draw=lighttext, fill=black!70, text=lighttext, minimum height=1cm, minimum width=2.5cm, text width=2.3cm, align=center, rounded corners=3pt},
+    arrow/.style={-Latex, thick, lighttext}, % Latex è una punta di freccia da arrows.meta
+    msg/.style={midway, above, sloped, text=lighttext, font=\scriptsize, align=center}
+]
+% Nodes
+\node[actor] (A) {Alice (A)};
+\node[actor, right=of A] (B) {Bob (B)};
+
+% Arrows
+\path[arrow] (B.west) edge node[msg] {1. NONCE (es. 36)} (A.east);
+\path[arrow] (A.east) edge node[msg, yshift=0.2cm] {2. Messaggio M,\\NONCE incluso} ([yshift=-0.3cm]B.west); % Spostato per evitare sovrapposizione
+\end{tikzpicture}
+\caption{Flusso NONCE per Non Replay.}
+\label{fig:nonce_flow}
+\end{figure}
+
+\subsection{Privacy (Riservatezza)}
+Assicurare che solo il destinatario autorizzato possa leggere il messaggio. Si usa la crittografia.
+\begin{itemize}
+    \item \textbf{AES (Advanced Encryption Standard):} Algoritmo di crittografia simmetrica. Veloce, richiede chiave segreta condivisa (Ks).
+    \item \textbf{RSA (Rivest-Shamir-Adleman):} Algoritmo di crittografia asimmetrica. Coppia di chiavi: pubblica (cifra) e privata (decifra). Usato per scambiare Ks.
+    \item \textbf{Flusso per messaggio M lungo con privacy e non-replay (Es.4 slide 3)} (vedi Figura \ref{fig:privacy_flow}):
+    \begin{enumerate}
+        \item B $\xrightarrow{\text{NONCE (36)}}$ A
+        \item A genera Ks.
+        \item A cifra Ks con KB+: $E_{KB+}(Ks)$.
+        \item A $\xrightarrow{E_{KB+}(Ks)}$ B
+        \item B decifra con KB- per ottenere Ks: $D_{KB-}(E_{KB+}(Ks)) = Ks$.
+        \item A cifra (M, NONCE) con Ks: $E_{Ks}(M, 36)$.
+        \item A $\xrightarrow{E_{Ks}(M, 36)}$ B
+        \item B decifra con Ks per ottenere (M, 36). Verifica NONCE.
+    \end{enumerate}
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2.5cm and 3.5cm,
+    actor/.style={rectangle, draw=lighttext, fill=black!70, text=lighttext, minimum height=1cm, minimum width=2.5cm, text width=2.3cm, align=center, rounded corners=3pt},
+    arrow/.style={-Latex, thick, lighttext},
+    msg/.style={midway, above, sloped, text=lighttext, font=\scriptsize, align=center}
+]
+% Nodes
+\node[actor] (A) {Alice (A)};
+\node[actor, right=of A] (B) {Bob (B)};
+
+% Arrows
+\path[arrow] (B.west) edge node[msg] {1. NONCE (36)} (A.east);
+\path[arrow] (A.east) edge node[msg] {2. $E_{KB+}(Ks)$} ([xshift=-0.5cm,yshift=0.7cm]B.west); % Messaggio 2
+\path[arrow] ([xshift=0.5cm,yshift=-0.7cm]A.east) edge node[msg] {3. $E_{Ks}(M, 36)$} (B.west); % Messaggio 3
+\end{tikzpicture}
+\caption{Flusso per messaggio lungo con privacy e non-replay.}
+\label{fig:privacy_flow}
+\end{figure}
+
+\subsection{Non Ripudiabilità (Firma Digitale)}
+Garantire che il mittente non possa negare di aver inviato il messaggio. Si usa la chiave privata del mittente per "firmare".
+\begin{itemize}
+    \item \textbf{Flusso con aggiunta di non ripudiabilità (Es.5 slide 3)} (vedi Figura \ref{fig:nonrep_flow}):
+    \begin{enumerate}
+        \item (Scambio NONCE come prima)
+        \item A cifra Ks con KB+: $E_{KB+}(Ks)$.
+        \item A firma $E_{KB+}(Ks)$ con KA-: $S_{KA-}(E_{KB+}(Ks))$.
+        \item A $\xrightarrow{S_{KA-}(E_{KB+}(Ks))}$ B
+        \item B verifica firma con KA+: $V_{KA+}(S_{KA-}(E_{KB+}(Ks))) \rightarrow E_{KB+}(Ks)$. Poi decifra con KB- per Ks.
+        \item A $\xrightarrow{E_{Ks}(M, \text{NONCE})}$ B
+        \item B decifra e verifica NONCE.
+    \end{enumerate}
+    \item \textbf{Nota sull'integrità senza privacy:}
+    \begin{enumerate}
+        \item A calcola hash: $H(M)$.
+        \item A firma hash: $S_{KA-}(H(M))$.
+        \item A $\xrightarrow{M, S_{KA-}(H(M))}$ B
+        \item B ricalcola $H(M)$ e verifica firma.
+    \end{enumerate}
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2.5cm and 4cm,
+    actor/.style={rectangle, draw=lighttext, fill=black!70, text=lighttext, minimum height=1cm, minimum width=2.5cm, text width=2.3cm, align=center, rounded corners=3pt},
+    arrow/.style={-Latex, thick, lighttext},
+    msg/.style={midway, above, sloped, text=lighttext, font=\scriptsize, align=center}
+]
+% Nodes
+\node[actor] (A) {Alice (A)};
+\node[actor, right=of A] (B) {Bob (B)};
+
+% Arrows
+\path[arrow] (B.west) edge node[msg] {1. NONCE} (A.east);
+\path[arrow] (A.east) edge node[msg] {2. $S_{KA-}(E_{KB+}(Ks))$} ([xshift=-0.5cm,yshift=0.7cm]B.west);
+\path[arrow] ([xshift=0.5cm,yshift=-0.7cm]A.east) edge node[msg] {3. $E_{Ks}(M, \text{NONCE})$} (B.west);
+\end{tikzpicture}
+\caption{Flusso con non ripudiabilità.}
+\label{fig:nonrep_flow}
+\end{figure}
+
+\subsection{Messaggi Brevi (Es.6 slide 3)}
+Se il messaggio (m) è molto breve, si può usare RSA direttamente.
+\begin{itemize}
+    \item A $\xrightarrow{E_{KB+}(m, \text{NONCE})}$ B.
+    \item Con non ripudiabilità: A $\xrightarrow{S_{KA-}(E_{KB+}(m, \text{NONCE}))}$ B.
+\end{itemize}
+
+\section{Tecnologie e Prestazioni di Rete}
+
+\subsection{OFDM (Orthogonal Frequency-Division Multiplexing)}
+Tecnica di modulazione che usa molti sottocanali (subcarrier) ortogonali.
+\begin{itemize}
+    \item \textbf{Bitrate Nominale (Es.7 slide 4):}
+    \begin{itemize}
+        \item Dati: 40 subcarrier, QPSK, 1000 simboli/secondo.
+        \item QPSK (Quadrature Phase Shift Keying): Usa 4 simboli, codifica $\log_2(4) = 2$ bit/simbolo.
+        \item Bitrate = (N. subcarrier) $\times$ (Simboli/s) $\times$ (Bit/simbolo)
+        \[ \text{Bitrate} = 40 \times 1000 \times 2 = 80.000 \, \text{bps} = 80 \, \text{Kbps} \]
+    \end{itemize}
+\end{itemize}
+
+\subsection{Link Budget Wireless (Es.8 e 9 slide 4)}
+Bilancio di potenza tra Tx e Rx. Margine di segnale rispetto alla sensibilità minima del ricevitore (RS).
+\begin{itemize}
+    \item \textbf{Fade Operating Margin (FOM):} Margine aggiuntivo (es. 10-20 dB) per fluttuazioni.
+    \item \textbf{Regola dei 6 dB:}
+    \begin{itemize}
+        \item Perdere 6 dB $\approx$ raddoppiare distanza.
+        \item Guadagnare 6 dB $\approx$ dimezzare distanza (stesso margine) OPPURE raddoppiare distanza (perdendo 6dB di margine).
+    \end{itemize}
+    \item \textbf{Esempio Es.8:} Link budget @ 200m = 8 dB.
+    \begin{itemize}
+        \item Rinunciando a 6 dB (margine 2 dB), distanza $\rightarrow$ 400m.
+        \item Non si può raddoppiare a 800m (margine $2 - 6 = -4$ dB).
+    \end{itemize}
+    \item \textbf{Guadagno Antenna (dBi):} Concentrazione del segnale rispetto a isotropica.
+    \item \textbf{Esempio Es.9:} Antenne con 3 dBi guadagno (Tx e Rx).
+    \begin{itemize}
+        \item Guadagno totale = $3 + 3 = 6$ dBi.
+        \item Nuovo link budget = $8 + 6 = 14$ dB @ 200m.
+        \item @ 200m, margine 14 dB.
+        \item Rinuncio a 6 dB (margine 8 dB) $\rightarrow$ distanza 400m.
+        \item Rinuncio ad altri 6 dB (margine 2 dB) $\rightarrow$ distanza 800m.
+        \item Distanza massima > 800m.
+    \end{itemize}
+\end{itemize}
+
+\subsection{EIRP (Effective Isotropic Radiated Power) (Es.12 slide 5)}
+Potenza che un'antenna isotropica dovrebbe emettere.
+\[ \text{EIRP (dBm)} = \text{Potenza IR (dBm)} + \text{Guadagno Antenna (dBi)} \]
+\begin{itemize}
+    \item \textbf{Conversione mW $\leftrightarrow$ dBm:}
+    \[ \text{dBm} = 10 \cdot \log_{10} \left( \frac{\text{Potenza}_{\text{mW}}}{1\text{mW}} \right) \]
+    \item 1 mW = 0 dBm; Raddoppio potenza = +3 dB; Potenza x10 = +10 dB.
+    \item \textbf{Esempio Es.12:} IR 2W (2000 mW), antenna 18 dBi.
+    \begin{itemize}
+        \item 2000 mW $\approx$ 33 dBm ( $1\text{mW} \cdot 2 \cdot 10 \cdot 10 \cdot 10 \rightarrow 0\text{dBm} + 3\text{dB} + 10\text{dB} + 10\text{dB} + 10\text{dB} = 33\text{dBm}$ ).
+        \item EIRP = $33\text{dBm} + 18\text{dBi} = 51\text{dBm}$.
+    \end{itemize}
+    \item \textbf{Limitare l'IR se c'è un limite EIRP:}
+    \begin{itemize}
+        \item Limite EIRP = 40 mW $\approx$ 16 dBm ( $1\text{mW} \cdot 4 \cdot 10 \rightarrow 0\text{dBm} + 6\text{dB} + 10\text{dB} = 16\text{dBm}$ ).
+        \item Antenna 18 dBi. Potenza IR (P\textunderscore IR) deve essere:
+        \[ P_{\text{IR\_dBm}} + 18\text{dBi} \le 16\text{dBm} \Rightarrow P_{\text{IR\_dBm}} \le -2\text{dBm} \]
+        \item -2 dBm $\approx 0.625$ mW.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Congestione del Router (Es.10 e 11 slide 5)}
+Avviene quando il traffico in ingresso supera la capacità di inoltro.
+\begin{itemize}
+    \item \textbf{Condizione per evitare congestione:} (Traffico totale ingresso) $<$ (Capacità link uscita)
+    \begin{itemize}
+        \item K flussi, Y pacchetti/s, dimensione media D bit:
+        \[ K \cdot Y \cdot D < \text{Capacità link uscita (bps)} \]
+        \[ D < \frac{\text{Capacità link uscita (bps)}}{K \cdot Y} \]
+    \end{itemize}
+    \item \textbf{Buffer del Router:} Assorbe picchi temporanei.
+    \[ \text{Tempo riempimento buffer} = \frac{\text{Dimensione\_Buffer\_bit}}{\text{Traffico\_Ingresso\_bps} - \text{Capacità\_Uscita\_bps}} \]
+\end{itemize}
+
+\section{Concetti Generali di Rete (dal "Ripasso Generale")}
+
+\subsection{Internet: Commutazione di Pacchetto}
+Internet è una rete a \textbf{commutazione di pacchetto}, non di circuito.
+\begin{itemize}
+    \item \textit{Commutazione di circuito (es. telefono):} Percorso dedicato, risorse riservate.
+    \item \textit{Commutazione di pacchetto (es. Internet):} Dati in pacchetti, viaggiano indipendentemente, risorse condivise. Più efficiente per traffico "a raffica" (bursty).
+\end{itemize}
+
+\subsection{Fattori che determinano il Throughput}
+Quantità di dati utili al secondo ricevuti con successo.
+\begin{itemize}
+    \item Larghezza di banda del link più lento (\textbf{collo di bottiglia}).
+    \item Latenza (\textbf{RTT} - Round Trip Time).
+    \item \textbf{Congestione} di rete (perdite, ritardi).
+    \item Errori di trasmissione (richiedono ritrasmissioni).
+    \item \textbf{Overhead} dei protocolli (intestazioni).
+    \item Dimensione della finestra \textbf{TCP} (controllo di flusso/congestione).
+\end{itemize}
+
+\subsection{Tecnologie LAN con Accesso Multiplo (Broadcast)}
+\begin{itemize}
+    \item \textbf{Ethernet} (storica, con hub): Tutti condividono dominio di collisione.
+    \item \textbf{Wi-Fi (802.11):} Mezzo radio condiviso.
+\end{itemize}
+(Nota: Ethernet moderna con switch crea domini di collisione separati per porta).
+
+\subsection{Latenza vs. Throughput}
+Esempio: Meglio 10Mb/s @ 1s RTT o 1Mb/s @ 100ms RTT?
+\begin{itemize}
+    \item \textbf{Trasferimento file grandi:} 10 Mb/s @ 1s RTT è spesso meglio. Il throughput domina su $Tempo = \frac{Dati}{Throughput} + Latenza$.
+    \item \textbf{Applicazioni interattive (VoIP, gaming):} 1 Mb/s @ 100ms RTT potrebbe essere preferibile. Bassa latenza cruciale.
+\end{itemize}
+
+\subsection{Componenti Livello Rete (Livello 3 OSI)}
+\begin{itemize}
+    \item Dispositivi principali: \textbf{Router}.
+    \item Compiti:
+    \begin{itemize}
+        \item \textbf{Routing (instradamento):} Determinare percorso migliore (tabelle di routing).
+        \item \textbf{Forwarding (inoltro):} Spostare pacchetti da interfaccia ingresso a uscita.
+    \end{itemize}
+\end{itemize}
+
+\subsection{UDP vs. TCP (Livello Trasporto - Livello 4 OSI)}
+\begin{itemize}
+    \item \textbf{UDP (User Datagram Protocol):}
+    \begin{itemize}
+        \item \textit{Connectionless} (senza connessione).
+        \item Inaffidabile (nessuna garanzia).
+        \item Veloce, header semplice.
+        \item Nessun controllo di flusso o congestione.
+        \item Usi: Streaming, DNS, DHCP.
+    \end{itemize}
+    \item \textbf{TCP (Transmission Control Protocol):}
+    \begin{itemize}
+        \item \textit{Connection-oriented} (handshake).
+        \item Affidabile (ACK, ritrasmissioni).
+        \item Controllo di flusso (finestra ricevitore \texttt{rwnd}).
+        \item Controllo di congestione (finestra congestione \texttt{cwnd}, slow start, AIMD).
+        \item Header più complesso.
+        \item Usi: Web (HTTP/S), email (SMTP), FTP.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Controllo di Flusso vs. Controllo di Congestione (TCP)}
+\begin{itemize}
+    \item \textbf{Controllo di Flusso:} Protegge il \textit{ricevitore} dall'essere sommerso. Basato su \texttt{rwnd}.
+    \item \textbf{Controllo di Congestione:} Protegge la \textit{rete} dall'essere sommersa. Basato su \texttt{cwnd} e algoritmi.
+\end{itemize}
+
+\subsection{PC senza Maschera di Rete e DNS Server}
+\begin{itemize}
+    \item \textbf{Maschera di rete:} Essenziale. Senza, il PC non può determinare se un IP è locale o remoto.
+    \item \textbf{DNS server:} Essenziale per navigazione moderna (tradurre nomi dominio in IP).
+    \item \textbf{Connessione wireless:} Non cambia questi requisiti a livello IP.
+\end{itemize}
+
+\subsection{Protocollo ICMP (Internet Control Message Protocol)}
+Usato per messaggi di errore e operativi. Non trasporta dati utente.
+\begin{itemize}
+    \item \textbf{Applicazioni basate su ICMP:}
+    \begin{itemize}
+        \item \textbf{Ping:} Test raggiungibilità, misura RTT (ICMP Echo Request/Reply).
+        \item \textbf{Tracert/Traceroute:} Scopre percorso (TTL, ICMP Time Exceeded).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Maschere di Rete Legali}
+Devono avere una sequenza contigua di '1' dall'inizio, seguita da '0'.
+\begin{itemize}
+    \item Esempi validi: \texttt{255.0.0.0 (/8)}, \texttt{255.255.128.0 (/17)}, \texttt{255.255.255.240 (/28)}.
+    \item Esempi invalidi: \texttt{/33} (IPv4 ha 32 bit), \texttt{FF.FB.00.00} (hex: \texttt{11111111.11111011...} $\rightarrow$ non contiguo).
+\end{itemize}
+
+\subsection{RTS/CTS in 802.11 (Wi-Fi)}
+\textbf{Request To Send / Clear To Send.} Meccanismo per mitigare il problema del "nodo nascosto".
+\begin{itemize}
+    \item Nodo A vuole trasmettere a B. C non sente A ma sente B.
+    \item Con RTS/CTS:
+    \begin{enumerate}
+        \item A $\xrightarrow{\text{RTS}}$ B.
+        \item B $\xrightarrow{\text{CTS}}$ A (e sentito da C).
+        \item Nodi che sentono RTS o CTS (incluso C) sanno che il mezzo è occupato.
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Modalità Access Point Wi-Fi (802.11)}
+\begin{itemize}
+    \item \textbf{Infrastructure Mode:} AP fa da ponte tra client wireless e rete cablata. Più comune.
+    \item \textbf{Ad-hoc Mode (IBSS):} Client wireless comunicano direttamente tra loro, senza AP.
+    \item Altre: Bridge, Repeater.
+\end{itemize}
+
+\end{document}

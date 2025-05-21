@@ -1,0 +1,736 @@
+\documentclass{article}
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% --- Margini e layout ---
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% --- Font sans-serif ---
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% --- Matematica ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts} % Aggiunto per simboli matematici
+
+% --- Liste personalizzate ---
+\usepackage{enumitem}
+
+% --- Immagini ---
+\usepackage{float}
+\usepackage{tikz} % per disegni
+\usepackage{graphicx} % per immagini
+\usetikzlibrary{shapes.geometric, positioning, arrows.meta, calc, fit} % Aggiornato per frecce e positioning
+
+% --- Hyperlink ---
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={Appunti su Sicurezza nelle Reti di Calcolatori},
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=cyan,        % color of internal links (change box color with linkbordercolor)
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=blue           % color of external links
+}
+
+% --- Colori e sfondo nero ---
+\usepackage{xcolor}
+\pagecolor{black}
+\color{white}
+
+% --- Evidenziazione del codice (richiede -shell-escape) ---
+% Compilare con: pdflatex -shell-escape nomefile.tex
+\usepackage{minted}
+\setminted{
+    frame=lines,     % Cornice attorno al codice
+    framesep=2mm,
+    fontsize=\small,
+    breaklines=true, % A capo automatico per linee lunghe
+    style=monokai,   % Stile di highlighting (buono per sfondo scuro)
+    bgcolor=gray!10 % Sfondo leggermente diverso per i blocchi minted
+}
+\usemintedstyle{monokai}
+
+
+% --- Titolo ---
+\title{Appunti su Sicurezza nelle Reti di Calcolatori \\ (Capitolo 8)}
+\author{Basato sulle slide del Prof.} % Nome del prof. omesso come da richiesta
+\date{\today}
+
+% Comandi personalizzati per diagrammi
+\tikzstyle{actor} = [rectangle, draw, fill=blue!20, text=white,
+    minimum height=1cm, minimum width=2cm, text centered]
+\tikzstyle{message_r} = [->, >=Stealth, thick]
+\tikzstyle{message_l} = [<-, >=Stealth, thick]
+\tikzstyle{channel} = [draw, thick, loosely dashed, blue!50]
+\tikzstyle{intruder} = [star, star points=7, star point ratio=0.5, draw, fill=red!50, text=white, minimum size=1.5cm, text centered]
+\tikzstyle{key} = [shape=key, shape border rotate=0, draw, fill=yellow!50, minimum size=0.5cm, font=\tiny]
+\tikzstyle{dataflow} = [->, >=Stealth, thick, rounded corners]
+\tikzstyle{block} = [rectangle, draw, fill=gray!20, text=white, minimum height=0.8cm, minimum width=2.5cm, text centered]
+\tikzstyle{process} = [rectangle, draw, fill=green!20, text=white, rounded corners, minimum height=0.8cm, text centered]
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Cos'è la Sicurezza di Rete?}
+\label{sec:cos_e_sicurezza}
+
+La sicurezza di rete si basa su alcuni pilastri fondamentali:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Riservatezza (Confidentiality):}
+    \begin{itemize}
+        \item Solo il mittente e il destinatario intenzionale dovrebbero essere in grado di \textit{comprendere} il contenuto del messaggio.
+        \item Si ottiene tramite:
+        \begin{itemize}
+            \item Il mittente \textbf{crittografa} il messaggio.
+            \item Il destinatario \textbf{decrittografa} il messaggio.
+        \end{itemize}
+        \item \textit{Esempio pratico:} Quando inserisci la password per l'home banking, vuoi che solo la banca possa leggerla, non un malintenzionato che intercetta la comunicazione.
+    \end{itemize}
+
+    \item \textbf{Autenticazione (Authentication):}
+    \begin{itemize}
+        \item Sia il mittente che il destinatario vogliono confermare l'identità l'uno dell'altro.
+        \item \textit{Esempio pratico:} La banca vuole essere sicura che sei tu a fare login, e tu vuoi essere sicuro di star parlando con il vero sito della banca e non con un sito fasullo.
+    \end{itemize}
+
+    \item \textbf{Integrità del Messaggio (Message Integrity):}
+    \begin{itemize}
+        \item Mittente e destinatario vogliono assicurarsi che il messaggio non sia stato alterato (durante il transito o successivamente) senza che ciò venga rilevato.
+        \item \textit{Esempio pratico:} Se invii un bonifico da 100€, vuoi che la banca riceva 100€ e non 10.000€ perché qualcuno ha modificato l'importo.
+    \end{itemize}
+
+    \item \textbf{Accesso e Disponibilità (Access and Availability):}
+    \begin{itemize}
+        \item I servizi devono essere accessibili e disponibili per gli utenti legittimi.
+        \item \textit{Esempio pratico:} Il sito della tua università deve essere raggiungibile quando hai bisogno di consultare gli orari delle lezioni, e non reso irraggiungibile da un attacco.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Personaggi Comuni in Sicurezza}
+\begin{itemize}
+    \item \textbf{Alice e Bob:} Due entità (persone, sistemi) che vogliono comunicare in modo sicuro.
+    \item \textbf{Trudy (Intruder):} L'antagonista che cerca di intercettare, cancellare o aggiungere messaggi.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm and 4cm, auto]
+        \node (alice) [actor] {Alice};
+        \node (bob) [actor, right=of alice] {Bob};
+        \node (trudy) [intruder, below = 0.7cm of alice, xshift=2cm] {Trudy};
+
+        \draw[message_r] (alice.east) -- node[midway, above, sloped, text=black!40!white] {canale dati/controllo} (bob.west);
+        \draw[->, red, thick, dashed] (trudy.north) |- ($(alice.east)!0.5!(bob.west)$) node[right, text=red] {intercetta};
+    \end{tikzpicture}
+    \caption{Scenario base: Alice, Bob e l'intruso Trudy.}
+\end{figure}
+
+\subsection{Chi sono Alice e Bob nella vita reale?}
+\begin{itemize}
+    \item Persone che si scambiano email.
+    \item Browser web e server web durante transazioni elettroniche (es. acquisti online).
+    \item Client e server di online banking.
+    \item Server DNS.
+    \item Router che si scambiano aggiornamenti delle tabelle di routing.
+\end{itemize}
+
+\subsection{Cosa può fare un \textit{cattivo} (Trudy)?}
+\begin{itemize}
+    \item \textbf{Eavesdrop (Origliare):} Intercettare messaggi.
+    \item \textbf{Insert (Inserire attivamente):} Introdurre messaggi falsi nella connessione.
+    \item \textbf{Impersonation (Impersonificazione/Spoofing):} Fingere di essere qualcun altro, ad es. falsificando l'indirizzo IP sorgente in un pacchetto.
+    \item \textbf{Hijacking (Dirottamento):} \textquotedblleft Prendere il controllo\textquotedblright{} di una connessione esistente, sostituendosi al mittente o al destinatario.
+    \item \textbf{Denial of Service (DoS - Negazione del Servizio):} Impedire che un servizio venga utilizzato da altri, ad es. sovraccaricando le risorse del server.
+\end{itemize}
+
+\section{Principi di Crittografia}
+\label{sec:principi_crittografia}
+
+\subsection{Il Linguaggio della Crittografia}
+\begin{itemize}
+    \item $m$ (\textbf{plaintext}): Il messaggio originale, in chiaro.
+    \item \textbf{Algoritmo di Crittografia (Encryption Algorithm):} Processo per trasformare il plaintext.
+    \item \textbf{Chiave di Crittografia ($K_A$):} Un valore segreto usato dall'algoritmo per crittografare.
+    \item $K_A(m)$ (\textbf{ciphertext}): Il messaggio crittografato, illeggibile senza la chiave.
+    \item \textbf{Algoritmo di Decrittografia (Decryption Algorithm):} Processo per ritrasformare il ciphertext in plaintext.
+    \item \textbf{Chiave di Decrittografia ($K_B$):} Un valore segreto usato dall'algoritmo per decrittografare.
+    \item Se le chiavi $K_A$ e $K_B$ sono le stesse (o facilmente derivabili l'una dall'altra), si parla di \textbf{crittografia simmetrica}. Se sono diverse e non derivabili, si parla di \textbf{crittografia asimmetrica (o a chiave pubblica)}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm and 2.5cm, auto]
+        \node (plaintext1) [block] {plaintext ($m$)};
+        \node (keyA) [key, above left=0.3cm and 0.2cm of plaintext1, label=left:Alice's Key] {$K_A$};
+        \node (enc_algo) [process, right=of plaintext1] {Encryption Algorithm};
+        \node (ciphertext) [block, right=of enc_algo] {ciphertext $K_A(m)$};
+        \node (keyB) [key, above right=0.3cm and 0.2cm of ciphertext, label=right:Bob's Key] {$K_B$};
+        \node (dec_algo) [process, right=of ciphertext] {Decryption Algorithm};
+        \node (plaintext2) [block, right=of dec_algo] {plaintext ($m$)};
+        \node (trudy_crypto) [intruder, below=of ciphertext] {Trudy};
+
+        \draw[dataflow] (plaintext1) -- (enc_algo);
+        \draw[dataflow] (keyA) |- (enc_algo);
+        \draw[dataflow] (enc_algo) -- (ciphertext);
+        \draw[dataflow] (ciphertext) -- (dec_algo);
+        \draw[dataflow] (keyB) |- (dec_algo);
+        \draw[dataflow] (dec_algo) -- (plaintext2);
+        \draw[->, red, dashed] (trudy_crypto.north) -- (ciphertext);
+    \end{tikzpicture}
+    \caption{Flusso base della crittografia.}
+\end{figure}
+
+\subsection{Rompere uno Schema di Crittografia (Attacchi)}
+\begin{enumerate}
+    \item \textbf{Ciphertext-only attack (Attacco al solo ciphertext):} Trudy ha solo il ciphertext e cerca di decifrarlo.
+    \begin{itemize}
+        \item \textbf{Brute force:} Provare tutte le possibili chiavi.
+        \item \textbf{Analisi statistica:} Analizzare le frequenze delle lettere/simboli.
+    \end{itemize}
+    \item \textbf{Known-plaintext attack (Attacco con plaintext noto):} Trudy ha accesso a coppie di plaintext e al corrispondente ciphertext.
+    \item \textbf{Chosen-plaintext attack (Attacco con plaintext scelto):} Trudy può scegliere dei plaintext, farli crittografare dal sistema e ottenere i ciphertext corrispondenti.
+\end{enumerate}
+
+\subsection{Crittografia a Chiave Simmetrica}
+\begin{itemize}
+    \item Alice e Bob condividono la \textbf{stessa chiave segreta ($K_S$)}.
+    \item \textit{Problema:} Come fanno Alice e Bob a concordare la chiave $K_S$ in modo sicuro?
+\end{itemize}
+
+\subsubsection{Cifrario a Sostituzione Semplice (Monoalfabetico)}
+\begin{itemize}
+    \item Ogni lettera del plaintext è sostituita da un'altra lettera.
+    \item \textit{Esempio plaintext:} \texttt{abcdefghijklmnopqrstuvwxyz}
+    \item \textit{Esempio ciphertext:} \texttt{mnbvcxzasdfghjklpoiuytrewq}
+    \item La \textbf{chiave di crittografia} è la mappatura. Debole all'analisi statistica.
+\end{itemize}
+
+\subsubsection{DES (Data Encryption Standard)}
+\begin{itemize}
+    \item Standard USA (NIST 1993), ora obsoleto per molte applicazioni.
+    \item Chiave simmetrica a \textbf{56 bit}, input plaintext a 64 bit.
+    \item \textbf{Block cipher} con \textbf{cipher block chaining (CBC)}.
+    \item \textbf{Sicurezza:} Una chiave a 56 bit può essere trovata con brute force in meno di un giorno.
+    \item \textbf{3DES (Triple DES):} Crittografa 3 volte con 3 chiavi diverse. Più sicuro ma più lento.
+    \item \textbf{Funzionamento DES (generale):} Permutazione iniziale, 16 \textit{round} identici con sotto-chiavi diverse, permutazione finale.
+\end{itemize}
+
+\subsubsection{AES (Advanced Encryption Standard)}
+\begin{itemize}
+    \item Standard NIST che ha sostituito DES (Novembre 2001).
+    \item Processa dati in blocchi da \textbf{128 bit}.
+    \item Chiavi simmetriche da \textbf{128, 192, o 256 bit}.
+    \item \textbf{Sicurezza:} Considerato molto sicuro. Un attacco brute force su AES (128 bit) impiegherebbe trilioni di anni.
+\end{itemize}
+
+\subsection{Crittografia a Chiave Pubblica (Asimmetrica)}
+\begin{itemize}
+    \item Mittente e destinatario \textbf{non} condividono una chiave segreta.
+    \item Ogni utente ha una coppia di chiavi:
+    \begin{itemize}
+        \item \textbf{Chiave Pubblica ($K_B^+$):} Conosciuta da tutti. Usata per crittografare messaggi destinati a Bob o per verificare firme digitali di Bob.
+        \item \textbf{Chiave Privata ($K_B^-$):} Conosciuta solo dal proprietario (Bob). Usata per decrittografare messaggi crittografati con la sua chiave pubblica o per firmare digitalmente messaggi.
+    \end{itemize}
+\end{itemize}
+\textit{Flusso (Alice invia a Bob):} plaintext ($m$) $\xrightarrow{K_B^+}$ ciphertext ($K_B^+(m)$) $\xrightarrow{K_B^-}$ plaintext ($m$)
+
+\subsubsection{RSA (Rivest, Shamir, Adelson Algorithm)}
+\begin{itemize}
+    \item L'algoritmo a chiave pubblica più diffuso.
+    \item \textbf{Prerequisito: Aritmetica Modulare}
+    \begin{itemize}
+        \item $x \pmod n$: resto della divisione di $x$ per $n$.
+        \item Proprietà: $(a \pmod n)^d \pmod n = a^d \pmod n$.
+    \end{itemize}
+    \item \textbf{Creazione della Coppia di Chiavi Pubblica/Privata RSA:}
+    \begin{enumerate}
+        \item Scegliere due numeri primi grandi, $p$ e $q$.
+        \item Calcolare $n = p \cdot q$ e $z = (p-1)(q-1)$.
+        \item Scegliere $e$ (con $e<n$) tale che $e$ e $z$ siano relativamente primi.
+        \item Scegliere $d$ tale che $e \cdot d \equiv 1 \pmod z$.
+        \item \textbf{Chiave Pubblica:} $K_B^+ = (n, e)$
+        \item \textbf{Chiave Privata:} $K_B^- = (n, d)$
+    \end{enumerate}
+    \item \textbf{Crittografia e Decrittografia RSA:}
+    \begin{itemize}
+        \item Crittografare $m$ ($m < n$): $c = m^e \pmod n$
+        \item Decrittografare $c$: $m = c^d \pmod n$
+        \item Quindi: $m = (m^e \pmod n)^d \pmod n$
+    \end{itemize}
+    \item \textbf{Altra Proprietà Importante di RSA (Commutatività):}
+    $K_B^-(K_B^+(m)) = m$ e $K_B^+(K_B^-(m)) = m$. La seconda forma è usata per le firme digitali.
+    \item \textbf{Perché RSA è sicuro?} Si basa sulla difficoltà computazionale di \textbf{fattorizzare numeri molto grandi} ($n$).
+    \item \textbf{RSA in Pratica: Chiavi di Sessione (Session Keys):}
+    RSA è lento. Si usa RSA per scambiare una \textbf{chiave simmetrica di sessione ($K_S$)}, e poi si usa AES/DES (più veloci) con $K_S$ per i dati.
+\end{itemize}
+
+\section{Integrità dei Messaggi e Autenticazione}
+\label{sec:integrita_autenticazione}
+
+\subsection{Autenticazione}
+\textbf{Obiettivo:} Bob vuole che Alice \textquotedblleft provi\textquotedblright{} la sua identità.
+
+\begin{itemize}
+    \item \textbf{Protocollo ap1.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{}. \textit{Fallimento:} Trudy può dirlo.
+    \item \textbf{Protocollo ap2.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{} (con IP di Alice). \textit{Fallimento:} Trudy può fare IP spoofing.
+    \item \textbf{Protocollo ap3.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{} + password. \textit{Fallimento:} Playback attack.
+    \item \textbf{Protocollo ap3.1:} Alice: \textquotedblleft Sono Alice\textquotedblright{} + password crittografata. \textit{Fallimento:} Playback attack funziona ancora.
+    \item \textbf{Protocollo ap4.0: Autenticazione con Nonce (per evitare playback):}
+    \begin{itemize}
+        \item \textbf{Nonce (R):} Numero usato una sola volta.
+        \item Passaggi:
+        \begin{enumerate}
+            \item Alice $\rightarrow$ Bob: \textquotedblleft Sono Alice\textquotedblright{}.
+            \item Bob $\rightarrow$ Alice: $R$ (nonce).
+            \item Alice $\rightarrow$ Bob: $K_{A-B}(R)$ (nonce crittografato con chiave condivisa).
+        \end{enumerate}
+        \item \textit{Problema:} Richiede una chiave simmetrica $K_{A-B}$ condivisa.
+    \end{itemize}
+    \item \textbf{Protocollo ap5.0: Autenticazione con Nonce e Chiave Pubblica:}
+    \begin{enumerate}
+        \item Alice $\rightarrow$ Bob: \textquotedblleft Sono Alice\textquotedblright{}.
+        \item Bob $\rightarrow$ Alice: $R$ (nonce).
+        \item (Alice chiede la chiave pubblica di Bob, $K_A^+$).
+        \item Alice $\rightarrow$ Bob: $K_A^-(R)$ (nonce crittografato con la chiave \textit{privata} di Alice).
+        \item Bob verifica con $K_A^+(K_A^-(R)) \stackrel{?}{=} R$.
+    \end{enumerate}
+    \textit{Buco di Sicurezza ap5.0:} \textbf{Man-in-the-Middle (MITM) Attack}. Trudy si frappone e scambia le sue chiavi pubbliche con Alice e Bob.
+\end{itemize}
+
+\subsection{Firme Digitali (Digital Signatures)}
+\begin{itemize}
+    \item Tecnica crittografica analoga alle firme autografe.
+    \item \textbf{Obiettivi:}
+    \begin{itemize}
+        \item Mittente (Bob) firma, stabilendo proprietà/creazione.
+        \item \textbf{Verificabile e Non Falsificabile}.
+        \item \textbf{Non Ripudio (Non-repudiation):} Bob non può negare di aver firmato.
+    \end{itemize}
+    \item \textbf{Firma Digitale Semplice per $m$ (usando RSA):}
+    \begin{enumerate}
+        \item Bob firma $m$ con la sua \textbf{chiave privata $K_B^-$}: $K_B^-(m)$.
+        \item Bob invia ad Alice $(m, K_B^-(m))$.
+        \item Alice verifica applicando la \textbf{chiave pubblica di Bob $K_B^+$} alla firma: $K_B^+(K_B^-(m))$.
+        \item Se il risultato è $m$, la firma è valida.
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Digest dei Messaggi (Funzioni Hash Crittografiche)}
+Crittografare messaggi lunghi con chiave pubblica è costoso.
+\begin{itemize}
+    \item \textbf{Obiettivo:} Creare un'\textquotedblleft impronta digitale\textquotedblright{} (\textit{fingerprint}) di lunghezza fissa.
+    \item Si applica una \textbf{funzione hash $H$} al messaggio $m$ per ottenere un digest $H(m)$.
+    \item \textbf{Proprietà delle Funzioni Hash Crittografiche:}
+    \begin{itemize}
+        \item Output di lunghezza fissa.
+        \item \textbf{Resistenza alla preimmagine (One-way):} Dato $H(m)$, difficile trovare $m$.
+        \item \textbf{Resistenza alla seconda preimmagine:} Dato $m_1$, difficile trovare $m_2 \neq m_1$ t.c. $H(m_1) = H(m_2)$.
+        \item \textbf{Resistenza alle collisioni:} Difficile trovare $m_1 \neq m_2$ t.c. $H(m_1) = H(m_2)$.
+    \end{itemize}
+    \item \textbf{Internet Checksum:} NON è una funzione hash crittografica (debole).
+    \item \textbf{Firma Digitale con Message Digest:}
+    \begin{enumerate}
+        \item \textbf{Bob (mittente):}
+        \begin{enumerate}
+            \item Calcola $H(m)$.
+            \item Firma il digest: $K_B^-(H(m))$.
+            \item Invia $(m, K_B^-(H(m)))$.
+        \end{enumerate}
+        \item \textbf{Alice (destinatario):}
+        \begin{enumerate}
+            \item Riceve $m$ e $S_B = K_B^-(H(m))$.
+            \item Calcola $H(m')$ dal messaggio $m'$ ricevuto.
+            \item Decrittografa la firma: $H_{firmato} = K_B^+(S_B)$.
+            \item Confronta $H(m')$ con $H_{firmato}$. Se uguali, firma valida e messaggio integro.
+        \end{enumerate}
+    \end{enumerate}
+    \item \textbf{Algoritmi di Hash Comuni:} MD5 (insicuro), SHA-1 (debole), SHA-2 (SHA-256, SHA-512 - raccomandati).
+\end{itemize}
+
+\subsection{Certificazione della Chiave Pubblica (Public-Key Certification)}
+Risolve il problema del MITM per lo scambio di chiavi pubbliche.
+\begin{itemize}
+    \item \textbf{Autorità di Certificazione (CA - Certification Authority):} Entità fidata che lega una chiave pubblica a un'entità E.
+    \item \textbf{Processo:}
+    \begin{enumerate}
+        \item L'entità E (es. Bob) si registra presso una CA (prova d'identità + chiave pubblica).
+        \item La CA crea un \textbf{certificato digitale} contenente: identità di E, chiave pubblica di E, info CA, validità, ecc.
+        \item La CA \textbf{firma digitalmente} questo certificato con la \textbf{chiave privata della CA}.
+    \end{enumerate}
+    \item \textbf{Utilizzo del Certificato:}
+    \begin{enumerate}
+        \item Alice ottiene il certificato di Bob.
+        \item Alice usa la chiave pubblica della CA (che deve conoscere/fidarsi) per verificare la firma sul certificato di Bob.
+        \item Se la firma della CA è valida, Alice si fida che la chiave pubblica nel certificato sia di Bob.
+    \end{enumerate}
+\end{itemize}
+
+\section{Protezione delle E-mail}
+\label{sec:protezione_email}
+
+Alice vuole inviare email sicure a Bob (riservatezza, autenticazione, integrità).
+
+\subsection{Solo Riservatezza}
+\begin{enumerate}
+    \item \textbf{Alice:}
+    \begin{enumerate}
+        \item Genera chiave simmetrica casuale $K_S$.
+        \item Crittografa $m$ con $K_S$: $K_S(m)$.
+        \item Crittografa $K_S$ con la chiave pubblica di Bob $K_B^+$: $K_B^+(K_S)$.
+        \item Invia $(K_S(m), K_B^+(K_S))$.
+    \end{enumerate}
+    \item \textbf{Bob:}
+    \begin{enumerate}
+        \item Usa $K_B^-$ per decrittografare $K_B^+(K_S) \rightarrow K_S$.
+        \item Usa $K_S$ per decrittografare $K_S(m) \rightarrow m$.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Solo Autenticazione e Integrità}
+\begin{enumerate}
+    \item \textbf{Alice:}
+    \begin{enumerate}
+        \item Calcola $H(m)$.
+        \item Firma $H(m)$ con la sua chiave privata $K_A^-$: $K_A^-(H(m))$.
+        \item Invia $(m, K_A^-(H(m)))$.
+    \end{enumerate}
+    \item \textbf{Bob:}
+    Verifica la firma usando $K_A^+$ e confrontando $H(m)$.
+\end{enumerate}
+
+\subsection{Riservatezza + Autenticazione + Integrità (PGP-like)}
+\begin{enumerate}
+    \item \textbf{Alice:}
+    \begin{enumerate}
+        \item Firma $H(m)$ con $K_A^- \rightarrow S_A = K_A^-(H(m))$.
+        \item $M' = m \mathbin{\|} S_A$.
+        \item Genera $K_S$.
+        \item Crittografa $M'$ con $K_S \rightarrow C_1 = K_S(M')$.
+        \item Crittografa $K_S$ con $K_B^+ \rightarrow C_2 = K_B^+(K_S)$.
+        \item Invia $(C_1, C_2)$.
+    \end{enumerate}
+    \item \textbf{Bob:}
+    Processo inverso per ottenere $m$ e verificare $S_A$.
+\end{enumerate}
+Alice usa tre chiavi: la sua privata, la pubblica di Bob, e la $K_S$ simmetrica.
+
+\section{Protezione delle Connessioni TCP: SSL/TLS}
+\label{sec:ssl_tls}
+SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
+
+\begin{itemize}
+    \item \textbf{Fornisce:} Riservatezza, Integrità, Autenticazione (server sempre, client opzionale).
+    \item \textbf{Posizionamento:} Applicazione $\rightarrow$ \textbf{SSL/TLS} $\rightarrow$ TCP $\rightarrow$ IP.
+\end{itemize}
+
+\subsection{Fasi di SSL (Concettuale, \textquotedblleft Toy SSL\textquotedblright{})}
+\begin{enumerate}
+    \item \textbf{Handshake (Stretta di Mano):}
+    \begin{itemize}
+        \item Client e Server usano certificati e chiavi pubbliche/private per autenticarsi e scambiarsi un segreto condiviso (\textbf{Master Secret, MS}).
+        \item Client genera un \textbf{Pre-Master Secret (PMS)}, lo crittografa con la chiave pubblica del server.
+        \item Entrambi calcolano MS da PMS e nonce scambiati.
+    \end{itemize}
+    \item \textbf{Key Derivation (Derivazione delle Chiavi):}
+    \begin{itemize}
+        \item Da MS si derivano chiavi di sessione simmetriche (tipicamente 4: 2 per crittografia client $\leftrightarrow$ server, 2 per MAC client $\leftrightarrow$ server).
+    \end{itemize}
+    \item \textbf{Data Transfer (Trasferimento Dati):}
+    \begin{itemize}
+        \item Dati suddivisi in \textbf{record}.
+        \item Ogni record: (Dati + MAC) crittografati + header SSL (tipo, versione, lunghezza).
+        \item Numeri di sequenza impliciti nel MAC per prevenire replay/riordino.
+        \item Tipi di record specifici per prevenire Truncation Attack.
+    \end{itemize}
+    \item \textbf{Connection Closure (Chiusura Connessione):}
+    Messaggi speciali (alert \texttt{close\_notify}) per chiudere in modo sicuro.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1cm and 2.5cm]
+        \node (client) [actor] {Client (Alice)};
+        \node (server) [actor, right=6cm of client] {Server (Bob)};
+
+        % Handshake
+        \draw[message_r] (client.east) -- node[midway, above, font=\scriptsize] {1. ClientHello (ciphers, nonce C)} (server.west);
+        \draw[message_l] (client.east) -- node[midway, below, font=\scriptsize] {2. ServerHello (cipher choice, cert, nonce S)} (server.west);
+        \draw[message_r] (client.east) -- node[midway, above, yshift=0.5cm, font=\scriptsize] {3. ClientKeyExchange ($K_S^+(\text{PMS})$), ChangeCipherSpec, Finished} (server.west);
+        \draw[message_l] (client.east) -- node[midway, below, yshift=-0.5cm, font=\scriptsize] {4. ChangeCipherSpec, Finished} (server.west);
+
+        % Data Transfer (Encrypted)
+        \node (encrypted_data_label) [below=1.5cm of client, xshift=3cm, font=\small\itshape, text=green!50!white] {Trasferimento Dati Crittografati};
+        \draw[<->, green!70!black, thick, dashed] ($(client.south east) + (0,-0.5)$) -- node[midway, below, font=\scriptsize] {Record SSL} ($(server.south west) + (0,-0.5)$);
+
+        % Vertical lines for phases
+        \draw[dotted, gray] ($(client)!0.5!(server) + (0,1.5cm)$) -- ($(client)!0.5!(server) + (0,-2.5cm)$);
+        \node[above=0.1cm of $(client)!0.5!(server) + (0,1.5cm)$, font=\small\bfseries] {Handshake};
+    \end{tikzpicture}
+    \caption{Schema semplificato dell'Handshake SSL/TLS.}
+\end{figure}
+
+
+\subsection{Real SSL: Handshake (dettagli)}
+\begin{enumerate}
+    \item \textbf{ClientHello:} Client invia lista cipher suite, versione SSL/TLS, nonce client.
+    \item \textbf{ServerHello, Certificate, ServerHelloDone:} Server sceglie cipher suite, invia certificato, nonce server.
+    \item \textbf{ClientKeyExchange, ChangeCipherSpec, EncryptedHandshakeMessage (Finished):}
+    Client verifica certificato server, genera PMS, lo crittografa con chiave pubblica server. Entrambi calcolano MS e chiavi di sessione. Client invia MAC di tutti i messaggi handshake finora, crittografato (Finished).
+    \item \textbf{Server: ChangeCipherSpec, EncryptedHandshakeMessage (Finished):}
+    Server invia il suo messaggio Finished crittografato.
+\end{itemize}
+Gli ultimi due messaggi (Finished) proteggono l'handshake da manomissioni. I due nonce prevengono replay di sessioni.
+
+\subsection{SSL Record Protocol}
+Dati frammentati $\rightarrow$ Aggiunta MAC $\rightarrow$ Crittografia (frammento+MAC) $\rightarrow$ Header SSL.
+
+\section{Sicurezza a Livello di Rete: IPsec (IP Security)}
+\label{sec:ipsec}
+Fornisce sicurezza a livello IP (livello 3).
+
+\begin{itemize}
+    \item \textbf{\textquotedblleft Blanket coverage\textquotedblright{}:} Protegge tutto il traffico tra due endpoint IPsec.
+    \item \textbf{Virtual Private Networks (VPNs):} Traffico crittografato su Internet pubblica.
+\end{itemize}
+
+\subsection{Servizi IPsec}
+Integrità dati, autenticazione origine, prevenzione replay, confidenzialità.
+
+\subsection{Protocolli IPsec}
+\begin{itemize}
+    \item \textbf{AH (Authentication Header):} Autenticazione, integrità. \textbf{Non} confidenzialità.
+    \item \textbf{ESP (Encapsulating Security Payload):} Autenticazione, integrità, \textbf{confidenzialità}. Più usato.
+\end{itemize}
+
+\subsection{Modalità IPsec}
+\begin{itemize}
+    \item \textbf{Transport Mode:} Protegge payload IP. Header IP originale in gran parte intatto. Host-to-host.
+    \item \textbf{Tunnel Mode:} Intero datagramma IP originale incapsulato in nuovo datagramma IP. Tipicamente router-to-router (VPN site-to-site) o client-to-router.
+\end{itemize}
+\textbf{ESP in Tunnel Mode è la più comune per VPN.}
+
+\subsection{Security Associations (SAs)}
+\begin{itemize}
+    \item Contratto unidirezionale (simplex) tra due entità IPsec. Contiene parametri (chiavi, algoritmi, SPI).
+    \item \textbf{SPI (Security Parameter Index):} Identificatore a 32 bit della SA.
+    \item \textbf{SAD (Security Association Database):} Database dove gli endpoint IPsec memorizzano le SA.
+\end{itemize}
+
+\subsection{Datagramma IPsec (Tunnel Mode con ESP)}
+\texttt{[New IP Hdr] [ESP Hdr] [Original IP Hdr] [Original Payload] [ESP Trailer] [ESP Auth]}
+\begin{itemize}
+    \item \textbf{Parte Crittografata:} \texttt{[Original IP Hdr] [Original Payload] [ESP Trailer]}
+    \item \textbf{Parte Autenticata (MAC):} \texttt{[ESP Hdr] [Parte Crittografata]}
+    \item \textbf{Numeri di Sequenza:} Nell'ESP Hdr, per prevenire replay.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=0mm, scale=0.8, transform shape]
+        \small % Smaller font for the diagram
+        \node (newip)   [draw, fill=blue!20, minimum height=0.7cm, minimum width=2.5cm, text=white] {New IP Hdr};
+        \node (esph)    [draw, fill=green!30, minimum height=0.7cm, minimum width=2.2cm, right=of newip, text=white] {ESP Hdr};
+        \node (origip)  [draw, fill=orange!40, minimum height=0.7cm, minimum width=2.5cm, right=of esph, text=white] {Original IP Hdr};
+        \node (origpay) [draw, fill=orange!40, minimum height=0.7cm, minimum width=3.0cm, right=of origip, text=white] {Original Payload};
+        \node (esptrl)  [draw, fill=orange!40, minimum height=0.7cm, minimum width=2.5cm, right=of origpay, text=white] {ESP Trailer};
+        \node (espauth) [draw, fill=purple!50, minimum height=0.7cm, minimum width=2.2cm, right=of esptrl, text=white] {ESP Auth (ICV)};
+
+        % Braces for encrypted and authenticated parts
+        \draw [decorate,decoration={brace,amplitude=5pt,mirror},yshift=-0.5cm]
+            (origip.south west) -- (esptrl.south east) node [black,midway,yshift=-0.4cm, text=white] {Encrypted};
+
+        \draw [decorate,decoration={brace,amplitude=5pt},yshift=0.5cm]
+            (esph.north west) -- (esptrl.north east) node [black,midway,yshift=0.4cm, text=white] {Authenticated (for ICV)};
+    \end{tikzpicture}
+    \caption{Struttura del datagramma IPsec (ESP Tunnel Mode).}
+\end{figure}
+
+
+\subsection{SPD (Security Policy Database)}
+Contiene policy che dicono \textbf{se} e \textbf{quale SA} usare per un dato traffico.
+\begin{itemize}
+    \item \textbf{SPD:} \textquotedblleft Cosa\textquotedblright{} fare (policy).
+    \item \textbf{SAD:} \textquotedblleft Come\textquotedblright{} farlo (parametri SA).
+\end{itemize}
+
+\subsection{IKE (Internet Key Exchange)}
+Protocollo per negoziare e stabilire dinamicamente le SA IPsec.
+\begin{itemize}
+    \item \textbf{Autenticazione IKE:}
+    \begin{itemize}
+        \item \textbf{PSK (Pre-Shared Secret):} Segreto condiviso manualmente.
+        \item \textbf{PKI (Public Key Infrastructure):} Chiavi pubbliche/private e certificati.
+    \end{itemize}
+    \item \textbf{Fasi di IKE:}
+    \begin{itemize}
+        \item \textbf{Fase 1:} Stabilisce SA IKE bidirezionale (ISAKMP SA). Modalità: Aggressive o Main.
+        \item \textbf{Fase 2:} Usa ISAKMP SA per negoziare coppia di SA IPsec.
+    \end{itemize}
+\end{itemize}
+
+\section{Protezione delle LAN Wireless (Wi-Fi)}
+\label{sec:wifi_security}
+
+\subsection{WEP (Wired Equivalent Privacy)}
+\textbf{Standard obsoleto e insicuro.}
+\begin{itemize}
+    \item \textbf{Obiettivi:} Confidenzialità, autorizzazione, integrità (debole), auto-sincronizzazione.
+    \item Usa cifrario a flusso \textbf{RC4}.
+    \item Chiave RC4 = Chiave WEP condivisa (es. 104 bit) + \textbf{IV (Initialization Vector) di 24 bit}.
+    \item L'IV è inviato in chiaro.
+    \item \textbf{Crittografia WEP:} (Dati + ICV) $\oplus$ Keystream. ICV è un CRC-32 (debole).
+    \item \textbf{Rottura di WEP:} \textbf{Riutilizzo dell'IV}. IV a 24 bit $\rightarrow$ IV si ripetono rapidamente.
+    Se $c_1 = p_1 \oplus KS_{IV}$ e $c_2 = p_2 \oplus KS_{IV}$, allora $c_1 \oplus c_2 = p_1 \oplus p_2$.
+    Se $p_1$ è noto, si ricava $p_2$ e $KS_{IV}$.
+\end{itemize}
+
+\subsection{802.11i (WPA2/WPA3): Sicurezza Migliorata}
+Sostituisce WEP.
+\begin{itemize}
+    \item Crittografia più robusta (es. AES-CCMP).
+    \item Distribuzione robusta delle chiavi.
+    \item Usa \textbf{Authentication Server (AS)} separato dall'Access Point (AP).
+    \item \textbf{Quattro Fasi Operative di 802.11i:}
+    \begin{enumerate}
+        \item \textbf{Discovery:} STA e AP scoprono capacità.
+        \item \textbf{Authentication:} STA e AS si autenticano (AP fa da pass-through, spesso con EAP). Generano \textbf{PMK (Pairwise Master Key)}. AS invia PMK ad AP.
+        \item \textbf{Key Generation:} STA e AP usano PMK per derivare chiavi temporanee (\textbf{TK}).
+        \item \textbf{Data Transfer Protetto:} Dati protetti con TK.
+    \end{enumerate}
+    \item \textbf{EAP (Extensible Authentication Protocol):} Protocollo end-to-end client (STA) $\leftrightarrow$ AS.
+    Incapsulato: EAPoL (STA-AP), RADIUS (AP-AS).
+\end{itemize}
+
+\section{Sicurezza Operativa: Firewall e IDS}
+\label{sec:firewall_ids}
+
+\subsection{Firewall}
+Isolano rete interna, permettendo/bloccando pacchetti secondo regole.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm and 2cm, scale=0.9, transform shape]
+        % Rete interna
+        \node (admin_net_label) [text width=3cm, align=center] {Rete Amministrata (trusted \textquotedblleft good guys\textquotedblright)};
+        \node (pc1) [computer, below left=0.5cm and -0.5cm of admin_net_label] {};
+        \node (pc2) [computer, below right=0.5cm and -0.5cm of admin_net_label] {};
+        \node (server_int) [server, below=0.5cm of pc1, xshift=0.7cm] {};
+
+        % Firewall
+        \node (firewall_obj) [cylinder, shape border rotate=90, draw, fill=red!70!black, minimum width=0.8cm, minimum height=1.5cm, aspect=0.3, right=2cm of server_int, yshift=0.5cm, text=white, font=\bfseries\tiny] {FW};
+        \node (firewall_label) [below=0.1cm of firewall_obj, font=\small] {Firewall};
+
+        % Internet
+        \node (internet_cloud) [cloud, cloud puffs=10, draw, fill=blue!30, minimum width=3cm, minimum height=2cm, right=1.5cm of firewall_obj, text=white] {Internet};
+        \node (internet_label) [below=0.1cm of internet_cloud, text width=3cm, align=center] {Internet (untrusted \textquotedblleft bad guys\textquotedblright)};
+
+        \draw[<->, thick] ($(admin_net_label.west) - (0.5,0)$) -- (admin_net_label.east);
+        \draw[<->, thick] (firewall_obj.west) -- ($(admin_net_label.east) + (1,0)$);
+        \draw[<->, thick] (firewall_obj.east) -- (internet_cloud.west);
+        \draw[<->, thick] (internet_cloud.west) -- ($(internet_label.east) + (0.5,0)$);
+
+        % Connect internal devices to a conceptual switch before firewall
+        \coordinate (sw_internal) at ($(server_int)!0.5!(firewall_obj) - (1cm,0)$);
+        \draw (pc1.east) -- (sw_internal);
+        \draw (pc2.east) -- (sw_internal);
+        \draw (server_int.east) -- (sw_internal);
+        \draw (sw_internal) -- (firewall_obj.west);
+
+    \end{tikzpicture}
+    \caption{Concetto di Firewall tra rete interna e Internet.}
+\end{figure}
+
+
+\subsubsection{Perché usare i Firewall?}
+\begin{itemize}
+    \item Prevenire attacchi DoS (es. SYN flooding).
+    \item Prevenire modifiche/accessi illegali a dati interni.
+    \item Consentire solo accessi autorizzati.
+\end{itemize}
+
+\subsubsection{Tipi di Firewall}
+\begin{enumerate}
+    \item \textbf{Stateless Packet Filters:}
+    \begin{itemize}
+        \item Router firewall, esamina pacchetti individualmente.
+        \item Decisione basata su IP src/dest, porte TCP/UDP, tipo ICMP, bit TCP SYN/ACK.
+        \item \textbf{ACL (Access Control Lists):} Tabelle di regole (azione, condizione).
+    \end{itemize}
+    \item \textbf{Stateful Packet Filters:}
+    \begin{itemize}
+        \item Traccia lo stato di ogni connessione TCP.
+        \item Determina se i pacchetti \textquotedblleft hanno senso\textquotedblright{} nel contesto della connessione.
+        \item Timeout connessioni inattive.
+    \end{itemize}
+    \item \textbf{Application Gateways (Proxy Firewall):}
+    \begin{itemize}
+        \item Filtrano sui \textbf{dati dell'applicazione} oltre che sugli header.
+        \item Agiscono come proxy per specifiche applicazioni.
+        \item Client deve essere configurato per usare il proxy.
+    \end{itemize}
+\end{enumerate}
+\textbf{Esempio ACL (Stateless):}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|l|l|l|l|l|}
+        \hline
+        \textbf{Azione} & \textbf{IP Src} & \textbf{IP Dest} & \textbf{Proto} & \textbf{Porta Src} & \textbf{Porta Dest} & \textbf{Flag} \\ \hline
+        allow & 222.22/16 & ext. & TCP & $>$1023 & 80 & any \\ \hline
+        allow & ext. & 222.22/16 & TCP & 80 & $>$1023 & ACK \\ \hline
+        deny  & all & all & all & all & all & all \\ \hline
+    \end{tabular}
+    \caption{Esempio semplificato di Access Control List (ACL).}
+\end{table}
+
+
+\subsubsection{Limitazioni di Firewall e Gateway}
+\begin{itemize}
+    \item IP Spoofing.
+    \item Complessità con molte app che necessitano gateway dedicati.
+    \item Client software deve essere configurato per il proxy.
+    \item Trade-off: comunicazione vs. sicurezza.
+\end{itemize}
+
+\subsection{Intrusion Detection Systems (IDS)}
+Rilevano attività sospette o dannose.
+\begin{itemize}
+    \item \textbf{Deep Packet Inspection (DPI):} Guardano il \textbf{contenuto} dei pacchetti (vs. firme virus, stringhe attacco).
+    \item \textbf{Correlazione tra pacchetti multipli:} Rilevano port scanning, network mapping, DoS.
+    \item Posizionati in vari punti della rete (interna, DMZ).
+\end{itemize}
+
+\section{Riassunto sulla Sicurezza di Rete}
+\label{sec:riassunto_sicurezza}
+
+\subsection{Tecniche di Base}
+\begin{itemize}
+    \item \textbf{Crittografia} (simmetrica e a chiave pubblica)
+    \item \textbf{Integrità dei messaggi} (hash crittografici e MAC)
+    \item \textbf{Autenticazione degli endpoint}
+\end{itemize}
+
+\subsection{Usate in Diversi Scenari di Sicurezza}
+\begin{itemize}
+    \item Email sicure (PGP, S/MIME)
+    \item Trasporto sicuro (SSL/TLS)
+    \item Sicurezza a livello di rete (IPsec, VPN)
+    \item Sicurezza Wireless (802.11i - WPA2/WPA3)
+\end{itemize}
+
+\subsection{Sicurezza Operativa}
+\begin{itemize}
+    \item Firewall
+    \item Intrusion Detection Systems (IDS)
+\end{itemize}
+
+\end{document}

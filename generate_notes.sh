@@ -10,21 +10,16 @@ echo "Verifico che tutti i file necessari siano presenti..."
 
 FILES=(
   "01-introduzione.tex"
-  "02-relazioni.tex"
-  "03-algebra-relazionale.tex"
-  "04-sql.tex"
-  "05-sql-avanzato.tex"
-  "06-db-design.tex"
-  "07-modello-concettuale.tex"
-  "08-modello-logico.tex"
-  "09-normalizzazione.tex"
-  "10-db-attivi.tex"
-  "lab-01-algebra.tex"
-  "lab-02-sql.tex"
-  "lab-03-04-architettura-transazioni.tex"
-  "lab-05-progettazione.tex"
-  "lab-06-indici.tex"
-  "lab-07-hash.tex"
+  "02-networking.tex"
+  "03-ip-subnetting.tex"
+  "04-ipv4-vlsm.tex"
+  "05-application-layer.tex"
+  "06-security.tex"
+  "07-wireless-1.tex"
+  "07-wireless-2.tex"
+  "08-wireless-protocols.tex"
+  "09-routing.tex"
+  "10-esercitazioni.tex"
   "preambolo_comune.tex"
 )
 
@@ -64,7 +59,7 @@ cat >appunti_completi.tex <<'EOT'
 }
 
 % Titolo del documento unificato
-\title{\Huge Appunti Completi di Reti di Calcolatori\\
+\title{\Appunti Completi di Reti di Calcolatori\\
   \large Basati sulle dispense del Prof. Luciano Bononi}
 \author{Alessandro Amella, Gemini e Claude}
 \date{\today}
@@ -82,11 +77,10 @@ Questo documento è la versione compilata automaticamente di tutti i miei appunt
 
 \begin{itemize}
   \item \textbf{Fonte}: Tutti gli appunti sono disponibili come file separati nella repository GitHub: 
-        \url{https://github.com/alessandroamella/appunti-db}
+        \url{https://github.com/alessandroamella/appunti-reti}
   \item \textbf{Generazione}: Questo PDF è stato generato automaticamente utilizzando uno script che unisce tutti i singoli file .tex degli appunti.
-  \item \textbf{Immagini}: Le immagini sono generate con PlantUML. Maggiori informazioni sono disponibili nel \href{https://github.com/alessandroamella/appunti-db/blob/master/README.md}{README} del progetto.
   \item \textbf{Aggiornamenti}: Per la versione più recente degli appunti, visita la pagina delle release:
-        \url{https://github.com/alessandroamella/appunti-db/releases/latest}
+        \url{https://github.com/alessandroamella/appunti-reti/releases/latest}
   \item \textbf{Uso di AI}: Ho usato Gemini e Claude a manetta.
 \end{itemize}
 
@@ -96,53 +90,38 @@ Sentiti libero di utilizzare, condividere o contribuire a questi appunti attrave
 
 \clearpage
 
-\chapter{Introduzione ai Database}
+\chapter{Introduzione alle Reti di Calcolatori}
 \input{01-introduzione}
 
-\chapter{Modello Relazionale dei Dati}
-\input{02-relazioni}
+\chapter{Principi di Networking}
+\input{02-networking}
 
-\chapter{Algebra Relazionale e Calcolo Relazionale}
-\input{03-algebra-relazionale}
+\chapter{Indirizzamento IP, Subnetting e Instradamento}
+\input{03-ip-subnetting}
 
-\chapter{SQL Base}
-\input{04-sql}
+\chapter{Progettazione Reti IPv4 e Subnetting}
+\input{04-ipv4-vlsm}
 
-\chapter{SQL Avanzato}
-\input{05-sql-avanzato}
+\chapter{Livello Applicazione}
+\input{05-application-layer}
 
-\chapter{Modellazione Concettuale dei Dati}
-\input{06-db-design}
+\chapter{Sicurezza nelle Reti di Calcolatori}
+\input{06-security}
 
-\chapter{Progettazione Concettuale di Reti di Calcolatori}
-\input{07-modello-concettuale}
+\chapter{Sistemi Wireless: Livello Fisico e Segnali}
+\input{07-wireless-1}
 
-\chapter{Progettazione Logica dei Database}
-\input{08-modello-logico}
+\chapter{Sistemi Wireless: Spettro Fisico, Canali Logici, Modulazione Digitale}
+\input{07-wireless-2}
 
-\chapter{Normalizzazione dei Database}
-\input{09-normalizzazione}
+\chapter{Protocolli MAC Wireless}
+\input{08-wireless-protocols}
 
-\chapter{Database Attivi}
-\input{10-db-attivi}
+\chapter{Reti Wireless: Routing e Trasporto}
+\input{09-routing}
 
-\chapter{Laboratorio 1: Algebra Relazionale}
-\input{lab-01-algebra}
-
-\chapter{Laboratorio 2: SQL}
-\input{lab-02-sql}
-
-\chapter{Laboratorio 3 e 4: Architettura e Transazioni}
-\input{lab-03-04-architettura-transazioni}
-
-\chapter{Laboratorio 5: Progettazione}
-\input{lab-05-progettazione}
-
-\chapter{Laboratorio 6: Indici e B+ Alberi}
-\input{lab-06-indici}
-
-\chapter{Laboratorio 7: Hash Table e Indici Invertiti}
-\input{lab-07-hash}
+\chapter{Esercitazioni}
+\input{10-esercitazioni}
 
 \end{document}
 EOT
