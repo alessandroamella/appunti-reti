@@ -1,0 +1,495 @@
+\documentclass{article}
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% --- Margini e layout ---
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% --- Font sans-serif ---
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% --- Matematica ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Liste personalizzate ---
+\usepackage{enumitem}
+
+% --- Immagini ---
+\usepackage{float}
+\usepackage{tikz} % per disegni
+\usepackage{graphicx} % per immagini
+\usetikzlibrary{shapes.geometric, positioning, calc}
+
+% --- Hyperlink ---
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={Appunti di Reti di Calcolatori},
+    colorlinks=true,
+    linkcolor=cyan,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=green,
+}
+
+% --- Colori e sfondo nero ---
+\usepackage{xcolor}
+\pagecolor{black}
+\color{white}
+
+% --- Evidenziazione del codice (richiede -shell-escape) ---
+% Compilare con: pdflatex -shell-escape nomefile.tex
+\usepackage{minted}
+\setminted{
+    frame=lines,     % Cornice attorno al codice
+    framesep=2mm,
+    fontsize=\small,
+    breaklines=true, % A capo automatico per linee lunghe
+    style=monokai,    % Stile di highlighting
+    bgcolor=black!80 % Sfondo leggermente più chiaro per i blocchi minted
+}
+
+% --- Titolo ---
+\title{Appunti di Reti di Calcolatori}
+\author{Basato sulle slide del Prof. Luciano Bononi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Reti di Reti e Internetworking}
+\begin{itemize}
+    \item \textbf{Concetto Base:} Le reti locali (LAN) individuali sono interconnesse per formare reti più grandi. Questa interconnessione avviene in modo gerarchico.
+    \item \textbf{Componenti Chiave:}
+    \begin{itemize}
+        \item \textbf{Router (Instradatori):} Calcolatori specializzati che collegano diverse LAN (o sottoreti). Ogni router è un ``rappresentante'' della sua rete locale.
+        \item \textbf{Dorsali (Backbone):} Linee dati ad alta velocità che collegano i router tra loro.
+    \end{itemize}
+    \item \textbf{Astrazione a Livello Rete (Livello 3 OSI):}
+    \begin{itemize}
+        \item Dal punto di vista di un router, i dettagli interni delle LAN collegate sono nascosti. Il router vede solo altri router e le reti che questi rappresentano.
+        \item Questo è fondamentale per la \textbf{scalabilità}: invece di dover conoscere l'indirizzo MAC (livello 2) di ogni singolo dispositivo su Internet, un router deve solo sapere come raggiungere la \textit{rete} di destinazione, inoltrando il pacchetto al router successivo appropriato.
+        \item \textbf{Esempio Pratico:} Immagina il sistema postale. Il postino del tuo quartiere (router locale) non ha bisogno di conoscere l'indirizzo esatto di ogni casa in un'altra città. Sa solo che deve mandare la lettera al centro di smistamento di quella città (router di backbone o router della rete di destinazione), che poi si occuperà della consegna locale.
+    \end{itemize}
+    \begin{figure}[H]
+        \centering
+        % Per inserire l'immagine, scaricala da https://i.imgur.com/nK8g4eH.png
+        % salvala nella stessa cartella del file .tex come 'reti_di_reti.png'
+        % e decommenta la riga seguente:
+        % \includegraphics[width=0.8\textwidth]{reti_di_reti.png}
+        \fbox{\parbox{0.8\textwidth}{\centering \texttt{Immagine concettuale: a sinistra LAN Z, K, X, Y con i loro router Rz, Rk, Rx, Ry connessi da dorsali. A destra, l'astrazione dove si vedono solo i router e le connessioni tra loro. (Vedi URL nella sorgente LaTeX per l'immagine effettiva)} }}
+        \caption{Diagramma Reti di Reti (placeholder)}
+    \end{figure}
+    \item \textbf{Problema Risolto:} Se milioni di computer fossero connessi solo con switch e bridge (livello 2), l'instradamento dei frame richiederebbe tabelle MAC enormi, causando ritardi, complessità e rischi di errore. I router, operando al livello 3 (Rete), semplificano questo gestendo l'instradamento tra reti.
+\end{itemize}
+
+\section{Livello Rete: Internet Protocol (IP)}
+Il concetto di rete si estende dalla LAN locale alla rete globale (Internet).
+\begin{itemize}
+    \item \textbf{Protocollo Internet (IP):}
+    \begin{itemize}
+        \item \textbf{Indirizzamento IP:} Introduce un nuovo schema di indirizzamento globale e gerarchico.
+        \begin{itemize}
+            \item Fornisce indirizzi alla rete locale e ai suoi nodi (host).
+        \end{itemize}
+        \item \textbf{Instradamento (Forwarding):} Gestisce l'inoltro dei pacchetti dal mittente al destinatario finale.
+        \begin{itemize}
+            \item Servizio di comunicazione di tipo \textbf{connectionless} (senza connessione preliminare, ogni pacchetto è trattato indipendentemente).
+        \end{itemize}
+        \item \textbf{Nuovi Dispositivi (Router):} Amministratori del livello 3.
+        \begin{itemize}
+            \item \textbf{Tabelle di instradamento:} Illustrano la topologia della rete (dal punto di vista del router), nascondendo i dettagli interni delle LAN.
+            \item \textbf{Protocolli di routing:} Protocolli per aggiornare dinamicamente le tabelle di instradamento (vedi sezione successiva).
+        \end{itemize}
+        \item \textbf{Frammentazione:} Suddivide i dati in pacchetti più piccoli se necessario per attraversare reti con Maximum Transmission Unit (MTU) diverse.
+        \item \textbf{Busta del Pacchetto (Header IP):} Contiene gli indirizzi IP del mittente e del destinatario e altre informazioni di controllo.
+    \end{itemize}
+    \item \textbf{Collocazione nello Stack ISO/OSI (o Internet Stack):}
+    \begin{itemize}
+        \item Livello Fisico (es. codifica segnali)
+        \item Livello Data Link (MAC/LLC, es. Ethernet, Wi-Fi, PPP) - accesso al mezzo, controllo errore locale.
+        \item \textbf{Livello Rete (IP)} - frammentazione, indirizzamento, instradamento.
+        \item Livello Trasporto (TCP/UDP)
+        \item Livelli superiori (Sessione, Presentazione, Applicazione)
+    \end{itemize}
+\end{itemize}
+
+\section{Indirizzamento IPv4}
+\begin{itemize}
+    \item \textbf{Indirizzi IP:} Identificatori unici per le interfacce di rete (schede di rete) connesse a Internet.
+    \begin{itemize}
+        \item Un dispositivo con più schede di rete può avere più indirizzi IP.
+        \item \textbf{Associazione MAC-IP:} Un indirizzo IP è associato a un indirizzo MAC.
+        \begin{itemize}
+            \item \textbf{IP Statico:} L'associazione non cambia (configurato manualmente).
+            \item \textbf{IP Dinamico:} L'associazione può cambiare (assegnato da un server, es. DHCP).
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Formato IPv4:}
+    \begin{itemize}
+        \item 32 bit (4 Byte).
+        \item Rappresentato come 4 valori decimali separati da punti (es. \texttt{192.168.1.10}).
+        \item Ogni valore decimale è compreso tra 0 e 255.
+        \item \textbf{Esempio:} \texttt{130.136.25.1}
+    \end{itemize}
+    \item \textbf{Struttura dell'Indirizzo IP:}
+    \begin{itemize}
+        \item \textbf{Network Number (Numero di Rete):} Identifica la rete IP a cui appartiene l'interfaccia.
+        \item \textbf{Host Number (Numero dell'Host):} Identifica l'interfaccia specifica all'interno di quella rete.
+    \end{itemize}
+    \item \textbf{Classi di Reti IPv4 (obsolete ma didatticamente utili):}
+    \begin{itemize}
+        \item Il valore del primo byte determina la classe.
+        \item \textbf{Classe A:}
+        \begin{itemize}
+            \item Primo bit: \texttt{0} (valori primo byte: 1-126).
+            \item Formato: \texttt{0NNNNNNN.HHHHHHHH.HHHHHHHH.HHHHHHHH}
+            \item Poche reti (max 126), ma ognuna con moltissimi host (oltre 16 milioni).
+            \item Esempio: \texttt{10.0.0.1} (Rete \texttt{10.0.0.0})
+        \end{itemize}
+        \item \textbf{Classe B:}
+        \begin{itemize}
+            \item Primi due bit: \texttt{10} (valori primo byte: 128-191).
+            \item Formato: \texttt{10NNNNNN.NNNNNNNN.HHHHHHHH.HHHHHHHH}
+            \item Numero medio di reti (max 16.382), ognuna con molti host (oltre 64.000).
+            \item Esempio: \texttt{172.16.0.1} (Rete \texttt{172.16.0.0})
+        \end{itemize}
+        \item \textbf{Classe C:}
+        \begin{itemize}
+            \item Primi tre bit: \texttt{110} (valori primo byte: 192-223).
+            \item Formato: \texttt{110NNNNN.NNNNNNNN.NNNNNNNN.HHHHHHHH}
+            \item Moltissime reti (oltre 2 milioni), ma ognuna con pochi host (max 254).
+            \item Esempio: \texttt{192.168.1.1} (Rete \texttt{192.168.1.0})
+        \end{itemize}
+    \end{itemize}
+    \textit{(Nota: L'indirizzamento classful è stato ampiamente sostituito da Classless Inter-Domain Routing (CIDR), ma la comprensione delle classi aiuta a capire la logica originale.)}
+\end{itemize}
+
+\section{Sottoreti (Subnetwork)}
+\begin{itemize}
+    \item \textbf{Scopo:} Organizzare ulteriormente una rete IP in segmenti più piccoli e gestibili.
+    \item \textbf{Maschera di Rete (Netmask):}
+    \begin{itemize}
+        \item Valore a 32 bit che definisce la parte rete/sottorete e la parte host.
+        \item Bit a \texttt{1} = parte rete/sottorete; Bit a \texttt{0} = parte host.
+        \item \textbf{Esempio:}
+        \begin{itemize}
+            \item Rete Classe B: \texttt{130.136.0.0} (Netmask di classe: \texttt{255.255.0.0})
+            \item Con netmask \texttt{255.255.255.0} per 256 sottoreti:
+            \begin{itemize}
+                \item \texttt{130.136.1.0} è la sottorete 1.
+                \item \texttt{130.136.1.22} è l'host 22 sulla sottorete \texttt{130.136.1.0}.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Gerarchia di Sottoreti:} Ogni sottorete è amministrata da un router (\textbf{default router} o default gateway).
+    \item \textbf{Informazioni di Configurazione Fondamentali per un Host:}
+    \begin{enumerate}
+        \item Indirizzo IP
+        \item Netmask
+        \item Default Router IP
+    \end{enumerate}
+\end{itemize}
+
+\section{Instradamento (Forwarding) dei Pacchetti IP}
+\begin{itemize}
+    \item \textbf{Forwarding:} Processo decisionale di un router per inoltrare un pacchetto IP.
+    \item \textbf{Tabella di Instradamento:} Ogni router ha una tabella con reti di destinazione e "next hop".
+    \item \textbf{Processo (Esempio Semplificato):}
+    \begin{enumerate}
+        \item Un host (\texttt{H1}) invia un pacchetto a un host (\texttt{H2}) su un'altra rete.
+        \item \texttt{H1} invia il pacchetto al suo default router (\texttt{R1}).
+        \item \texttt{R1} controlla l'IP di destinazione e consulta la sua tabella:
+        \begin{itemize}
+            \item Se rete direttamente connessa, inoltra a \texttt{H2} (via ARP).
+            \item Altrimenti, inoltra al router "next hop" (\texttt{R2}).
+        \end{itemize}
+        \item \texttt{R2} ripete il processo, e così via fino alla destinazione.
+    \end{enumerate}
+    \item \textbf{Esempio (dalle slide 11-13):} Host \texttt{140.217.2.10} (rete Y) spedisce a \texttt{130.136.2.33} (rete K).
+    \begin{enumerate}
+        \item Pacchetto a default router di \texttt{Y.2} (\texttt{Ry2: 140.217.2.254}).
+        \item \texttt{Ry2} inoltra a default router di rete \texttt{Y} (\texttt{Ry: 140.217.0.254}).
+        \item \texttt{Ry} inoltra a \texttt{Rz} (\texttt{190.89.0.254}).
+        \item \texttt{Rz} inoltra a \texttt{Rk} (\texttt{130.136.0.254}).
+        \item \texttt{Rk} inoltra a router sottorete \texttt{K.2} (\texttt{Rk2: 130.136.2.254}).
+        \item \texttt{Rk2} consegna a host \texttt{130.136.2.33}.
+    \end{enumerate}
+\end{itemize}
+
+\section{Routing}
+\begin{itemize}
+    \item \textbf{Routing vs. Forwarding:}
+    \begin{itemize}
+        \item \textbf{Forwarding:} Azione di spostare pacchetti basata su tabella esistente.
+        \item \textbf{Routing:} Processo di costruzione e aggiornamento delle tabelle di instradamento.
+    \end{itemize}
+    \item \textbf{Necessità di Aggiornamento Tabelle:} Cambiamenti topologia, mobilità, accordi tra Sistemi Autonomi (AS).
+    \begin{itemize}
+        \item \textbf{AS (Autonomous System):} Rete/insieme di reti sotto una singola amministrazione tecnica.
+    \end{itemize}
+    \item \textbf{Protocolli di Routing (Algoritmi):}
+    \begin{itemize}
+        \item I router li usano per scambiarsi informazioni e calcolare percorsi migliori.
+        \item \textbf{Esempi:}
+        \begin{itemize}
+            \item \textbf{RIP (Routing Information Protocol)}
+            \item \textbf{OSPF (Open Shortest Path First)} (IGP - Interior Gateway Protocol)
+            \item \textbf{BGP (Border Gateway Protocol)} (EGP - Exterior Gateway Protocol)
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\section{Protocollo ICMP (Internet Control Message Protocol)}
+\begin{itemize}
+    \item \textbf{Scopo:} Protocollo per messaggi di controllo e di errore; non trasporta dati utente.
+    \item \textbf{Funzionamento:} Opera a fianco di IP; messaggi ICMP incapsulati in pacchetti IP.
+    \item \textbf{Tipi di Messaggi Comuni:}
+    \begin{itemize}
+        \item Rete/Host destinazione non raggiungibile/sconosciuto
+        \item Protocollo richiesto non disponibile
+        \item Echo Request / Echo Reply (usato da \texttt{PING})
+        \item Time Exceeded (TTL arrivato a zero, usato da \texttt{Traceroute})
+    \end{itemize}
+\end{itemize}
+
+\section{Applicazioni Basate su ICMP}
+\begin{itemize}
+    \item \textbf{PING (Packet InterNet Groper):}
+    \begin{itemize}
+        \item \textbf{Scopo:} Testare la connettività.
+        \item \textbf{Funzionamento:} \texttt{host1} invia ICMP Echo Request a \texttt{host2}; \texttt{host2} risponde con ICMP Echo Reply. Calcola RTT.
+        \item \textbf{Output Esempio:}
+\begin{minted}{text}
+Risposta da 130.136.2.241: byte=32 durata<1ms TTL=128
+Richiesta scaduta.
+\end{minted}
+    \end{itemize}
+    \item \textbf{Traceroute (o \texttt{tracert} su Windows):}
+    \begin{itemize}
+        \item \textbf{Scopo:} Mostrare la sequenza di router attraversati.
+        \item \textbf{Funzionamento:} Invia pacchetti con TTL crescente. Ogni router che fa scadere il TTL invia ICMP Time Exceeded.
+        \item \textbf{Output Esempio:}
+\begin{minted}{text}
+Rilevazione instradamento verso mi-bo-g.garr.net [193.206.134.21]
+1 <1 ms <1 ms <1 ms csgw-3-0-5.cs.unibo.it [130.136.2.254]
+2 <1 ms <1 ms <1 ms cesia-csgw.cs.unibo.it [130.136.254.254]
+...
+5  4 ms  4 ms  4 ms mi-bo-g.garr.net [193.206.134.21]
+\end{minted}
+    \end{itemize}
+\end{itemize}
+
+\section{Protocollo ARP (Address Resolution Protocol) e RARP}
+\begin{itemize}
+    \item \textbf{Problema:} Per inviare un frame su LAN, serve l'indirizzo MAC del destinatario, dato il suo IP.
+    \item \textbf{ARP (Address Resolution Protocol):}
+    \begin{itemize}
+        \item \textbf{Scopo:} Trovare MAC corrispondente a un IP su LAN.
+        \item \textbf{Funzionamento:}
+        \begin{enumerate}
+            \item Mittente invia \textbf{ARP Request} (broadcast): ``Chi ha IP\_B? Dimmi il tuo MAC.''
+            \item Host con IP\_B risponde con \textbf{ARP Reply} (unicast): ``Io ho IP\_B, il mio MAC è MAC\_B.''
+            \item Mittente memorizza l'associazione (cache ARP) e invia il frame dati.
+        \end{enumerate}
+    \end{itemize}
+    \item \textbf{RARP (Reverse Address Resolution Protocol):}
+    \begin{itemize}
+        \item \textbf{Scopo:} Trovare IP corrispondente a un MAC. Sostituito da DHCP.
+    \end{itemize}
+\end{itemize}
+
+\section{Assegnazione Indirizzi IP: DHCP (Dynamic Host Configuration Protocol)}
+\begin{itemize}
+    \item \textbf{Scopo:} Automatizzare l'assegnazione di IP e altre info di configurazione.
+    \item \textbf{Server DHCP:} Gestisce un pool di IP e li assegna dinamicamente ai client.
+    \begin{itemize}
+        \item \textbf{Informazioni fornite:} IP, netmask, gateway, DNS.
+    \end{itemize}
+    \item \textbf{Processo DHCP (semplificato - DORA):}
+    \begin{enumerate}
+        \item \textbf{Discover:} Client (broadcast): ``Cerco server DHCP.''
+        \item \textbf{Offer:} Server(s) DHCP: ``Posso darti IP X.''
+        \item \textbf{Request:} Client: ``Accetto IP X dal server Y.''
+        \item \textbf{Acknowledge:} Server Y: ``OK, IP X è tuo per N ore.''
+    \end{enumerate}
+    \item \textbf{Vantaggi:} Semplifica amministrazione, evita conflitti, uso efficiente IP.
+\end{itemize}
+
+\section{IPv6 e Tunnelling IPv4}
+\begin{itemize}
+    \item \textbf{Motivazioni per IPv6:} Esaurimento indirizzi IPv4.
+    \item \textbf{Caratteristiche Salienti di IPv6:}
+    \begin{itemize}
+        \item \textbf{Indirizzi IPv6 Estesi:} \textbf{128 bit} (16 Byte). Numero enorme di indirizzi.
+        \item \textbf{Nuova Struttura dell'Header IP.}
+    \end{itemize}
+    \item \textbf{Integrazione/Sostituzione di IPv4:}
+    \begin{itemize}
+        \item Transizione graduale. Tecniche come Dual Stack.
+        \item \textbf{Tunnelling:} Spedire pacchetti IPv6 incapsulati in pacchetti IPv4 attraverso una rete IPv4.
+    \end{itemize}
+\end{itemize}
+
+\section{Livello Trasporto (TCP e UDP)}
+\begin{itemize}
+    \item \textbf{Scopo:} Fornire servizi di comunicazione end-to-end tra applicazioni.
+    \item \textbf{Protocolli Principali:}
+    \begin{itemize}
+        \item \textbf{TCP (Transmission Control Protocol):}
+        \begin{itemize}
+            \item \textbf{Servizio Affidabile}, \textbf{Connection-Oriented}.
+            \item Numeri di Porta, numerazione sequenziale, ACK, ritrasmissione, controllo flusso/congestione.
+        \end{itemize}
+        \item \textbf{UDP (User Data Protocol):}
+        \begin{itemize}
+            \item \textbf{Servizio Non Affidabile}, \textbf{Connectionless}.
+            \item Numeri di Porta. Semplice e veloce, overhead minimo.
+            \item Usi: Streaming, DNS, giochi online.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\section{Livello Trasporto su Internet: TCP e Sockets}
+\begin{itemize}
+    \item \textbf{TCP/IP:} Combinazione base per gran parte della comunicazione Internet.
+    \item \textbf{Porte e Smistamento:} Numeri di porta (0-65535) per distinguere applicazioni.
+    \item \textbf{Socket:} Endpoint di comunicazione: coppia \texttt{(Indirizzo IP, Numero di Porta)}.
+    \item \textbf{Attivazione della Connessione TCP (Handshake a 3 vie implicito):}
+    \begin{enumerate}
+        \item \textbf{Apertura Connessione:} Client richiede connessione a socket del server.
+        \item \textbf{Accettazione e Configurazione:} Scambio pacchetti di controllo (SYN, SYN-ACK, ACK).
+        \item \textbf{Scambio Dati.}
+        \item \textbf{Rilascio della Connessione:} Chiusura tramite pacchetti FIN, ACK.
+    \end{enumerate}
+\end{itemize}
+
+\section{Controllo di Flusso e Congestione di Rete (TCP)}
+\begin{itemize}
+    \item \textbf{Problema:} Latenza di rete significativa. Evitare invio troppo lento o troppo veloce.
+    \item \textbf{Obiettivi del Controllo TCP:}
+    \begin{itemize}
+        \item \textbf{Controllo di Flusso (Flow Control):} Evitare che mittente sovraccarichi il \textbf{destinatario}.
+        \item \textbf{Controllo della Congestione (Congestion Control):} Evitare che mittente sovraccarichi la \textbf{rete}.
+    \end{itemize}
+    \item \textbf{Meccanismo Chiave: Finestra Scorrevole (Sliding Window, SW)}.
+\end{itemize}
+
+\section{Finestra Scorrevole di TCP (Sliding Window)}
+\begin{itemize}
+    \item \textbf{Concetto:} SW = numero max di byte/pacchetti inviabili senza aver ancora ricevuto ACK.
+    \item \textbf{Controllo di Flusso con SW:} Mittente invia max SW pacchetti, attende ACK, la finestra "scorre".
+    \item \textbf{Controllo della Congestione con SW (Dimensione Variabile):}
+    \begin{enumerate}
+        \item \textbf{Partenza Lenta (Slow Start):} Inizia con \texttt{cwnd} piccola.
+        \item \textbf{Aumento:} Se ACK OK, \texttt{cwnd} aumenta.
+        \item \textbf{Rilevamento Congestione:} Se pacchetto perso (timeout) o ACK duplicati.
+        \item \textbf{Riduzione:} \texttt{cwnd} ridotta drasticamente.
+        \item \textbf{Ripresa:} Aumento graduale ricomincia.
+    \end{enumerate}
+    \textit{Esempio (slide 40): SW=1 $\rightarrow$ SW=2 $\rightarrow$ SW=4 $\rightarrow$ SW=8. Se a SW=8 pacchetto perso, si torna a SW basso e si riprova. Max ritmo sostenibile in quel ciclo era SW=4.}
+\end{itemize}
+
+\section{Nomi di Dominio e Servizio DNS (Domain Name System)}
+\begin{itemize}
+    \item \textbf{Problema:} Utenti usano nomi (es. \texttt{www.google.com}), rete usa IP.
+    \item \textbf{Nomi di Dominio:} Gerarchici, es. \texttt{www.informatica.unibo.it}.
+    \item \textbf{Servizio DNS:} Risolve nomi di dominio in indirizzi IP.
+    \begin{itemize}
+        \item \textbf{Gerarchia di Server DNS:} Radice, TLD, Autoritativi, Locali/Ricorsivi.
+        \item \textbf{Processo di Risoluzione:} Il resolver locale interroga la gerarchia fino a ottenere l'IP.
+    \end{itemize}
+\end{itemize}
+
+\section{Livello Applicazione}
+\begin{itemize}
+    \item \textbf{Scopo:} Fornire primitive e protocolli per le applicazioni di rete.
+    \item \textbf{Relazione con Livelli Inferiori:} Si appoggia su Livello Trasporto (TCP/UDP).
+    \item \textbf{Esempi di Protocolli e Applicazioni:}
+    \begin{itemize}
+        \item \textbf{Posta Elettronica (E-mail):} \texttt{SMTP} (invio, TCP 25), \texttt{POP3} (ricezione, TCP 110), \texttt{IMAP} (gestione su server, TCP 143).
+        \item \textbf{World Wide Web (WWW):} \texttt{HTTP} (TCP 80), \texttt{HTTPS} (TCP 443).
+        \item \textbf{DNS:} Protocollo DNS stesso (UDP 53 principalmente).
+    \end{itemize}
+\end{itemize}
+
+\section{Servizi Client/Server e Peer-to-Peer (P2P)}
+\begin{itemize}
+    \item \textbf{Architettura Client/Server:}
+    \begin{itemize}
+        \item \textbf{Client:} Richiedono servizi. \textbf{Server:} Forniscono servizi.
+        \item Esempi: DNS, Web, E-mail.
+    \end{itemize}
+    \item \textbf{Architettura Peer-to-Peer (P2P):}
+    \begin{itemize}
+        \item Tutti gli host (\textbf{peer}) sono sia client che server.
+        \item Esempi: File-sharing (BitTorrent), alcune criptovalute.
+    \end{itemize}
+    \item \textbf{Servizi Ibridi:} Elementi di entrambe; server centrali per coordinamento, scambio dati P2P.
+    \begin{itemize}
+        \item Esempio: Napster (originale).
+    \end{itemize}
+\end{itemize}
+
+\section{Configurazione TCP/IP (Host per Connessione a Internet)}
+\begin{itemize}
+    \item \textbf{Riassunto:} Cosa serve per configurare un host (es. PC domestico) per Internet via ISP.
+    \item \textbf{Passi e Componenti:}
+    \begin{enumerate}
+        \item \textbf{Installare Dispositivo/Scheda di Rete} (Modem, Ethernet/Wi-Fi).
+        \item \textbf{Stack Protokollare:} TCP/IP (e \texttt{PPP} per modem).
+        \item \textbf{Firewall} (Raccomandato).
+        \item \textbf{Informazioni di Configurazione} (manuale o via DHCP dall'ISP):
+        \begin{itemize}
+            \item Indirizzo IP dell'host.
+            \item Maschera di Rete (Netmask).
+            \item Indirizzo IP del Default Router (Gateway) dell'ISP.
+            \item Indirizzo IP del/dei Server DNS dell'ISP.
+            \item (Opzionale) IP server SMTP, POP3, IMAP.
+        \end{itemize}
+    \end{enumerate}
+\end{itemize}
+
+\section{Cenni sulla Sicurezza in Rete}
+\begin{itemize}
+    \item \textbf{1. Prevenzione Programmi Dannosi (Malware, Virus):}
+    \begin{itemize}
+        \item Difesa: Antivirus, buone pratiche.
+    \end{itemize}
+    \item \textbf{2. Controllo dell'Accesso a Sistemi di Rete Privati:}
+    \begin{itemize}
+        \item \textbf{Firewall:} Filtra pacchetti al perimetro della rete.
+        \item \textbf{Autenticazione e Autorizzazione:} Per accessi consentiti (Login, Password, ACL).
+        \item \textbf{Application Gateway (Proxy):} Server intermedio per controllo accessi a specifiche app.
+    \end{itemize}
+    \item \textbf{3. Segretezza (Privacy) dei Dati Trasmessi:}
+    \begin{itemize}
+        \item \textbf{Crittografia e Cifratura:} Trasformare dati in formato illeggibile senza chiave.
+        \item Esempi: SSL/TLS (HTTPS), PGP, VPN.
+    \end{itemize}
+\end{itemize}
+
+\section{Servizi Differenziati e Internet2}
+\begin{itemize}
+    \item \textbf{Criticità di Internet Tradizionale:} Mancanza di Garanzie sulla Qualità del Servizio (QoS).
+    \begin{itemize}
+        \item TCP affidabile, ma non garantisce \textit{quando} i pacchetti arrivano.
+        \item Router tradizionali trattano tutti i pacchetti "best-effort".
+    \end{itemize}
+    \item \textbf{Internet2 e Servizi Differenziati (IntServ, DiffServ):}
+    \begin{itemize}
+        \item \textbf{Scopo:} Supportare app con requisiti QoS stringenti.
+        \item \textbf{Approccio:} Nuova infrastruttura, router intelligenti, prioritizzazione, riservazione risorse, classificazione/marcatura pacchetti.
+        \item \textbf{Obiettivo:} Garantire QoS su tutto il collegamento.
+    \end{itemize}
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,338 @@
+\documentclass{article}
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% --- Margini e layout ---
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% --- Font sans-serif ---
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% --- Matematica ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Liste personalizzate ---
+\usepackage{enumitem}
+
+% --- Immagini ---
+\usepackage{float}
+\usepackage{tikz} % per disegni
+\usepackage{graphicx} % per immagini
+\usetikzlibrary{shapes.geometric, positioning, calc}
+
+% --- Hyperlink ---
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={Appunti su Progettazione Reti IPv4 e Subnetting},
+    colorlinks=true,
+    linkcolor=cyan,
+    filecolor=magenta,      
+    urlcolor=green,
+    citecolor=blue,
+}
+
+% --- Colori e sfondo nero ---
+\usepackage{xcolor}
+\pagecolor{black}
+\color{white}
+
+% --- Evidenziazione del codice (richiede -shell-escape) ---
+% Compilare con: pdflatex -shell-escape nomefile.tex
+\usepackage{minted}
+\setminted{
+    frame=lines,     % Cornice attorno al codice
+    framesep=2mm,
+    fontsize=\small,
+    breaklines=true, % A capo automatico per linee lunghe
+    style=monokai    % Stile di highlighting
+}
+
+% --- Titolo ---
+\title{Appunti su Progettazione Reti IPv4 e Subnetting}
+\author{Basato sulle slide del Prof. Luciano Bononi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduzione alla Progettazione di Reti IPv4 e Subnetting (VLSM)}
+L'obiettivo della progettazione di reti IPv4 è allocare in modo efficiente lo spazio di indirizzamento IP disponibile per soddisfare i requisiti di host di diverse sottoreti (subnet), minimizzando lo spreco di indirizzi. Questo approccio utilizza spesso il Variable Length Subnet Masking (VLSM).
+
+\subsection{Concetti Fondamentali}
+\begin{itemize}
+    \item \textbf{Indirizzo di Rete (Network Address):} Il primo indirizzo di un blocco IP, con tutti i bit della parte host a 0. Non è assegnabile a un host. Esempio: \texttt{192.168.1.0}.
+    \item \textbf{Indirizzo di Broadcast:} L'ultimo indirizzo di un blocco IP, con tutti i bit della parte host a 1. Invia dati a tutti gli host in quella specifica sottorete. Non è assegnabile a un host. Esempio: \texttt{192.168.1.255} per una rete /24.
+    \item \textbf{Host Utilizzabili:} Gli indirizzi compresi tra l'indirizzo di rete e l'indirizzo di broadcast. Il numero di host utilizzabili è $(2^h) - 2$, dove $h$ è il numero di bit dedicati alla parte host.
+    \item \textbf{Netmask (Maschera di Sottorete):} Una sequenza di bit che distingue la parte di rete dalla parte host in un indirizzo IP. I bit a 1 indicano la parte di rete, i bit a 0 la parte host. Esempio: \texttt{255.255.255.0}.
+    \item \textbf{Notazione CIDR (Classless Inter-Domain Routing):} Indica il numero di bit a 1 consecutivi nella netmask (cioè i bit della parte di rete). Esempio: \texttt{/24} corrisponde a \texttt{255.255.255.0}.
+    \item \textbf{Router:} Un dispositivo che connette diverse reti o sottoreti. Ogni interfaccia del router ha un indirizzo IP che appartiene alla sottorete a cui è connessa e funge da gateway per gli host di quella sottorete. Solitamente si assegna il primo o l'ultimo indirizzo IP \textit{utilizzabile} della sottorete al router.
+    \item \textbf{Router di Default (Default Gateway):} L'indirizzo IP del router che gli host di una sottorete usano per comunicare con host esterni alla loro sottorete.
+\end{itemize}
+
+\subsection{Processo di Subnetting con VLSM}
+VLSM permette di usare maschere di sottorete di lunghezza variabile per diverse sottoreti, ottimizzando l'uso degli indirizzi. La strategia generale è:
+\begin{enumerate}
+    \item \textbf{Elencare i Requisiti:} Determinare il numero di host necessari per ogni sottorete.
+    \item \textbf{Ordinare per Dimensione:} Ordinare le sottoreti dalla più grande (più host richiesti) alla più piccola. Questo aiuta a prevenire la frammentazione dello spazio di indirizzamento.
+    \item \textbf{Calcolare la Dimensione del Blocco:} Per ogni sottorete, calcolare il numero minimo di indirizzi totali necessari: $N_{\text{host richiesti}} + 2$ (per indirizzo di rete e broadcast). Trovare la più piccola potenza di 2 ($2^h$) che sia maggiore o uguale a questo valore. $h$ sarà il numero di bit per la parte host.
+    \item \textbf{Determinare la Netmask/Prefisso:} Se $h$ sono i bit di host, allora $32 - h$ sono i bit di rete (il prefisso CIDR). Da qui si deriva la netmask.
+    \item \textbf{Allocare gli Indirizzi:} Iniziare ad allocare blocchi di indirizzi contigui dal range disponibile, partendo dalla sottorete più grande.
+\end{enumerate}
+
+\newpage
+\section{Esempio 1: Rete N: \texttt{199.201.17.0 / 24}}
+Si dispone di un blocco iniziale \texttt{199.201.17.0 / 24}.
+\begin{minted}{text}
+Netmask: 255.255.255.0
+Indirizzi totali: 256 (da .0 a .255)
+Host utilizzabili: 254 (da .1 a .254)
+Indirizzo di Rete N: 199.201.17.0
+Primo Host N: 199.201.17.1
+Ultimo Host N (convenzionale): 199.201.17.253
+Router N (convenzionale): 199.201.17.254
+Broadcast N: 199.201.17.255
+\end{minted}
+
+\subsection{Suddivisione}
+La suddivisione considera la gerarchia delle reti e alloca blocchi contigui.
+
+\subsubsection{Sottorete N2A (42 hosts)}
+\begin{itemize}
+    \item Host richiesti: 42. Indirizzi totali: $42 + 2 = 44$.
+    \item Potenza di 2 $\geq 44$: $64 = 2^6$. Quindi $h=6$ bit per host.
+    \item Prefisso: $32 - 6 = /26$. Netmask: \texttt{255.255.255.192}.
+    \item Allocazione N2A: \texttt{199.201.17.0 / 26}.
+\end{itemize}
+\begin{minted}{text}
+Rete N2A:
+Network:    199.201.17.0
+Netmask:    255.255.255.192
+First Host: 199.201.17.1
+Last Host:  199.201.17.61
+Router:     199.201.17.62
+Broadcast:  199.201.17.63
+\end{minted}
+
+\subsubsection{Sottorete N2 (119 hosts, include N2A)}
+\begin{itemize}
+    \item Host richiesti (totali in N2): 119. Indirizzi totali: $119 + 2 = 121$.
+    \item Potenza di 2 $\geq 121$: $128 = 2^7$. Quindi $h=7$ bit per host.
+    \item Prefisso: $32 - 7 = /25$. Netmask: \texttt{255.255.255.128}.
+    \item N2 ingloba N2A (\texttt{.0} - \texttt{.63}). Allocazione N2: \texttt{199.201.17.0 / 25}.
+\end{itemize}
+\begin{minted}{text}
+Rete N2:
+Network:    199.201.17.0
+Netmask:    255.255.255.128
+First Host: 199.201.17.1 (in N2A)
+Last Host:  199.201.17.125
+Router:     199.201.17.126 (per host in N2 ma non N2A)
+Broadcast:  199.201.17.127
+\end{minted}
+
+\subsubsection{Sottorete N1B (15 hosts)}
+Il prossimo blocco disponibile dopo N2 (\texttt{.0} - \texttt{.127}) inizia da \texttt{199.201.17.128}.
+\begin{itemize}
+    \item Host richiesti: 15. Indirizzi totali: $15 + 2 = 17$.
+    \item Potenza di 2 $\geq 17$: $32 = 2^5$. Quindi $h=5$ bit per host.
+    \item Prefisso: $32 - 5 = /27$. Netmask: \texttt{255.255.255.224}.
+    \item Allocazione N1B: \texttt{199.201.17.128 / 27}.
+\end{itemize}
+\begin{minted}{text}
+Rete N1B:
+Network:    199.201.17.128
+Netmask:    255.255.255.224
+First Host: 199.201.17.129
+Last Host:  199.201.17.157
+Router:     199.201.17.158
+Broadcast:  199.201.17.159
+\end{minted}
+
+\subsubsection{Sottorete N1A (6 hosts)}
+Il prossimo blocco disponibile dopo N1B (\texttt{.128} - \texttt{.159}) inizia da \texttt{199.201.17.160}.
+\begin{itemize}
+    \item Host richiesti: 6. Indirizzi totali: $6 + 2 = 8$.
+    \item Potenza di 2 $\geq 8$: $8 = 2^3$. Quindi $h=3$ bit per host.
+    \item Prefisso: $32 - 3 = /29$. Netmask: \texttt{255.255.255.248}.
+    \item Allocazione N1A: \texttt{199.201.17.160 / 29}.
+\end{itemize}
+\begin{minted}{text}
+Rete N1A:
+Network:    199.201.17.160
+Netmask:    255.255.255.248
+First Host: 199.201.17.161
+Last Host:  199.201.17.165
+Router:     199.201.17.166
+Broadcast:  199.201.17.167
+\end{minted}
+
+\subsubsection{Sottorete N1 (64 hosts, include N1A e N1B)}
+\begin{itemize}
+    \item Host richiesti (totali in N1): 64. Indirizzi totali: $64 + 2 = 66$.
+    \item Potenza di 2 $\geq 66$: $128 = 2^7$. Quindi $h=7$ bit per host.
+    \item Prefisso: $32 - 7 = /25$. Netmask: \texttt{255.255.255.128}.
+    \item N1 ingloba N1B (\texttt{.128} - \texttt{.159}) e N1A (\texttt{.160} - \texttt{.167}). Allocazione N1: \texttt{199.201.17.128 / 25}.
+\end{itemize}
+\begin{minted}{text}
+Rete N1:
+Network:    199.201.17.128
+Netmask:    255.255.255.128
+First Host: 199.201.17.129 (in N1B)
+Last Host:  199.201.17.252 (per host in N1 ma non N1A/N1B)
+Router:     199.201.17.253 (per host in N1 ma non N1A/N1B)
+Broadcast:  199.201.17.255
+\end{minted}
+
+\subsection{Considerazioni sull'Esempio 1}
+\begin{itemize}
+    \item \textbf{Conflitto di Broadcast?:} La rete N1 (\texttt{199.201.17.128/25}) ha come broadcast \texttt{199.201.17.255}. Anche la rete padre N (\texttt{199.201.17.0/24}) ha come broadcast \texttt{199.201.17.255}. Questo non è problematico perché ogni host interpreta l'indirizzo di broadcast in base alla propria netmask. Dato che N1 e N2 coprono l'intero spazio /24, non ci sono host "solo in N".
+    \item \textbf{Router di Default:}
+    \begin{itemize}
+        \item Host in N1A usano \texttt{199.201.17.166} come gateway.
+        \item Host in N1B usano \texttt{199.201.17.158} come gateway.
+        \item Host in N1 (ma non N1A/N1B) usano \texttt{199.201.17.253} come gateway.
+        \item I router \texttt{.166} e \texttt{.158} avranno come default gateway \texttt{199.201.17.253}.
+        \item Il router di N1 (\texttt{.253}) e il router di N2 (\texttt{.126}) avranno come default gateway il router principale della rete N (\texttt{199.201.17.254} o un router del provider).
+    \end{itemize}
+\end{itemize}
+
+\newpage
+\section{Esempio 2: Rete \texttt{130.136.0.0 / 16}}
+Si dispone di un blocco iniziale \texttt{130.136.0.0 / 16}.
+\begin{minted}{text}
+Netmask: 255.255.0.0
+Indirizzi totali: 2^16 = 65536
+\end{minted}
+
+\subsection{Requisiti}
+\begin{itemize}
+    \item LAN IP2: 260 host (divisa in IP2-B: 140 host, IP2-A: 120 host)
+    \item LAN IP1: 48 host
+    \item LAN IP3: 4 host
+\end{itemize}
+
+\subsection{Ordine di allocazione}
+Si alloca partendo dalla sottorete con più host richiesti, e si procede con blocchi contigui.
+
+\subsubsection{Sottorete IP2-B (140 hosts)}
+\begin{itemize}
+    \item Host richiesti: 140. Indirizzi totali: $140 + 2 = 142$.
+    \item Potenza di 2 $\geq 142$: $256 = 2^8$. $h=8$ bit per host.
+    \item Prefisso: $/24$. Netmask: \texttt{255.255.255.0}.
+    \item Allocazione IP2-B: \texttt{130.136.0.0 / 24}.
+\end{itemize}
+\begin{minted}{text}
+Rete IP2-B:
+Network:    130.136.0.0
+Netmask:    255.255.255.0
+First Host: 130.136.0.1
+Last Host:  130.136.0.253
+Router:     130.136.0.254
+Broadcast:  130.136.0.255
+\end{minted}
+
+\subsubsection{Sottorete IP2-A (120 hosts)}
+Prossimo blocco dopo IP2-B (che finisce a \texttt{130.136.0.255}).
+\begin{itemize}
+    \item Host richiesti: 120. Indirizzi totali: $120 + 2 = 122$.
+    \item Potenza di 2 $\geq 122$: $128 = 2^7$. $h=7$ bit per host.
+    \item Prefisso: $/25$. Netmask: \texttt{255.255.255.128}.
+    \item Allocazione IP2-A: \texttt{130.136.1.0 / 25}.
+\end{itemize}
+\begin{minted}{text}
+Rete IP2-A:
+Network:    130.136.1.0
+Netmask:    255.255.255.128
+First Host: 130.136.1.1
+Last Host:  130.136.1.125
+Router:     130.136.1.126
+Broadcast:  130.136.1.127
+\end{minted}
+
+\subsubsection{Sottorete IP2 (260 hosts, include IP2-A e IP2-B)}
+IP2 deve contenere IP2-B (\texttt{130.136.0.0/24}) e IP2-A (\texttt{130.136.1.0/25}).
+\begin{itemize}
+    \item Range coperto: da \texttt{130.136.0.0} a \texttt{130.136.1.127}. Totale indirizzi usati da IP2-A/B = $256 + 128 = 384$.
+    \item Potenza di 2 $\geq 384$: $512 = 2^9$. $h=9$ bit per host.
+    \item Prefisso: $/23$. Netmask: \texttt{255.255.254.0}.
+    \item Allocazione IP2: \texttt{130.136.0.0 / 23} (copre \texttt{130.136.0.0} - \texttt{130.136.1.255}).
+\end{itemize}
+\begin{minted}{text}
+Rete IP2:
+Network:    130.136.0.0
+Netmask:    255.255.254.0
+First Host: 130.136.0.1 (in IP2-B)
+Last Host:  130.136.1.253 (per host in IP2 ma non IP2-A/B)
+Router:     130.136.1.254 (per host in IP2 ma non IP2-A/B)
+Broadcast:  130.136.1.255
+Host in IP2 ma non in IP2-A/B: da 130.136.1.128 a 130.136.1.253
+\end{minted}
+
+\subsubsection{Sottorete IP1 (48 hosts)}
+Prossimo blocco dopo IP2 (che finisce a \texttt{130.136.1.255}).
+\begin{itemize}
+    \item Host richiesti: 48. Indirizzi totali: $48 + 2 = 50$.
+    \item Potenza di 2 $\geq 50$: $64 = 2^6$. $h=6$ bit per host.
+    \item Prefisso: $/26$. Netmask: \texttt{255.255.255.192}.
+    \item Allocazione IP1: \texttt{130.136.2.0 / 26}.
+\end{itemize}
+\begin{minted}{text}
+Rete IP1:
+Network:    130.136.2.0
+Netmask:    255.255.255.192
+First Host: 130.136.2.1
+Last Host:  130.136.2.61
+Router:     130.136.2.62
+Broadcast:  130.136.2.63
+\end{minted}
+
+\subsubsection{Sottorete IP3 (4 hosts)}
+Prossimo blocco dopo IP1 (che finisce a \texttt{130.136.2.63}).
+\begin{itemize}
+    \item Host richiesti: 4. Indirizzi totali: $4 + 2 = 6$.
+    \item Potenza di 2 $\geq 6$: $8 = 2^3$. $h=3$ bit per host.
+    \item Prefisso: $/29$. Netmask: \texttt{255.255.255.248}.
+    \item Allocazione IP3: \texttt{130.136.2.64 / 29}.
+\end{itemize}
+\begin{minted}{text}
+Rete IP3:
+Network:    130.136.2.64
+Netmask:    255.255.255.248
+First Host: 130.136.2.65
+Last Host:  130.136.2.69
+Router:     130.136.2.70
+Broadcast:  130.136.2.71
+\end{minted}
+
+\subsection{Considerazioni sull'Esempio 2 (Default Routers)}
+\begin{itemize}
+    \item Host in IP2-B (\texttt{130.136.0.0/24}) usano \texttt{130.136.0.254} come gateway.
+    \item Host in IP2-A (\texttt{130.136.1.0/25}) usano \texttt{130.136.1.126} come gateway.
+    \item Host in IP2 ma fuori da IP2-A/IP2-B (range \texttt{130.136.1.128} - \texttt{130.136.1.253}, con netmask \texttt{/23}) usano \texttt{130.136.1.254} come gateway.
+    \item Il router \texttt{130.136.0.254} (di IP2-B) e \texttt{130.136.1.126} (di IP2-A) avranno come default gateway \texttt{130.136.1.254} (router di IP2).
+    \item Host in IP1 (\texttt{130.136.2.0/26}) usano \texttt{130.136.2.62} come gateway.
+    \item Host in IP3 (\texttt{130.136.2.64/29}) usano \texttt{130.136.2.70} come gateway.
+    \item I router di IP1, IP2, IP3 avranno come default gateway il router principale della rete \texttt{130.136.0.0/16} (es. \texttt{130.136.255.254}, se così configurato, o un router del provider).
+\end{itemize}
+
+\newpage
+\section{Riepilogo Punti Chiave}
+\begin{itemize}
+    \item Il subnetting e VLSM sono essenziali per un uso efficiente degli indirizzi IP.
+    \item Si parte sempre dal numero di host richiesti, si aggiungono 2 (indirizzo di rete e di broadcast), e si trova la potenza di 2 immediatamente superiore o uguale per determinare i bit di host necessari.
+    \item L'allocazione dei blocchi di indirizzi dovrebbe essere contigua per evitare la frammentazione dello spazio di indirizzamento e semplificare la gestione.
+    \item Ogni sottorete definita ha il suo indirizzo di rete, il suo indirizzo di broadcast e necessita di un router (gateway) per la comunicazione esterna.
+    \item La gerarchia delle reti implica che i router delle sottoreti più piccole puntino ai router delle reti che le contengono come loro default gateway, fino al router principale della rete o del provider.
+    \item La comprensione della maschera di sottorete è cruciale per ogni host per determinare quali altri host sono nella sua stessa sottorete e quale indirizzo usare come broadcast.
+\end{itemize}
+
+\end{document}

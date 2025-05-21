@@ -1,0 +1,424 @@
+\documentclass{article}
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% --- Margini e layout ---
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% --- Font sans-serif ---
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% --- Matematica ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Liste personalizzate ---
+\usepackage{enumitem}
+
+% --- Immagini ---
+\usepackage{float}
+\usepackage{tikz} % per disegni
+\usepackage{graphicx} % per immagini
+\usetikzlibrary{shapes.geometric, positioning, calc}
+
+% --- Hyperlink ---
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={Appunti su Reti di Calcolatori - Introduzione},
+    colorlinks=true,
+    linkcolor=cyan,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+% --- Colori e sfondo nero ---
+\usepackage{xcolor}
+\pagecolor{black}
+\color{white}
+
+% --- Evidenziazione del codice (richiede -shell-escape) ---
+% Compilare con: pdflatex -shell-escape nomefile.tex
+\usepackage{minted}
+\setminted{
+    frame=lines,     % Cornice attorno al codice
+    framesep=2mm,
+    fontsize=\small,
+    breaklines=true, % A capo automatico per linee lunghe
+    style=monokai,    % Stile di highlighting
+    bgcolor=gray!20 % Sfondo leggermente diverso per i blocchi minted
+}
+\newminted{text}{fontsize=\small, breaklines=true, bgcolor=gray!20} % Per testi come "blocchi"
+
+% --- Titolo ---
+\title{Appunti su Reti di Calcolatori - Introduzione}
+\author{Basato sulle slide del Prof. Luciano Bononi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduzione alle Reti di Calcolatori}
+
+\textit{“NON CHI COMINCIA MA QUEL CHE PERSEVERA”} - Motto della Nave Scuola Amerigo Vespucci.
+
+\subsection{Cos'è una Rete di Calcolatori?}
+\begin{itemize}
+    \item \textbf{Definizione:} Un insieme di \textbf{dispositivi di calcolo autonomi e interconnessi}.
+    \begin{itemize}
+        \item \textbf{Autonomi:} Ogni dispositivo (computer, server, smartphone, stampante di rete, etc.) può funzionare indipendentemente.
+        \item \textbf{Interconnessi:} I dispositivi possono scambiare informazioni tra loro.
+    \end{itemize}
+    \item \textbf{Motivazioni (Perché creare reti?):}
+    \begin{enumerate}
+        \item \textbf{Supporto alla comunicazione tra utenti:}
+        \begin{itemize}
+            \item Permette nuovi servizi come e-mail, World Wide Web (\texttt{WWW}), messaggistica istantanea, videoconferenze.
+            \item \textit{Esempio pratico:} Puoi inviare un'email a un amico o navigare su un sito web grazie alla rete.
+        \end{itemize}
+        \item \textbf{Comunicazione tra calcolatori elettronici (condivisione):}
+        \begin{itemize}
+            \item \textbf{Condivisione di informazione:} Accesso a database condivisi, pagine web ospitate su server.
+            \item \textit{Esempio pratico:} Più utenti possono accedere e modificare un documento condiviso su Google Drive.
+            \item \textbf{Condivisione di dispositivi e risorse:} Utilizzo di stampanti di rete, dischi di memorizzazione centralizzati.
+            \item \textit{Esempio pratico:} In un ufficio, tutti possono stampare su un'unica stampante connessa alla rete.
+            \item \textbf{Accesso a calcolatori remoti:} Possibilità di utilizzare la potenza di calcolo o i dati di un computer situato altrove.
+            \item \textit{Esempio pratico:} Connettersi da casa al server dell'università per lanciare simulazioni.
+            \item \textbf{Calcolo distribuito e sistemi scalabili:} Suddivisione di compiti complessi tra più macchine, possibilità di aumentare le capacità del sistema aggiungendo più dispositivi.
+            \item \textit{Esempio pratico:} Motori di ricerca come Google usano migliaia di server per processare le tue ricerche velocemente.
+        \end{itemize}
+    \end{enumerate}
+    \item \textit{Terminologia:} Quando si parla di “rete” o “rete di comunicazione” in questo contesto, si intende implicitamente una rete di calcolatori elettronici. Reti telefoniche tradizionali o reti di distribuzione TV non sono considerate reti di calcolatori.
+\end{itemize}
+
+\subsection{Classificazione delle Reti (in base alla dimensione geografica)}
+Le reti si possono classificare in base all'area geografica che coprono:
+\begin{enumerate}
+    \item \textbf{Reti Personali (Personal Area Network - \texttt{PAN}):}
+    \begin{itemize}
+        \item Connessione tra dispositivi molto vicini, tipicamente entro una stanza o sulla scrivania di una persona.
+        \item \textit{Esempio pratico:} Connettere lo smartphone agli auricolari Bluetooth, o il laptop a una stampante wireless sulla stessa scrivania.
+        \item Solitamente finanziate e gestite dal singolo utente.
+    \end{itemize}
+    \item \textbf{Reti Locali (Local Area Network - \texttt{LAN}):}
+    \begin{itemize}
+        \item Connessione di dispositivi all'interno di un ufficio, un laboratorio, un edificio o un campus universitario.
+        \item Raggio di qualche centinaio di metri.
+        \item \textit{Esempio pratico:} La rete Wi-Fi di casa tua, la rete cablata del dipartimento universitario.
+        \item Spesso gestite da organizzazioni, università, aziende.
+    \end{itemize}
+    \item \textbf{Reti Metropolitane (Metropolitan Area Network - \texttt{MAN}):}
+    \begin{itemize}
+        \item Connessione su un'area urbana (una città).
+        \item Raggio di decine di chilometri.
+        \item \textit{Esempio pratico:} Una rete che collega diverse sedi di un'azienda sparse in una città, o reti civiche.
+        \item Mantenute da provider di servizi di comunicazione o gestori telefonici.
+    \end{itemize}
+    \item \textbf{Reti Geografiche (Wide Area Network - \texttt{WAN}):}
+    \begin{itemize}
+        \item Connessione su aree molto ampie, nazionali, internazionali, o addirittura planetarie.
+        \item \textit{Esempio pratico:} Internet è l'esempio più grande di \texttt{WAN}. Una multinazionale che collega i suoi uffici in diversi continenti usa una \texttt{WAN}.
+        \item Struttura complessa, tecnologie eterogenee (cavi, fibra, satelliti). Gestite da enti nazionali/internazionali o grandi gestori.
+    \end{itemize}
+    \item \textbf{Internet:}
+    \begin{itemize}
+        \item È la \textbf{rete globale} composta dall'unione di moltissime reti di vari tipi (\texttt{PAN}, \texttt{LAN}, \texttt{MAN}, \texttt{WAN}) interconnesse.
+        \item Queste reti comunicano tra loro usando un insieme comune di regole, detti \textbf{protocolli di Internet} (come \texttt{TCP/IP}). È una “rete di reti”.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Evoluzione e Costi delle Reti}
+\begin{itemize}
+    \item \textbf{Nascita di Internet:} Storicamente, la prima rete antesignana di Internet (\texttt{ARPANET}) nasce nel 1969 connettendo solo 4 calcolatori di 4 università americane.
+    \item \textbf{Crescita:}
+    \begin{itemize}
+        \item Inizio 2003: oltre 172 milioni di calcolatori connessi (\textit{fonte: ISC}).
+        \item Oggi (2020): stima di oltre 4 miliardi di dispositivi con indirizzo \texttt{IP} e oltre 25 miliardi considerando l'Internet of Things (\texttt{IoT}).
+        \item Entro 2022-2025: previsione di oltre 60 miliardi di dispositivi \texttt{IoT} connessi.
+        \item \textit{Nota:} Il numero di “host \texttt{DNS}” è un indice, ma non cattura tutti i dispositivi connessi. La crescita reale è ancora più esponenziale.
+    \end{itemize}
+    \item \textbf{Costi (chi paga?):}
+    \begin{itemize}
+        \item La realizzazione e gestione delle infrastrutture ha costi elevati, distribuiti tra molte entità.
+        \item \textbf{Reti piccole (\texttt{LAN}):} Costi e gestione limitati, spesso locali.
+        \item \textbf{Reti grandi (\texttt{MAN}, \texttt{WAN}, Internet):} Investimenti consistenti da parte di consorzi, provider nazionali/multinazionali.
+        \item La maggior parte dell'infrastruttura di Internet è gestita capillarmente da piccoli gestori.
+        \item \textbf{Costo per l'utente:} Tariffe a tempo, a quantità di dati, o “tutto incluso”.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Prestazioni delle Reti}
+Due aspetti principali di interesse per l'utente:
+\begin{enumerate}
+    \item \textbf{Capacità di Trasmissione (Bandwidth):}
+    \begin{itemize}
+        \item Numero di bit o byte trasmessi/ricevuti in un secondo.
+        \item Impropriamente detta “velocità della rete”.
+        \item Unità di misura:
+        \begin{itemize}
+            \item \textbf{bit} (b) o \textbf{byte} (B) (1 Byte = 8 bit).
+            \item Prefissi: Kilo (K, migliaia), Mega (M, milioni), Giga (G, miliardi), Tera (T, migliaia di miliardi).
+            \item Es: 10 Mbyte/sec = 10 milioni di gruppi da 8 bit al secondo.
+        \end{itemize}
+        \item \textit{Analogia:} Pensa a un tubo. La capacità è il diametro del tubo.
+        \item Migliori tecnologie (es. fibra ottica) offrono capacità maggiori, ma a costi più elevati.
+    \end{itemize}
+    \item \textbf{Ritardo del Collegamento (Latency/Delay):}
+    \begin{itemize}
+        \item Tempo richiesto ai dati per transitare da mittente a destinatario.
+        \item Dipende da: Distanza fisica, Tempi di gestione dei protocolli.
+        \item \textit{Analogia:} La lunghezza del tubo.
+        \item \textit{Esempio confronto:} Trasportare una grande quantità di dati.
+        \begin{itemize}
+            \item Rete \texttt{GARR} (1 GB/s): Potrebbe trasferire 10800 GB in 3 ore.
+            \item Furgone da Milano a Roma (3 ore): Potrebbe trasportare 11000 dischi da 1GB (11000 GB).
+            \item \textit{Quale “rete” è migliore?} Dipende. Per comunicazioni interattive, basso ritardo è cruciale.
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+Altri indici di prestazione, dipendenti dall'applicazione:
+\begin{itemize}
+    \item \textbf{Jitter (Variazione del Ritardo):}
+    \begin{itemize}
+        \item È lo “spargimento” del ritardo di arrivo dei pacchetti attorno a un valore medio.
+        \item Critico per applicazioni di streaming (audio/video).
+        \item \textit{Esempio pratico:} Video online che si blocca o “scatta”.
+    \end{itemize}
+    \item \textbf{\texttt{RTT} (Round Trip Time):}
+    \begin{itemize}
+        \item Ritardo di andata e ritorno.
+        \item Critico per applicazioni interattive come i giochi online.
+        \item \textit{Esempio pratico:} In un gioco sparatutto, un \texttt{RTT} alto causa svantaggio.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Il Calcolatore e la Rete: Componenti}
+Per connettere un calcolatore a una rete servono componenti hardware e software aggiuntivi:
+\begin{enumerate}
+    \item \textbf{Dispositivi o Schede di Rete (Hardware):}
+    \begin{itemize}
+        \item Componente fisico (es. scheda Ethernet, scheda Wi-Fi).
+        \item Funzioni: codificare/decodificare dati in segnali e viceversa.
+        \item Amministrati da software del sistema operativo.
+        \item Ogni scheda di rete ha un \textbf{indirizzo \texttt{MAC} (Medium Access Control)}: codice identificativo unico mondiale.
+        \item \textit{Esempio pratico:} Come il numero di telaio di un'automobile.
+    \end{itemize}
+    \item \textbf{Mezzo di Trasmissione (Hardware):}
+    \begin{itemize}
+        \item Supporto fisico per la propagazione dei segnali.
+        \item Tipi:
+        \begin{itemize}
+            \item \textbf{Cavetti o fili metallici:} Trasmettono segnali elettrici (es. cavo Ethernet).
+            \item \textbf{Fibre Ottiche:} Trasmettono segnali luminosi. Prestazioni elevate.
+            \item \textbf{Senza Fili (Wireless):} Usano onde elettromagnetiche. Permettono mobilità.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Connettore di Rete (Hardware):}
+    \begin{itemize}
+        \item Interfaccia standard per collegare dispositivo di rete al mezzo di trasmissione.
+        \item \textit{Esempio pratico:} Porta \texttt{RJ45} per cavi Ethernet.
+    \end{itemize}
+    \item \textbf{Protocolli di Rete (Software):}
+    \begin{itemize}
+        \item Insieme di regole implementate come software.
+        \item Definiscono come avviene la comunicazione per garantire compatibilità.
+        \item \textit{Esempio pratico:} Due persone che parlano la stessa lingua e seguono regole di cortesia.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Collegamenti e Infrastrutture di Rete}
+\begin{itemize}
+    \item \textbf{Connessione/Collegamento di Rete:} Mezzo di trasmissione condiviso.
+    \item \textbf{Infrastruttura di Rete:} Insieme dei collegamenti fisici.
+    \item \textbf{Cammino dei Segnali:} Percorso dei segnali.
+    \item \textbf{Classi di Strutture di Connessione (Topologie Semplici):}
+    \begin{itemize}
+        \item \textbf{(a) Punto a Punto:} Connessione diretta tra due dispositivi.
+        \item \textbf{(b) Completamente Connessa (Full Mesh):} Ogni dispositivo connesso a tutti gli altri. Ridondante ma costosa.
+        \item \textbf{(c) Parzialmente Connessa (Partial Mesh):} Garantisce almeno un cammino tra ogni coppia.
+        \item \textbf{(d) Partizioni di Rete:} Gruppi isolati.
+    \end{itemize}
+    \item \textbf{Topologie di Rete (Schemi di Connessione):}
+    \begin{itemize}
+        \item \textbf{(a) Anello (Ring):} Ogni dispositivo connesso al precedente e al successivo.
+        \item \textbf{(b) Stella (Star):} Dispositivi periferici connessi a un dispositivo centrale.
+        \item \textbf{(c) Bus:} Tutti i dispositivi connessi a un canale condiviso.
+        \item \textbf{(d) Albero (Tree):} Struttura gerarchica.
+        \item \textit{Nota:} Topologie semplici comuni in \texttt{LAN}/\texttt{PAN}. Reti più grandi hanno topologie complesse a grafo (maglia).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Canali di Comunicazione della Rete}
+\begin{itemize}
+    \item \textbf{Canale di Comunicazione:} Un “tubo virtuale” sul mezzo fisico.
+    \item \textbf{Canale Punto a Punto:} Riservato tra due soli dispositivi.
+    \item \textbf{Canale ad Accesso Multiplo (Canale Broadcast):}
+    \begin{itemize}
+        \item Tutti i dispositivi trasmettono e ricevono sullo stesso canale condiviso.
+        \item \textbf{Problemi:}
+        \begin{enumerate}
+            \item \textbf{Arbitraggio:} Chi trasmette? E quando?
+            \item \textbf{Rischio Collisione:} Se due o più dispositivi trasmettono simultaneamente, i segnali si distruggono.
+            \item \textit{Esempio pratico:} Più persone che parlano contemporaneamente.
+            \item \textbf{Indirizzamento:} A chi sono destinati i dati?
+        \end{enumerate}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Reti a Commutazione di Circuito vs. Pacchetto}
+Modi per trasferire informazioni:
+\begin{enumerate}
+    \item \textbf{Commutazione di Circuito (Circuit Switching):}
+    \begin{itemize}
+        \item Viene \textbf{riservato un circuito} (cammino dedicato) prima e per tutta la trasmissione.
+        \item \textit{Esempio classico:} Telefonata tradizionale.
+        \item \textbf{Caratteristiche:} Ritardo basso e costante; si paga il tempo di connessione; basso utilizzo risorse (spreco).
+    \end{itemize}
+    \item \textbf{Commutazione di Pacchetto (Packet Switching):}
+    \begin{itemize}
+        \item I dati sono suddivisi in \textbf{pacchetti}.
+        \item Ogni pacchetto è spedito \textbf{indipendentemente}. Canali condivisi.
+        \item \textit{Esempio classico:} Email, navigare sul web.
+        \item \textbf{Caratteristiche:} Ogni pacchetto necessita indirizzo destinatario; migliore utilizzo risorse; ritardo maggiore e variabile; si paga per quantità di dati.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Servizi Orientati alla Connessione e Non (reti a commutazione di pacchetto)}
+\begin{enumerate}
+    \item \textbf{Servizi Orientati alla Connessione (Connection-Oriented):}
+    \begin{itemize}
+        \item Stabilita una “connessione logica” (circuito virtuale) prima della trasmissione.
+        \item Obiettivo: comunicazione che appare affidabile e ordinata.
+        \item \textit{Esempio:} Telefonata \texttt{VoIP}, streaming video, download file con \texttt{TCP}.
+        \item Garantiscono (o tentano): consegna ordinata, ri-trasmissione pacchetti persi.
+    \end{itemize}
+    \item \textbf{Servizi Non Orientati alla Connessione (Connectionless):}
+    \begin{itemize}
+        \item Nessuna connessione preliminare. Ogni pacchetto trattato indipendentemente.
+        \item \textit{Esempio:} Posta ordinaria. In reti: \texttt{DNS}, alcuni giochi online, streaming con \texttt{UDP}.
+        \item Caratteristiche: pacchetti possono seguire strade diverse, arrivare fuori ordine o perdersi; meno overhead.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Protocolli di Rete Organizzati a Livelli (Architettura a Livelli)}
+\begin{itemize}
+    \item \textbf{Protocollo:} Insieme di regole (semantiche e sintattiche) per lo scambio di messaggi.
+    \begin{itemize}
+        \item \textbf{Semantica:} Significato dei messaggi.
+        \item \textbf{Sintassi:} Formato dei messaggi.
+        \item Permettono compatibilità tra sistemi eterogenei.
+    \end{itemize}
+    \item \textbf{Architettura dei Protocolli di Rete:} Struttura dei livelli.
+    \begin{itemize}
+        \item Ogni livello risolve un sottoinsieme di problemi.
+        \item Ogni livello offre \textbf{servizi} al livello superiore e usa i servizi del livello inferiore.
+        \item \textbf{Interfaccia tra livelli:} Definisce come un livello interagisce con quelli adiacenti.
+        \item \textbf{Comunicazione tra pari (Peer-to-Peer):} Un livello \texttt{X} su una macchina comunica virtualmente con il livello \texttt{X} su un'altra.
+    \end{itemize}
+    \item \textit{Esempio Pratico (Innamorati Italiano e Giapponese):}
+    Illustra come diversi "livelli" di servizio (dialogo, traduzione, dattilografia, FAX) collaborano per raggiungere l'obiettivo finale, ognuno gestendo un aspetto specifico del problema.
+\end{itemize}
+
+\subsection{Architettura Standard di Protocolli di Rete: \texttt{ISO/OSI RM}}
+\begin{itemize}
+    \item \textbf{Standard \texttt{ISO/OSI} Reference Model:} Modello teorico di riferimento con \textbf{7 livelli}.
+    \item \textbf{Scopo:} Standard per comunicazione tra sistemi aperti.
+    \item \textbf{I Sette Livelli \texttt{ISO/OSI} (dall'alto verso il basso):}
+    \begin{enumerate}[label=\arabic*.]
+        \setcounter{enumi}{6} % Start numbering from 7
+        \item \textbf{Livello 7 - Applicazione:} Interfaccia per applicazioni utente (es. \texttt{HTTP}, \texttt{SMTP}).
+        \item \textbf{Livello 6 - Presentazione:} Gestione sintassi/semantica dati (traduzione, compressione, crittografia).
+        \item \textbf{Livello 5 - Sessione:} Stabilisce, gestisce, termina sessioni di comunicazione.
+        \item \textbf{Livello 4 - Trasporto:} Trasferimento dati affidabile end-to-end (\texttt{TCP}, \texttt{UDP}). Controllo congestione.
+        \item \textbf{Livello 3 - Rete:} Instradamento (routing) pacchetti attraverso la rete (\texttt{IP}). Indirizzamento logico.
+        \item \textbf{Livello 2 - Data Link:} Trasferimento affidabile frame tra nodi direttamente connessi. Indirizzamento fisico (\texttt{MAC}). Controllo accesso.
+        \item \textbf{Livello 1 - Fisico:} Trasmissione bit grezzi sul mezzo fisico. Specifiche elettriche/meccaniche.
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Architettura dei Protocolli di Internet (\texttt{TCP/IP} Stack)}
+\begin{itemize}
+    \item Architettura semplificata dell'\texttt{ISO/OSI}, tipicamente con \textbf{5 livelli}.
+    \item \textbf{Livelli Internet (dal basso verso l'alto):}
+    \begin{enumerate}
+        \item \textbf{Fisico}
+        \item \textbf{Data Link / \texttt{MAC/LLC}}
+        \item \textbf{Rete (Network / Internet)} (protocollo principale: \texttt{IP})
+        \item \textbf{Trasporto (Transport)} (protocolli principali: \texttt{TCP}, \texttt{UDP})
+        \item \textbf{Applicazione} (comprende funzioni dei livelli 5, 6, 7 di \texttt{ISO/OSI})
+    \end{enumerate}
+    \item \textbf{Incapsulamento (Encapsulation):}
+    \begin{itemize}
+        \item \textbf{In trasmissione:} Ogni livello aggiunge info di controllo (header/trailer) ai dati dal livello superiore.
+        \begin{itemize}
+            \item Applicazione $\rightarrow$ dati
+            \item Trasporto $\rightarrow$ \textit{segmento/datagramma} (\texttt{TCP/UDP} header + dati)
+            \item Rete $\rightarrow$ \textit{pacchetto} (\texttt{IP} header + segmento/datagramma)
+            \item Data Link $\rightarrow$ \textit{frame} (\texttt{MAC} header + pacchetto + \texttt{MAC} trailer)
+            \item Fisico $\rightarrow$ bit
+        \end{itemize}
+        \item \textbf{In ricezione:} Processo inverso (\textbf{decapsulamento}).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Livelli e Integrazione delle Reti (Prospettiva Funzionale)}
+\begin{itemize}
+    \item \textbf{Livello Fisico:} Rete = un \textbf{segmento} di mezzo trasmissivo condiviso.
+    \item \textbf{Livello \texttt{MAC/LLC}:} Rete = una \textbf{rete locale (\texttt{LAN})}. Può integrare tecnologie diverse. Disp: Switch, Bridge.
+    \item \textbf{Livello Rete:} Rete = una \textbf{collezione di reti interconnesse (internetwork)}. Disp: Router.
+    \item \textbf{Livello Trasporto:} Rete = offre comunicazione \textbf{end-to-end}.
+    \item \textbf{Livello Applicazione:} Rete = \textbf{utilizzabile dalle applicazioni} utente.
+\end{itemize}
+
+\textbf{Approfondimento dispositivi Livello 1 e 2:}
+\begin{itemize}
+    \item \textbf{Repeater (Livello 1):} Amplifica/rigenera segnale per estendere segmento. Non capisce \texttt{MAC}. Estende dominio di collisione.
+    \item \textbf{Hub (Livello 1):} Repeater multiporta. Crea unico grande dominio di collisione. Inefficiente.
+    \item \textbf{Bridge (Ponte) (Livello 2):} Connette segmenti, anche \texttt{MAC} diversi. Filtra/inoltra frame basandosi su indirizzi \texttt{MAC}. Ogni segmento è dominio di collisione separato.
+    \item \textbf{Switch (Commutatore) (Livello 2):} Bridge multiporta intelligente. Ogni porta è dominio di collisione separato. Inoltra frame solo alla porta specifica del destinatario.
+\end{itemize}
+
+\textbf{Affidabilità a Livelli Diversi:}
+\begin{itemize}
+    \item \textbf{Livello 2 \texttt{MAC/LLC} (hop-by-hop reliability):} Affidabilità su singolo collegamento fisico. Usa ACK e ritrasmissioni. Tentativo rapido e locale.
+    \item \textbf{Livello 4 Trasporto (end-to-end reliability, es. \texttt{TCP}):} Affidabilità tra applicazioni finali, attraverso l'intera rete. Gestisce problemi globali (perdita pacchetti nei router, congestione).
+\end{itemize}
+
+\subsection{Tecnologie per Schede di Rete (Esempi di Protocolli Livello 2 - \texttt{MAC})}
+\begin{enumerate}
+    \item \textbf{Ethernet (\texttt{CSMA/CD}):}
+    \begin{itemize}
+        \item Molto usato in reti locali cablate.
+        \item \textbf{\texttt{CSMA/CD} (Carrier Sense Multiple Access with Collision Detection):}
+        \begin{itemize}
+            \item \textbf{Carrier Sense:} Ascolta il canale prima di trasmettere.
+            \item \textbf{Multiple Access:} Più dispositivi condividono.
+            \item \textbf{Collision Detection:} Se rileva collisione, interrompe, invia jam, attende tempo casuale (backoff), ritenta.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{\texttt{IEEE 802.11} (Wi-Fi) (\texttt{CSMA/CA}):}
+    \begin{itemize}
+        \item Reti locali senza fili.
+        \item \textbf{\texttt{CSMA/CA} (Carrier Sense Multiple Access with Collision Avoidance):}
+        \begin{itemize}
+            \item Collision Detection difficile in wireless. Si cerca di \textbf{evitare} collisioni.
+            \item Attende intervalli (DIFS) e tempi casuali. Usa ACK espliciti. Può usare \texttt{RTS/CTS}.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Token Ring (e Token Bus):}
+    \begin{itemize}
+        \item Meno comune oggi. Accesso regolato da \textbf{token} (gettone).
+        \item Solo chi possiede il token trasmette. Poi passa il token.
+        \item \textbf{Vantaggi:} Assenza collisioni, prestazioni deterministiche.
+        \item \textbf{Svantaggi:} Complessità, gestione token.
+    \end{itemize}
+\end{enumerate}
+
+\end{document}

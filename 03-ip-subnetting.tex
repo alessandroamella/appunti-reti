@@ -1,0 +1,342 @@
+\documentclass{article}
+
+% --- Encoding e lingua ---
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+
+% --- Margini e layout ---
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+% --- Font sans-serif ---
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+% --- Matematica ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Liste personalizzate ---
+\usepackage{enumitem}
+
+% --- Immagini ---
+\usepackage{float}
+% \usepackage{tikz} % per disegni (non usato in questa versione per semplicità)
+% \usepackage{graphicx} % per immagini
+% \usetikzlibrary{shapes.geometric, positioning, calc}
+
+% --- Hyperlink ---
+\usepackage{hyperref}
+\hypersetup{
+    pdftitle={Appunti di Reti di Calcolatori: Indirizzamento, Subnetting e Instradamento},
+    colorlinks=true,
+    linkcolor=cyan,
+    urlcolor=magenta,
+    citecolor=green,
+}
+
+% --- Colori e sfondo nero ---
+\usepackage{xcolor}
+\pagecolor{black}
+\color{white}
+
+% --- Evidenziazione del codice (richiede -shell-escape) ---
+% Compilare con: pdflatex -shell-escape nomefile.tex
+\usepackage{minted}
+\setminted{
+    frame=lines,     % Cornice attorno al codice
+    framesep=2mm,
+    fontsize=\small,
+    breaklines=true, % A capo automatico per linee lunghe
+    style=monokai,   % Stile di highlighting (buono per sfondo nero)
+    bgcolor=black!80 % Sfondo leggermente più chiaro per il blocco minted
+}
+\newminted{text}{style=monokai, bgcolor=black!80, fontsize=\small} % Per testo semplice dentro minted
+
+% --- Titolo ---
+\title{Appunti di Reti di Calcolatori: Indirizzamento, Subnetting e Instradamento}
+\author{Basato sulle slide del Prof. Luciano Bononi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Indirizzi IPv4: Fondamentali}
+
+\subsection{Rappresentazione}
+Un indirizzo IPv4 è un numero a 32 bit, comunemente rappresentato in \textbf{notazione decimale puntata} (es. \texttt{192.168.1.10}). Ogni numero separato da un punto rappresenta un ottetto (8 bit) e può variare da 0 a 255.
+
+In binario, l'indirizzo \texttt{192.168.1.10} sarebbe:
+\begin{minted}{text}
+11000000.10101000.00000001.00001010
+\end{minted}
+
+\subsection{Classi di Indirizzi (Storiche)}
+Originariamente, gli indirizzi IP erano divisi in classi:
+\begin{itemize}
+    \item \textbf{Classe A:} Primo bit \texttt{0}. Formato \texttt{Rete.Host.Host.Host}. Il primo ottetto (1-126) identifica la rete. Maschera di default \texttt{255.0.0.0} (o \texttt{/8}).
+    \begin{itemize}
+        \item Esempio: \texttt{10.x.y.z}. Rete \texttt{10.0.0.0}.
+    \end{itemize}
+    \item \textbf{Classe B:} Primi due bit \texttt{10}. Formato \texttt{Rete.Rete.Host.Host}. I primi due ottetti (128.0-191.255) identificano la rete. Maschera di default \texttt{255.255.0.0} (o \texttt{/16}).
+    \begin{itemize}
+        \item Esempio: \texttt{172.16.x.y}. Rete \texttt{172.16.0.0}.
+    \end{itemize}
+    \item \textbf{Classe C:} Primi tre bit \texttt{110}. Formato \texttt{Rete.Rete.Rete.Host}. I primi tre ottetti (192.0.0-223.255.255) identificano la rete. Maschera di default \texttt{255.255.255.0} (o \texttt{/24}).
+    \begin{itemize}
+        \item Esempio: \texttt{192.168.1.x}. Rete \texttt{192.168.1.0}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Indirizzi Speciali all'interno di una Rete/Sottorete}
+\begin{itemize}
+    \item \textbf{Indirizzo di Rete (o Sottorete):} È il primo indirizzo del range, con tutti i bit della parte host a \texttt{0}. Non è assegnabile a un host.
+    \begin{itemize}
+        \item Esempio: \texttt{192.168.1.0} (con maschera \texttt{/24}).
+    \end{itemize}
+    \item \textbf{Indirizzo di Broadcast:} È l'ultimo indirizzo del range, con tutti i bit della parte host a \texttt{1}. Invia un pacchetto a tutti gli host della rete/sottorete. Non è assegnabile a un host.
+    \begin{itemize}
+        \item Esempio: \texttt{192.168.1.255} (con maschera \texttt{/24}).
+    \end{itemize}
+    \item \textbf{Indirizzo del Router (Gateway):} Per convenzione, si usa spesso il primo indirizzo host disponibile (es. \texttt{192.168.1.1}) o l'ultimo (es. \texttt{192.168.1.254}).
+\end{itemize}
+Per una rete con $N$ bit per la parte host, ci sono $2^N$ indirizzi totali, ma solo $2^N - 2$ sono assegnabili agli host.
+
+\section{Maschera di Rete (Netmask)}
+
+\subsection{Scopo}
+La maschera di rete serve a distinguere, in un indirizzo IP, quale parte identifica la \textbf{rete} (o sottorete) e quale parte identifica l'textbf{host}.
+È una sequenza di bit \texttt{1} consecutivi seguiti da bit \texttt{0} consecutivi. Gli \texttt{1} corrispondono alla parte di rete, gli \texttt{0} alla parte host.
+
+\subsection{Notazione CIDR (Classless Inter-Domain Routing)}
+Indica il numero di bit \texttt{1} iniziali nella maschera.
+\begin{itemize}
+    \item \texttt{255.0.0.0} $\rightarrow$ \texttt{/8} (8 bit di rete, 24 di host)
+    \item \texttt{255.255.0.0} $\rightarrow$ \texttt{/16} (16 bit di rete, 16 di host)
+    \item \texttt{255.255.255.0} $\rightarrow$ \texttt{/24} (24 bit di rete, 8 di host)
+    \item \texttt{255.255.255.192} $\rightarrow$ \texttt{/26} (26 bit di rete, 6 di host)
+    \begin{minted}{text}
+11111111.11111111.11111111.11000000
+    \end{minted}
+\end{itemize}
+
+\subsection{Validità delle Maschere}
+Una maschera è valida se è composta da una sequenza ininterrotta di \texttt{1} seguita da una sequenza ininterrotta di \texttt{0}.
+\begin{itemize}
+    \item \texttt{255.255.255.0} (\texttt{...11111111.00000000}) $\rightarrow$ \textbf{VALIDA}
+    \item \texttt{255.255.128.0} (\texttt{...10000000.00000000}) $\rightarrow$ \textbf{VALIDA}
+    \item \texttt{255.255.128.128} (\texttt{...10000000.10000000}) $\rightarrow$ \textbf{NON VALIDA}
+\end{itemize}
+
+\subsection{Ottenere l'Indirizzo di Rete/Sottorete}
+Si ottiene eseguendo un'operazione di \textbf{AND logico} bit a bit tra l'indirizzo IP dell'host e la sua maschera di rete.
+
+\textbf{Esempio:} Host \texttt{192.168.1.77}, Maschera \texttt{255.255.255.0}
+\begin{itemize}
+    \item IP: \texttt{11000000.10101000.00000001.01001101}
+    \item Mask: \texttt{11111111.11111111.11111111.00000000}
+    \item Risultato AND (Indirizzo di Sottorete):
+    \begin{minted}{text}
+11000000.10101000.00000001.00000000  ->  192.168.1.0
+    \end{minted}
+\end{itemize}
+
+\section{Subnetting (Creazione di Sottoreti)}
+
+\subsection{Scopo}
+Il subnetting permette di dividere una rete IP più grande in sottoreti più piccole per:
+\begin{itemize}
+    \item Organizzare meglio la rete.
+    \item Ridurre il traffico di broadcast.
+    \item Migliorare la sicurezza.
+\end{itemize}
+
+\subsection{Come Funziona}
+Si "rubano" bit dalla parte host dell'indirizzo per usarli come bit di sottorete. Questo aumenta la parte di rete della maschera.
+\begin{itemize}
+    \item Se si rubano $k$ bit, si possono creare $2^k$ sottoreti.
+    \item Se la parte host originale aveva $H$ bit, ora avrà $H-k$ bit. Ogni sottorete potrà ospitare $2^{(H-k)} - 2$ host.
+\end{itemize}
+
+\subsection{Esempio Pratico: Dividere \texttt{130.136.0.0/16} in 8 sottoreti}
+\begin{enumerate}
+    \item \textbf{Bit necessari per le sottoreti:} Per 8 sottoreti, servono $\log_2(8) = 3$ bit.
+    \item \textbf{Nuova maschera:} La maschera originale \texttt{/16}. Rubiamo 3 bit dalla parte host. La nuova maschera avrà $16 + 3 = 19$ bit (\texttt{/19}).
+    \begin{itemize}
+        \item Originale (\texttt{/16}): \texttt{11111111.11111111.00000000.00000000}
+        \item Nuova (\texttt{/19}): \texttt{11111111.11111111.11100000.00000000} $\rightarrow$ \texttt{255.255.224.0}
+    \end{itemize}
+    \item \textbf{Host per sottorete:} Bit per host rimanenti: $32 - 19 = 13$.
+    Ogni sottorete può avere $2^{13} - 2 = 8192 - 2 = 8190$ host.
+    \item \textbf{Range delle sottoreti:} (identificate dai 3 bit rubati \texttt{sss} nel terzo ottetto: \texttt{130.136.sssxxxxx.xxxxxxxx})
+    \begin{itemize}
+        \item \texttt{000}: \texttt{130.136.0.0/19} (range host \texttt{130.136.0.1} - \texttt{130.136.31.254})
+        \item \texttt{001}: \texttt{130.136.32.0/19} (range host \texttt{130.136.32.1} - \texttt{130.136.63.254})
+        \item \dots
+        \item \texttt{111}: \texttt{130.136.224.0/19} (range host \texttt{130.136.224.1} - \texttt{130.136.255.254})
+    \end{itemize}
+\end{enumerate}
+\textbf{Esempio di assegnazione:} L'host \texttt{130.136.169.4} con maschera \texttt{255.255.224.0} (\texttt{/19}):
+\begin{itemize}
+    \item IP: \texttt{10000010.10001000.10101001.00000100} (terzo ottetto: \texttt{10101001} = 169)
+    \item Maschera: \texttt{11111111.11111111.11100000.00000000}
+    \item AND (per sottorete): \texttt{10000010.10001000.10100000.00000000} $\rightarrow$ \texttt{130.136.160.0}.
+    I bit di sottorete nel terzo ottetto sono \texttt{101}.
+\end{itemize}
+
+
+\subsection{Esercizio: Progettare una Sottorete per 17 host}
+Data la rete di Classe C \texttt{212.11.24.0/24}.
+\begin{enumerate}
+    \item \textbf{Host necessari:} Per 17 host, il "contenitore" (potenza di 2) più piccolo è $2^5 = 32$. Questo lascia 5 bit per la parte host (32 indirizzi totali, 30 usabili).
+    \item \textbf{Bit da rubare:} La rete \texttt{/24} ha 8 bit per gli host. Se ne usiamo 5 per gli host, ne "rubiamo" $8 - 5 = 3$ per le sottoreti.
+    \item \textbf{Nuova maschera:} Maschera originale \texttt{/24}. Nuova maschera \texttt{/24} + 3 = \texttt{/27}.
+    \begin{itemize}
+        \item \texttt{/27} $\rightarrow$ \texttt{11111111.11111111.11111111.11100000} $\rightarrow$ \texttt{255.255.255.224}.
+    \end{itemize}
+    \item \textbf{Numero di sottoreti create:} $2^3 = 8$ sottoreti.
+    \item \textbf{Allocazione (esempio):}
+    \begin{itemize}
+        \item Sottorete 0: \texttt{212.11.24.0/27} (host \texttt{212.11.24.1} - \texttt{212.11.24.30})
+        \item Sottorete 1: \texttt{212.11.24.32/27} (host \texttt{212.11.24.33} - \texttt{212.11.24.62})
+        \item \dots e così via.
+    \end{itemize}
+\end{enumerate}
+
+\section{Instradamento dei Pacchetti (Routing)}
+
+\subsection{Decisione Iniziale del Mittente}
+Quando un host (mittente) deve inviare un pacchetto:
+\begin{enumerate}
+    \item \textbf{Confronto:} Il mittente calcola l'indirizzo di rete del destinatario usando la \textbf{PROPRIA} maschera di rete.
+    \begin{itemize}
+        \item \texttt{Rete\_Mittente = IP\_Mittente AND Maschera\_Mittente}
+        \item \texttt{Rete\_Destinatario\_Vista\_Dal\_Mittente = IP\_Destinatario AND Maschera\_Mittente}
+    \end{itemize}
+    \item \textbf{Decisione:}
+    \begin{itemize}
+        \item Se \texttt{Rete\_Mittente == Rete\_Destinatario\_Vista\_Dal\_Mittente}: il destinatario è sulla \textbf{stessa rete locale/sottorete}. Il pacchetto viene inviato direttamente (usando ARP).
+        \item Se \texttt{Rete\_Mittente != Rete\_Destinatario\_Vista\_Dal\_Mittente}: il destinatario è su una \textbf{rete esterna}. Il pacchetto viene inviato al \textbf{Default Gateway} (router di default).
+    \end{itemize}
+\end{enumerate}
+\textbf{Esempio:} Mittente \texttt{140.217.2.10} (mask \texttt{255.255.255.0}), Destinatario \texttt{130.136.2.33}.
+\begin{itemize}
+    \item \texttt{Rete\_Mittente = 140.217.2.10 AND 255.255.255.0 = 140.217.2.0}
+    \item \texttt{Rete\_Dest\_Vista = 130.136.2.33 AND 255.255.255.0 = 130.136.2.0}
+    \item \texttt{140.217.2.0 != 130.136.2.0} $\rightarrow$ Rete esterna. Invia al gateway (es. \texttt{140.217.2.254}).
+\end{itemize}
+
+\subsection{Processo Decisionale del Router}
+Quando un router riceve un pacchetto:
+\begin{enumerate}
+    \item \textbf{Controllo Destinazione:} Guarda l'IP di destinazione.
+    \item \textbf{Confronto con Reti Connesse Direttamente:} Per ogni interfaccia, calcola \texttt{Rete\_Destinatario\_Vista\_Dal\_Router = IP\_Destinatario AND Maschera\_Interfaccia\_Router}.
+    \item \textbf{Decisione:}
+    \begin{itemize}
+        \item Se corrisponde a una rete direttamente connessa: inoltra su quell'interfaccia.
+        \item Altrimenti: consulta la \textbf{tabella di instradamento (routing table)}.
+        \begin{itemize}
+            \item Cerca la corrispondenza più specifica (\textit{longest prefix match}).
+            \item Se non c'è rotta specifica, usa la \textbf{rotta di default} (\texttt{0.0.0.0/0}), se configurata.
+            \item Se nessuna corrispondenza, pacchetto scartato (ICMP "Destination Unreachable").
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Esempio di instradamento (dalle slide):} Pacchetto da \texttt{140.217.2.10} a \texttt{130.136.2.33}.
+\begin{itemize}
+    \item \textbf{Host Mittente (\texttt{140.217.2.10}, Mask \texttt{255.255.255.0}):}
+    \begin{itemize}
+        \item Rete mittente: \texttt{140.217.2.0}
+        \item Destinazione (\texttt{130.136.2.33}) AND Mask mittente (\texttt{255.255.255.0}) = \texttt{130.136.2.0}
+        \item \texttt{140.217.2.0 != 130.136.2.0} $\rightarrow$ Destinazione esterna. Invia a Default Gateway \texttt{Ry2} (\texttt{140.217.2.254}).
+    \end{itemize}
+    \item \textbf{Router Ry2 (Default Gateway del mittente, IP interf. \texttt{140.217.2.254}, mask \texttt{255.255.255.0}):}
+    \begin{itemize}
+        \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.255.0}) = \texttt{130.136.2.0}.
+        \item Rete connessa a Ry2 è \texttt{140.217.2.0}. Sono diverse.
+        \item Ry2 ha un default router, Ry (\texttt{140.217.0.254}). Inoltra a Ry.
+    \end{itemize}
+    \item \textbf{Router Ry (Default Router di Ry2, IP interf. es. \texttt{140.217.0.254}, mask interf. \texttt{255.255.0.0}):}
+    \begin{itemize}
+        \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.0.0}) = \texttt{130.136.0.0}.
+        \item Rete di Ry è \texttt{140.217.0.0}. Sono diverse.
+        \item Ry consulta la sua tabella: trova rotta per \texttt{130.136.0.0/16} via router Rz (\texttt{190.89.0.254}). Inoltra a Rz.
+    \end{itemize}
+    \item \textbf{Router Rz (IP interf. es. \texttt{190.89.0.254}, mask interf. \texttt{255.255.0.0}):}
+    \begin{itemize}
+        \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.0.0}) = \texttt{130.136.0.0}.
+        \item Rete di Rz è \texttt{190.89.0.0}. Sono diverse.
+        \item Rz consulta la tabella: trova rotta per \texttt{130.136.0.0/16} via router Rk (\texttt{130.136.0.254}). Inoltra a Rk.
+    \end{itemize}
+    \item \textbf{Router Rk (IP interf. \texttt{130.136.0.254}, mask interf. \texttt{255.255.0.0}):}
+    \begin{itemize}
+        \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.0.0}) = \texttt{130.136.0.0}.
+        \item Rete di Rk è \texttt{130.136.0.0}. Corrispondono!
+        \item Rk sa che la sottorete \texttt{130.136.2.0/24} è gestita dal router Rk2 (\texttt{130.136.2.254}). Inoltra a Rk2.
+    \end{itemize}
+    \item \textbf{Router Rk2 (IP interf. \texttt{130.136.2.254}, mask interf. \texttt{255.255.255.0}):}
+    \begin{itemize}
+        \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.255.0}) = \texttt{130.136.2.0}.
+        \item Rete di Rk2 è \texttt{130.136.2.0}. Corrispondono!
+        \item Rk2 usa ARP per trovare il MAC di \texttt{130.136.2.33} e consegna il pacchetto.
+    \end{itemize}
+\end{itemize}
+
+\subsection{ARP (Address Resolution Protocol)}
+Usato per trovare l'indirizzo MAC (fisico, di livello 2) di un host o router conoscendo il suo indirizzo IP, \textbf{solo all'interno della stessa rete locale/sottorete}.
+\begin{itemize}
+    \item Host A deve inviare a IP B (stessa rete), ma non conosce MAC di B.
+    \item A invia richiesta ARP: "Chi ha l'IP B?" (broadcast MAC).
+    \item Host B risponde: "Io ho l'IP B, il mio MAC è M\_B" (unicast MAC ad A).
+    \item A incapsula il pacchetto IP in un frame Ethernet con MAC destinazione M\_B.
+\end{itemize}
+
+\section{Conversioni di Base Numerica e Operazioni Binarie}
+
+\subsection{Decimale $\rightarrow$ Binario}
+Metodo delle divisioni successive per 2, leggendo i resti dal basso verso l'alto.
+\textbf{Esempio:} $14917_{10}$
+\begin{itemize}
+    \item $14917 / 2 = 7458$ resto $1$
+    \item $7458 / 2 = 3729$ resto $0$
+    \item $3729 / 2 = 1864$ resto $1$
+    \item \dots (e così via)
+\end{itemize}
+$14917_{10} = 11101001000101_2$. (Servono 14 bit: $\lceil \log_2(14917) \rceil = 14$).
+
+\subsection{Binario $\rightarrow$ Decimale}
+Sommare le potenze di 2 corrispondenti ai bit \texttt{1}.
+\textbf{Esempio:} $1011_2 = 1 \cdot 2^3 + 0 \cdot 2^2 + 1 \cdot 2^1 + 1 \cdot 2^0 = 8 + 0 + 2 + 1 = 11_{10}$.
+
+\subsection{Binario $\rightarrow$ Ottale (base 8)}
+Raggruppare i bit binari in gruppi di 3 da destra.
+\textbf{Esempio:} $101001010101_2$
+\begin{itemize}
+    \item \texttt{101 001 010 101}
+    \item \texttt{ 5   1   2   5 }
+\end{itemize}
+Risultato: $5125_8$.
+
+\subsection{Binario $\rightarrow$ Esadecimale (base 16)}
+Raggruppare i bit binari in gruppi di 4 da destra.
+\textbf{Esempio:} $101001010101_2$
+\begin{itemize}
+    \item \texttt{(00)10 1001 0101} (Aggiunti due 0 a sinistra)
+    \item \texttt{   2    9    5  }
+\end{itemize}
+Risultato: $295_{16}$.
+
+\subsection{Operazione Logica AND}
+\begin{itemize}
+    \item \texttt{0 AND 0 = 0}
+    \item \texttt{0 AND 1 = 0}
+    \item \texttt{1 AND 0 = 0}
+    \item \texttt{1 AND 1 = 1}
+\end{itemize}
+
+\end{document}
