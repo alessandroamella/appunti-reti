@@ -10,6 +10,9 @@ node_modules/
 *.fdb_latexmk
 *.fls
 
+*.synctex(busy)
+*.synctex.gz(busy)
+
 # remove releases
 *.pdf
 
