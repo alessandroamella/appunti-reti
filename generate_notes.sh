@@ -200,7 +200,33 @@ done
 
 echo "✅ Estrazione e correzione completate."
 
-# 4. Compila il documento automaticamente
+# 4. Esegui tutti i file Python per generare le immagini
+echo
+echo "==================================================================="
+echo "Esecuzione di tutti gli script Python per generare immagini..."
+
+PYTHON_FILES=($(find . -maxdepth 1 -name "*.py"))
+
+if [ ${#PYTHON_FILES[@]} -eq 0 ]; then
+  echo "Nessun file Python trovato nella directory corrente."
+else
+  echo "Trovati ${#PYTHON_FILES[@]} file Python da eseguire."
+
+  for PY_FILE in "${PYTHON_FILES[@]}"; do
+    echo "Eseguendo $PY_FILE..."
+    python3 "$PY_FILE"
+
+    if [ $? -eq 0 ]; then
+      echo "✅ $PY_FILE eseguito con successo."
+    else
+      echo "⚠️ $PY_FILE ha restituito un errore."
+    fi
+  done
+
+  echo "✅ Esecuzione degli script Python completata."
+fi
+
+# 5. Compila il documento automaticamente
 echo
 echo "==================================================================="
 echo "Compilando il documento..."
