@@ -1,40 +1,8 @@
-\documentclass{article}
-
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
-
-% --- Font sans-serif ---
-\usepackage[scaled]{helvet}
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-
-% --- Immagini ---
-\usepackage{float}
-\usepackage{tikz} % per disegni
-\usepackage{graphicx} % per immagini
-\usetikzlibrary{shapes.geometric, positioning, arrows.meta, calc, fit, arrows, decorations.markings}
+\input{preambolo_comune}
 
 % --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
-    colorlinks=true,
-    linkcolor=cyan,
-    filecolor=magenta,
-    urlcolor=blue,
     pdftitle={Reti Wireless: Routing e Trasporto},
-    pdfpagemode=FullScreen,
 }
 
 % --- Colori e sfondo nero ---
@@ -46,9 +14,6 @@
 \definecolor{linkcolor}{RGB}{150,150,150}
 \definecolor{highlightcolor}{RGB}{255,220,100} % Giallo chiaro per highlight
 
-\pagecolor{bgcolor}
-\color{maintext}
-
 % --- Stili TikZ per dark theme ---
 \tikzstyle{node_style}=[circle, draw=accentcolor, fill=nodecolor, text=white, minimum size=7mm, font=\sffamily\small]
 \tikzstyle{important_node_style}=[node_style, fill=highlightcolor!60!nodecolor, text=black, font=\sffamily\small\bfseries]
@@ -57,18 +22,6 @@
 \tikzstyle{info_box}=[rectangle, draw=accentcolor, fill=bgcolor, rounded corners, inner sep=5pt, text width=6cm, font=\sffamily\footnotesize, text=maintext]
 \tikzstyle{zone_style}=[rectangle, draw=accentcolor, dashed, fill=nodecolor!30, fill opacity=0.5, rounded corners, minimum width=3cm, minimum height=2cm]
 
-
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-% Compilare con: pdflatex -shell-escape nomefile.tex
-\usepackage{minted}
-\setminted{
-    frame=lines,     % Cornice attorno al codice
-    framesep=2mm,
-    fontsize=\small,
-    breaklines=true, % A capo automatico per linee lunghe
-    style=monokai,   % Stile di highlighting (già scuro)
-    bgcolor=bgcolor!80!black % Sfondo leggermente diverso per il codice
-}
 
 % --- Titolo ---
 \title{Reti Wireless: Routing e Trasporto}

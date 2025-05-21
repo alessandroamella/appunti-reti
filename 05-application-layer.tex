@@ -1,71 +1,10 @@
-\documentclass{article}
+\input{preambolo_comune}
 
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\usepackage{setspace}
-\geometry{a4paper, margin=1in}
-\onehalfspacing % Aumenta spaziatura tra righe per leggibilità
-
-% --- Font sans-serif con dimensione aumentata ---
-\usepackage[scaled=1.1]{helvet} % Dimensione font aumentata
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Aumenta dimensione di default del testo ---
-\usepackage{anyfontsize}
-\fontsize{12pt}{14pt}\selectfont % Aumenta dimensione di default del testo
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-\setlist{itemsep=4pt} % Aumenta spaziatura tra elementi delle liste
-
-% --- Immagini e Disegni ---
-\usepackage{float}
-\usepackage{graphicx}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, positioning, arrows.meta, fit, calc, decorations.pathreplacing, patterns}
-
-% --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
     pdftitle={Appunti sul Livello Applicazione - Reti di Calcolatori},
-    pdfauthor={Basato sulle slide del Prof.},
-    colorlinks=true,
-    linkcolor=cyan,
-    filecolor=magenta,      
-    urlcolor=green,
-    citecolor=red,
 }
 
-% --- Colori e sfondo nero ---
-\usepackage{xcolor}
-\definecolor{darkergray}{rgb}{0.08,0.08,0.08} % Sfondo leggermente più scuro per contrasto
 \definecolor{lighttext}{rgb}{0.98,0.98,0.98} % Testo leggermente più chiaro per contrasto
-\pagecolor{darkergray}
-\color{lighttext}
-
-
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-\usepackage{minted}
-\setminted{
-    frame=lines,
-    framesep=2mm,
-    fontsize=\normalsize, % Dimensione aumentata
-    breaklines=true,
-    style=monokai, % Stile che si adatta bene a sfondi scuri
-    bgcolor=black % Sfondo specifico per i blocchi minted
-}
-\newminted{text}{frame=lines, framesep=2mm, fontsize=\normalsize, breaklines=true, style=monokai, bgcolor=black}
-\newminted{python}{frame=lines, framesep=2mm, fontsize=\normalsize, breaklines=true, style=monokai, bgcolor=black}
-
 
 % --- Titolo ---
 \title{\textbf{Appunti sul Livello Applicazione}}
@@ -340,7 +279,7 @@ Telefonia Internet     & SIP, RTP, proprietari     & TCP o UDP                  
 \subsection{Messaggi HTTP}
 Formato ASCII. Tipi: \texttt{request} e \texttt{response}.
 \subsubsection{Messaggio di Richiesta HTTP}
-\begin{textcode}
+\begin{minted}{text}
 GET /index.html HTTP/1.1
 Host: www-net.cs.umass.edu
 User-Agent: Firefox/3.6.10
@@ -348,7 +287,7 @@ Accept: text/html,application/xhtml+xml
 Connection: keep-alive
 
 (Corpo del messaggio opzionale per POST)
-\end{textcode}
+\end{minted}
 \begin{itemize}
     \item \textbf{Request line:} metodo, URL, versione.
     \item \textbf{Header lines:} coppie nome-valore.
@@ -363,7 +302,7 @@ Connection: keep-alive
 \end{itemize}
 
 \subsubsection{Messaggio di Risposta HTTP}
-\begin{textcode}
+\begin{minted}{text}
 HTTP/1.1 200 OK
 Date: Sun, 26 Sep 2010 20:09:20 GMT
 Server: Apache/2.0.52 (CentOS)
@@ -372,7 +311,7 @@ Content-Length: 2652
 Content-Type: text/html; charset=ISO-8859-1
 
 (Corpo del messaggio: oggetto richiesto)
-\end{textcode}
+\end{minted}
 \begin{itemize}
     \item \textbf{Status line:} versione, codice stato, frase stato.
     \item \textbf{Header lines}.
@@ -864,7 +803,7 @@ Client invia stringa, server la converte in maiuscolo, client la visualizza.
 
 \subsection{Esempi Python (Concettuale)}
 \subsubsection{UDPClient.py}
-\begin{pythoncode}
+\begin{minted}{python}
 from socket import *
 
 serverName = 'hostname'
@@ -887,10 +826,10 @@ print(modifiedMessage.decode())
 
 # Chiudi il socket
 clientSocket.close()
-\end{pythoncode}
+\end{minted}
 
 \subsubsection{UDPServer.py}
-\begin{pythoncode}
+\begin{minted}{python}
 from socket import *
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_DGRAM)
@@ -900,10 +839,10 @@ while True:
     message, clientAddress = serverSocket.recvfrom(2048)
     modifiedMessage = message.decode().upper()
     serverSocket.sendto(modifiedMessage.encode(), clientAddress)
-\end{pythoncode}
+\end{minted}
 
 \subsubsection{TCPClient.py}
-\begin{pythoncode}
+\begin{minted}{python}
 from socket import *
 serverName = 'servername'
 serverPort = 12000
@@ -914,10 +853,10 @@ clientSocket.send(sentence.encode())
 modifiedSentence = clientSocket.recv(1024)
 print('From Server:', modifiedSentence.decode())
 clientSocket.close()
-\end{pythoncode}
+\end{minted}
 
 \subsubsection{TCPServer.py}
-\begin{pythoncode}
+\begin{minted}{python}
 from socket import *
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_STREAM) # Welcoming socket
@@ -930,7 +869,7 @@ while True:
     capitalizedSentence = sentence.upper()
     connectionSocket.send(capitalizedSentence.encode())
     connectionSocket.close() # Close connection socket, not welcoming socket
-\end{pythoncode}
+\end{minted}
 
 \section{Sommario Capitolo 2}
 \begin{itemize}

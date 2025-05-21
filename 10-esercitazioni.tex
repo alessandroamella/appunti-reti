@@ -1,66 +1,15 @@
-\documentclass{article}
+\input{preambolo_comune}
 
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
-
-% --- Font sans-serif ---
-\usepackage[scaled]{helvet}
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsfonts} % Per simboli matematici aggiuntivi
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-
-% --- Immagini ---
-\usepackage{float}
-\usepackage{tikz} % per disegni
-\usepackage{graphicx} % per immagini
-\usetikzlibrary{shapes.geometric, positioning, arrows.meta, calc} % arrows.meta per stili di freccia moderni
-
-% --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
-    pdftitle={Appunti di Reti di Calcolatori},
-    pdfauthor={Basato sulle slide del Prof. Luciano Bononi},
+    pdftitle={Esercitazioni per l'Esame},
     colorlinks=true,
-    linkcolor=cyan, % Colore per link interni (es. ToC)
-    urlcolor=magenta, % Colore per URL esterni
-    citecolor=green   % Colore per citazioni (se usate)
 }
 
-% --- Colori e sfondo nero ---
-\usepackage{xcolor}
 \definecolor{darkbackground}{rgb}{0.1,0.1,0.1} % Sfondo leggermente meno nero per leggibilità
 \definecolor{lighttext}{rgb}{0.95,0.95,0.95}   % Testo leggermente meno bianco
-\pagecolor{darkbackground}
-\color{lighttext}
-
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-% Compilare con: pdflatex -shell-escape nomefile.tex
-\usepackage{minted}
-\setminted{
-    frame=lines,         % Cornice attorno al codice
-    framesep=2mm,
-    fontsize=\small,
-    breaklines=true,     % A capo automatico per linee lunghe
-    style=monokai,       % Stile di highlighting (dark)
-    bgcolor=black!80,    % Sfondo per i blocchi minted
-    baselinestretch=1.1
-}
-\newminted{text}{fontsize=\small, bgcolor=black!80} % Per testo semplice formattato come codice
 
 % --- Titolo ---
-\title{Appunti di Reti di Calcolatori}
+\title{Esercitazioni per l'Esame}
 \author{Basato sulle slide del Prof. Luciano Bononi}
 \date{\today}
 

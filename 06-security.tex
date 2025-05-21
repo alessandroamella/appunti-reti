@@ -1,61 +1,8 @@
-\documentclass{article}
+\input{preambolo_comune}
 
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
-
-% --- Font sans-serif ---
-\usepackage[scaled]{helvet}
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsfonts} % Aggiunto per simboli matematici
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-
-% --- Immagini ---
-\usepackage{float}
-\usepackage{tikz} % per disegni
-\usepackage{graphicx} % per immagini
-\usetikzlibrary{shapes.geometric, positioning, arrows.meta, calc, fit} % Aggiornato per frecce e positioning
-
-% --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
     pdftitle={Appunti su Sicurezza nelle Reti di Calcolatori},
-    colorlinks=true,       % false: boxed links; true: colored links
-    linkcolor=cyan,        % color of internal links (change box color with linkbordercolor)
-    citecolor=green,        % color of links to bibliography
-    filecolor=magenta,      % color of file links
-    urlcolor=blue           % color of external links
 }
-
-% --- Colori e sfondo nero ---
-\usepackage{xcolor}
-\pagecolor{black}
-\color{white}
-
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-% Compilare con: pdflatex -shell-escape nomefile.tex
-\usepackage{minted}
-\setminted{
-    frame=lines,     % Cornice attorno al codice
-    framesep=2mm,
-    fontsize=\small,
-    breaklines=true, % A capo automatico per linee lunghe
-    style=monokai,   % Stile di highlighting (buono per sfondo scuro)
-    bgcolor=gray!10 % Sfondo leggermente diverso per i blocchi minted
-}
-\usemintedstyle{monokai}
-
 
 % --- Titolo ---
 \title{Appunti su Sicurezza nelle Reti di Calcolatori \\ (Capitolo 8)}

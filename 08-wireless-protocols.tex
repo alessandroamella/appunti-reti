@@ -1,45 +1,8 @@
-\documentclass{article}
+\input{preambolo_comune}
 
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
-
-% --- Font sans-serif ---
-\usepackage[scaled]{helvet}
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-
-% --- Immagini ---
-\usepackage{float}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, positioning, arrows.meta, calc, fit, backgrounds, patterns, decorations.pathreplacing}
-\usepackage{graphicx}
-
-% --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
-    pdftitle={Appunti sui Protocolli MAC Wireless},
-    colorlinks=true,
-    linkcolor=cyan,
-    urlcolor=cyan,
-    citecolor=green
+    pdftitle={Protocolli MAC Wireless},
 }
-
-% --- Colori e sfondo nero ---
-\usepackage{xcolor}
-\pagecolor{black}
-\color{white}
 
 % Stili TikZ per dark theme
 \tikzstyle{nodo_base} = [rectangle, rounded corners, draw=white, fill=gray!60!black, text=white, minimum height=1.5em, minimum width=4em, text centered]
@@ -52,23 +15,8 @@
 \tikzstyle{blocco_tempo_hatch} = [rectangle, draw=white, pattern=north east lines, pattern color=gray, text=white, minimum height=0.6cm, font=\tiny, anchor=south west]
 
 
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-% Compilare con: pdflatex -shell-escape nomefile.tex
-\usepackage{minted}
-\setminted{
-    frame=lines,
-    framesep=2mm,
-    fontsize=\small,
-    breaklines=true,
-    style=monokai,
-    bgcolor=black!80
-}
-\usepackage{tcolorbox}
-\tcbuselibrary{minted,breakable}
-
-
 % --- Titolo ---
-\title{Appunti sui Protocolli MAC Wireless}
+\title{Protocolli MAC Wireless}
 \author{Basato sulle slide del Prof. Luciano Bononi}
 \date{\today}
 

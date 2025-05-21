@@ -1,65 +1,11 @@
-\documentclass{article}
+\input{preambolo_comune}
 
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
-
-% --- Font sans-serif ---
-\usepackage[scaled]{helvet}
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{siunitx} % Per unità di misura come GHz, dBm, ecc.
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-
-% --- Immagini ---
-\usepackage{float}
-\usepackage{tikz} % per disegni
-\usepackage{graphicx} % per immagini
-\usetikzlibrary{shapes.geometric, positioning, calc, arrows.meta, patterns}
-
-% --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
-    pdftitle={Appunti sui Sistemi Wireless: Livello Fisico e Segnali},
-    pdfauthor={Basato sulle slide del Prof. Luciano Bononi},
-    colorlinks=true,
-    linkcolor=cyan,
-    urlcolor=magenta,
-    citecolor=green,
-}
-
-% --- Colori e sfondo nero ---
-\usepackage{xcolor}
-\definecolor{lightgray}{rgb}{0.83, 0.83, 0.83}
-\definecolor{midgray}{rgb}{0.5, 0.5, 0.5}
-\definecolor{darkergray}{rgb}{0.2, 0.2, 0.2} % Per cornici tabelle su sfondo nero
-\pagecolor{black}
-\color{white}
-
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-% Compilare con: pdflatex -shell-escape nomefile.tex
-\usepackage{minted}
-\setminted{
-    frame=lines,     % Cornice attorno al codice
-    framesep=2mm,
-    fontsize=\small,
-    breaklines=true, % A capo automatico per linee lunghe
-    style=monokai,   % Stile di highlighting
-    bgcolor=darkergray % Sfondo per minted
+    pdftitle={Livello Fisico e Segnali},
 }
 
 % --- Titolo ---
-\title{Appunti sui Sistemi Wireless: Livello Fisico e Segnali}
+\title{Livello Fisico e Segnali}
 \author{Basato sulle slide del Prof. Luciano Bononi}
 \date{\today}
 
@@ -216,7 +162,7 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
     % Sorgente
     \node[draw, circle, fill=blue!30] (A) at (0,0) {A};
     % Onde
-    \draw[yellow, pattern=dots, pattern_color=yellow!50] (A) circle (2.5cm);
+    \draw[yellow, pattern=dots] (A) circle (2.5cm);
     \draw[yellow, opacity=0.5] (A) circle (2cm);
     \draw[yellow, opacity=0.8] (A) circle (1.5cm);
     % Grafico attenuazione
@@ -467,7 +413,7 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
     \draw[orange, fill=orange!30, opacity=0.5] (0,0) ellipse (3.2cm and 0.6cm);
     \node at (0,0) [font=\tiny, orange] {1a Zona Fresnel};
     % Obstacle
-    \node (tree) at (0.5, -0.2) [cloud, draw, cloud puffs=10, aspect=1.2, minimum width=0.5cm, fill=green!50] {};
+    \node (tree) at (0.5, -0.2) [circle, draw, minimum width=0.5cm, fill=green!50] {};
 \end{tikzpicture}
 \end{center}
 

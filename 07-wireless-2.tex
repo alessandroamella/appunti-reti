@@ -1,63 +1,13 @@
-\documentclass{article}
+\input{preambolo_comune}
 
-% --- Encoding e lingua ---
-\usepackage[utf8]{inputenc}
-\usepackage[italian]{babel}
-
-% --- Margini e layout ---
-\usepackage{geometry}
-\geometry{a4paper, margin=1in}
-
-% --- Font sans-serif ---
-\usepackage[scaled]{helvet}
-\renewcommand{\familydefault}{\sfdefault}
-\usepackage[T1]{fontenc}
-
-% --- Matematica ---
-\usepackage{amsmath}
-\usepackage{amssymb}
-
-% --- Liste personalizzate ---
-\usepackage{enumitem}
-
-% --- Immagini ---
-\usepackage{float}
-\usepackage{tikz} % per disegni
-\usepackage{graphicx} % per immagini
-\usetikzlibrary{shapes.geometric, positioning, calc, arrows.meta, patterns}
-
-% --- Hyperlink ---
-\usepackage{hyperref}
 \hypersetup{
-    pdftitle={Appunti su Sistemi Wireless (2) – Spettro Fisico, Canali Logici, Modulazione Digitale},
-    pdfauthor={Basato sulle slide del Prof. Luciano Bononi},
-    colorlinks=true,
-    linkcolor=cyan,
-    urlcolor=magenta,
-    citecolor=green,
+    pdftitle={Spettro Fisico, Canali Logici, Modulazione Digitale},
 }
 
-% --- Colori e sfondo nero ---
-\usepackage{xcolor}
 \definecolor{lightgray}{rgb}{0.83, 0.83, 0.83}
 \definecolor{darkergray}{rgb}{0.2, 0.2, 0.2}
-\pagecolor{darkergray} % Sfondo leggermente meno nero per leggibilità
-\color{white}
 
-% --- Evidenziazione del codice (richiede -shell-escape) ---
-% Compilare con: pdflatex -shell-escape nomefile.tex
-\usepackage{minted}
-\setminted{
-    frame=lines,     % Cornice attorno al codice
-    framesep=2mm,
-    fontsize=\small,
-    breaklines=true, % A capo automatico per linee lunghe
-    style=monokai    % Stile di highlighting (richiede pygments)
-}
-\newminted{text}{style=monokai} % Per blocchi di testo generici formattati come codice
-
-% --- Titolo ---
-\title{Appunti su Sistemi Wireless (2) – \\ Spettro Fisico, Canali Logici, Modulazione Digitale}
+\title{Spettro Fisico, Canali Logici, Modulazione Digitale}
 \author{Basato sulle slide del Prof. Luciano Bononi}
 \date{\today}
 
@@ -251,8 +201,8 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
 \begin{itemize}
     \item \textbf{WWAN (Wireless Wide Area Network):} Copertura geografica estesa (es. satelliti, reti cellulari).
     \item \textbf{WMAN (Wireless Metropolitan Area Network):} Copertura metropolitana (es. una città, WiMAX).
-    \item \textbf{WLAN (Wireless Local Area Network):} Copertura locale (es. un edificio, una casa – Wi-Fi).
-    \item \textbf{WPAN (Wireless Personal Area Network):} Copertura personale, ridotta (es. una stanza – Bluetooth).
+    \item \textbf{WLAN (Wireless Local Area Network):} Copertura locale (es. un edificio, una casa - Wi-Fi).
+    \item \textbf{WPAN (Wireless Personal Area Network):} Copertura personale, ridotta (es. una stanza - Bluetooth).
     \item \textbf{Wireless Indoor Area Network:} Copertura a cortissimo raggio, tipicamente una stanza.
 \end{itemize}
 \textit{[Figura di riferimento: Slide 14 - Wireless network positioning]}
