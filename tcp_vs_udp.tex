@@ -1,0 +1,37 @@
+% TCP vs UDP Comparison Table
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{|p{4cm}|p{5.5cm}|p{5.5cm}|}
+        \hline
+        \rowcolor{gray!30}
+        \textbf{Caratteristica} & \textbf{TCP} & \textbf{UDP} \\
+        \hline
+        \textbf{Tipo di servizio} & Affidabile & Non affidabile \\
+        \hline
+        \textbf{Connessione} & Connection-oriented (richiede handshake) & Connectionless (nessun handshake) \\
+        \hline
+        \textbf{Ordine dei pacchetti} & Garantito & Non garantito \\
+        \hline
+        \textbf{Controllo errori} & Rilevamento errori e ritrasmissione & Solo rilevamento errori base \\
+        \hline
+        \textbf{Controllo flusso} & Sì (sliding window) & No \\
+        \hline
+        \textbf{Controllo congestione} & Sì & No \\
+        \hline
+        \textbf{Overhead} & Alto & Basso \\
+        \hline
+        \textbf{Velocità} & Più lento & Più veloce \\
+        \hline
+        \textbf{Dimensione header} & 20-60 byte & 8 byte \\
+        \hline
+        \textbf{Esempi applicazioni} & Web (HTTP/HTTPS), Email (SMTP), Trasferimento file (FTP), SSH & Streaming video/audio, Videogiochi online, DNS, VoIP \\
+        \hline
+        \textbf{Quando usarlo} & Quando è necessaria l'affidabilità e l'integrità dei dati è fondamentale & Quando la velocità è prioritaria e qualche perdita di dati è accettabile \\
+        \hline
+    \end{tabular}
+    \caption{Confronto tra TCP e UDP: caratteristiche e utilizzi pratici}
+    \label{tab:tcp_vs_udp}
+\end{table}
+
+% Nota: per utilizzare questa tabella, assicurati di includere il pacchetto colortbl con:
+% \usepackage{colortbl} 

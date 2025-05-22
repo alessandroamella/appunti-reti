@@ -2,10 +2,16 @@
 
 # Parse command line arguments
 DARK_MODE=false
+COMPILE_ONCE=false
 for arg in "$@"; do
-  if [ "$arg" = "--dark" ]; then
+  case "$arg" in
+  "--dark")
     DARK_MODE=true
-  fi
+    ;;
+  "--once")
+    COMPILE_ONCE=true
+    ;;
+  esac
 done
 
 # Versione completa per la generazione del documento finale
@@ -35,13 +41,19 @@ FILES=(
   "08-wireless-protocols.tex"
   "09-routing.tex"
   "10-esercitazioni.tex"
-  "preambolo_comune.tex"
 )
 
-# Add dark theme preambolo to the verification list
+# Generate the appropriate preamble
+echo "Generando il preambolo appropriato..."
 if [ "$DARK_MODE" = true ]; then
-  FILES+=("preambolo_comune_dark_theme.tex")
+  ./generate_preamble.sh --dark --no-document-class
+  echo "✅ Preambolo con tema scuro generato."
+else
+  ./generate_preamble.sh --no-document-class
+  echo "✅ Preambolo con tema chiaro generato."
 fi
+
+FILES+=("preambolo_comune.tex")
 
 MISSING=false
 for FILE in "${FILES[@]}"; do
@@ -77,9 +89,9 @@ else
   HYPERSETUP='
 \hypersetup{
     colorlinks=true,
-    linkcolor=darktext,
+    linkcolor=white,
     filecolor=magenta,
-    urlcolor=darktext,
+    urlcolor=cyan,
     pdftitle={Appunti Completi di Reti di Calcolatori},
     pdfauthor={Alessandro Amella},
     pdfpagemode=FullScreen,
@@ -90,13 +102,13 @@ cat >appunti_completi.tex <<EOT
 \documentclass{report}
 
 % Importa tutte le configurazioni dal preambolo comune
-\input{preambolo_comune_modificato}
+\input{preambolo_comune}
 
 % Hyperref configurazione globale (sovrascrive quella nel preambolo)
 $HYPERSETUP
 
 % Titolo del documento unificato
-\title{Appunti Completi di Reti di Calcolatori\\
+\title{Appunti Completi di Reti di Calcolatori\\\\
   \large Basati sulle dispense del Prof. Luciano Bononi}
 \author{Alessandro Amella, Gemini e Claude}
 \date{\today}
@@ -165,16 +177,6 @@ EOT
 
 echo "✅ appunti_completi.tex creato."
 
-# 2. Crea preambolo_comune_modificato.tex senza la riga \documentclass
-echo "Creando preambolo_comune_modificato.tex..."
-if [ "$DARK_MODE" = true ]; then
-  sed '/\\documentclass/d' preambolo_comune_dark_theme.tex >preambolo_comune_modificato.tex
-  echo "✅ preambolo_comune_modificato.tex creato dal tema scuro."
-else
-  sed '/\\documentclass/d' preambolo_comune.tex >preambolo_comune_modificato.tex
-  echo "✅ preambolo_comune_modificato.tex creato dal tema chiaro."
-fi
-
 # 3. Per ogni file .tex, estrai il contenuto e correggi l'indentazione minted
 echo "Estraendo contenuto dai file e correggendo l'indentazione minted..."
 
@@ -232,8 +234,10 @@ echo "==================================================================="
 echo "Compilando il documento..."
 pdflatex -shell-escape appunti_completi.tex
 
-echo "Compilando una seconda volta per l'indice..."
-pdflatex -shell-escape appunti_completi.tex
+if [ "$COMPILE_ONCE" = false ]; then
+  echo "Compilando una seconda volta per l'indice..."
+  pdflatex -shell-escape appunti_completi.tex
+fi
 
 echo "✅ Compilazione completata."
 echo "Il documento PDF è stato generato come 'appunti_completi.pdf'"
