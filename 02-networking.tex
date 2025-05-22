@@ -1,9 +1,5 @@
 \input{preambolo_comune}
 
-\hypersetup{
-    pdftitle={Appunti di Reti di Calcolatori},
-}
-
 % --- Titolo ---
 \title{Appunti di Reti di Calcolatori}
 \author{Basato sulle slide del Prof. Luciano Bononi}
@@ -893,5 +889,212 @@ Questo meccanismo adattivo è ciò che permette a TCP di trovare automaticamente
         \item \textbf{Obiettivo:} Garantire QoS su tutto il collegamento.
     \end{itemize}
 \end{itemize}
+
+
+\section{Recap dei concetti chiave}
+
+\subsection{Reti di Reti e Livello Rete (IP)}
+\begin{itemize}
+    \item \textbf{Internetworking:} Interconnessione gerarchica di LAN tramite \textbf{Router} e \textbf{Backbone}.
+    \item \textbf{Livello Rete (OSI 3):}
+        \begin{itemize}
+            \item Nasconde dettagli LAN, opera tra reti.
+            \item \textbf{Scalabilità:} Gestisce l'instradamento tra reti, non singoli host.
+        \end{itemize}
+    \item \textbf{Protocollo IP (Internet Protocol):}
+        \begin{itemize}
+            \item \textbf{Indirizzamento IP:} Globale e gerarchico.
+            \item \textbf{Instradamento (Forwarding):} Inoltro pacchetti, \textit{connectionless}.
+            \item \textbf{Router:} Amministratori del livello 3, usano \textbf{tabelle di instradamento}.
+            \item \textbf{Frammentazione:} Suddivisione pacchetti per MTU diverse.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Indirizzamento IPv4 e Sottoreti}
+\begin{itemize}
+    \item \textbf{Indirizzo IPv4:} 32 bit (4 byte), es. \texttt{192.168.1.10}.
+        \begin{itemize}
+            \item Diviso in \textbf{Network Number} e \textbf{Host Number}.
+            \item Classi A, B, C (obsolete, ma didattiche per capire la logica).
+        \end{itemize}
+    \item \textbf{Subnet Mask (Maschera di Sottorete):}
+        \begin{itemize}
+            \item 32 bit, definisce parte rete (bit a 1) e parte host (bit a 0).
+            \item \textbf{Calcolo Indirizzo di Rete:} IP \texttt{AND} Subnet Mask.
+            \item \textbf{Notazione CIDR:} Es. \texttt{/24} $\rightarrow$ \texttt{255.255.255.0} (24 bit per la rete).
+        \end{itemize}
+    \item \textbf{Configurazione Host Essenziale:}
+        \begin{enumerate}
+            \item Indirizzo IP
+            \item Subnet Mask
+            \item Default Gateway (Router per uscire dalla LAN)
+        \end{enumerate}
+\end{itemize}
+
+\subsection{Instradamento (Forwarding e Routing)}
+\begin{itemize}
+    \item \textbf{Forwarding:} Decisione del router su dove inoltrare un pacchetto, basata su \textbf{Routing Table}.
+    \item \textbf{Routing Table (Tabella di Instradamento):}
+        \begin{itemize}
+            \item Contiene: Rete Destinazione, Netmask, \textbf{Next Hop} (prossimo router), Interfaccia.
+            \item \textbf{Rotta di Default (0.0.0.0/0):} Usata se non c'è match specifico.
+        \end{itemize}
+    \item \textbf{Routing:} Processo di costruzione e aggiornamento delle tabelle di instradamento.
+        \begin{itemize}
+            \item \textbf{Protocolli di Routing:} \textbf{RIP}, \textbf{OSPF} (Interior, IGP), \textbf{BGP} (Exterior, EGP).
+            \item \textbf{AS (Autonomous System):} Rete sotto unica amministrazione.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Protocolli di Supporto e Utilità}
+\begin{description}
+    \item[ARP (Address Resolution Protocol)]
+        \begin{itemize}
+            \item \textbf{Scopo:} Risolvere IP $\rightarrow$ MAC Address (all'interno della stessa LAN).
+            \item \textbf{Funzionamento:}
+                \begin{enumerate}
+                    \item \textbf{ARP Request} (Broadcast): "Chi ha IP X?"
+                    \item \textbf{ARP Reply} (Unicast): "Io ho IP X, il mio MAC è Y."
+                \end{enumerate}
+            \item \textbf{ARP Cache:} Tabella locale con associazioni IP-MAC temporanee.
+            \item \textbf{RARP (Reverse ARP):} Obsoleto, MAC $\rightarrow$ IP. Sostituito da DHCP.
+        \end{itemize}
+    \item[ICMP (Internet Control Message Protocol)]
+        \begin{itemize}
+            \item \textbf{Scopo:} Messaggi di controllo ed errore (es. Destinazione irraggiungibile, Time Exceeded). Non trasporta dati utente.
+            \item \textbf{PING:} Usa ICMP Echo Request/Reply per testare connettività e misurare RTT (Round Trip Time).
+            \item \textbf{Traceroute (tracert):} Usa ICMP (e TTL) per mappare il percorso dei pacchetti.
+        \end{itemize}
+    \item[DHCP (Dynamic Host Configuration Protocol)]
+        \begin{itemize}
+            \item \textbf{Scopo:} Assegnazione automatica di configurazione IP (Indirizzo IP, Subnet Mask, Default Gateway, DNS Server).
+            \item \textbf{Processo (DORA):}
+                \begin{enumerate}
+                    \item Client: \textbf{D}iscover (broadcast)
+                    \item Server: \textbf{O}ffer (unicast o broadcast)
+                    \item Client: \textbf{R}equest (broadcast)
+                    \item Server: \textbf{A}cknowledge (unicast o broadcast)
+                \end{enumerate}
+            \item \textbf{Lease Time:} Durata dell'assegnazione dell'IP.
+        \end{itemize}
+\end{description}
+
+\subsection{IPv6}
+\begin{itemize}
+    \item \textbf{Motivazione:} Esaurimento indirizzi IPv4.
+    \item \textbf{Indirizzi IPv6:} \textbf{128 bit} (vs 32 di IPv4). Notazione esadecimale.
+    \item \textbf{Header Semplificato:} Rispetto a IPv4.
+    \item \textbf{Transizione:} Tecniche come \textbf{Dual Stack} (IPv4 e IPv6 coesistono) e \textbf{Tunnelling} (pacchetti IPv6 incapsulati in IPv4).
+\end{itemize}
+
+\subsection{Livello Trasporto: TCP vs UDP}
+\begin{itemize}
+    \item \textbf{Scopo:} Comunicazione end-to-end tra applicazioni.
+    \item \textbf{Porte:} Numeri (0-65535) per identificare l'applicazione sul destinatario.
+    \item \textbf{Socket:} Coppia (Indirizzo IP, Numero di Porta).
+\end{itemize}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \rowcolor{bg_custom}
+        \textbf{Caratteristica} & \textbf{TCP (Transmission Control Protocol)} & \textbf{UDP (User Datagram Protocol)} \\
+        \hline
+        Connessione & Orientato alla connessione (Handshake) & Senza connessione (Connectionless) \\
+        \hline
+        Affidabilità & \textbf{Affidabile}: consegna garantita, ordinata & \textbf{Non affidabile}: best-effort, no garanzie \\
+        \hline
+        Controllo Errori & Sì (checksum, ritrasmissione) & Sì (checksum, opzionale) ma no ritrasm. \\
+        \hline
+        Controllo Flusso & Sì (Sliding Window) & No \\
+        \hline
+        Controllo Congestione & Sì (Slow Start, Cong. Avoidance) & No \\
+        \hline
+        Overhead & Maggiore & Minore \\
+        \hline
+        Velocità & Più lento & Più veloce \\
+        \hline
+        Esempi Uso & HTTP, HTTPS, FTP, SMTP, POP3, IMAP & DNS, DHCP, VoIP, Streaming, Giochi online \\
+        \hline
+    \end{tabular}
+    \caption{Confronto TCP vs UDP}
+\end{table}
+
+\subsection{TCP: Controllo di Flusso e Congestione}
+\begin{itemize}
+    \item \textbf{Controllo di Flusso:} Evita che il mittente sovraccarichi il \textit{destinatario}. Gestito dalla \textbf{finestra di ricezione} del destinatario (rwnd).
+    \item \textbf{Controllo della Congestione:} Evita che il mittente sovraccarichi la \textit{rete}. Gestito dalla \textbf{finestra di congestione} del mittente (cwnd).
+    \item \textbf{Finestra Scorrevole (Sliding Window):} Quantità di dati inviabili prima di ricevere ACK. La dimensione effettiva usata è min(rwnd, cwnd).
+    \item \textbf{Fasi Controllo Congestione TCP:}
+        \begin{itemize}
+            \item \textbf{Slow Start:} cwnd cresce esponenzialmente.
+            \item \textbf{Congestion Avoidance:} cwnd cresce linearmente.
+            \item \textbf{Fast Retransmit/Fast Recovery:} Reazione a 3 ACK duplicati (perdita pacchetto).
+        \end{itemize}
+\end{itemize}
+
+\subsection{DNS (Domain Name System)}
+\begin{itemize}
+    \item \textbf{Scopo:} Risolvere \textbf{nomi di dominio} (es. \texttt{www.google.com}) in \textbf{indirizzi IP}.
+    \item \textbf{Struttura Gerarchica:} Server Root, TLD (Top-Level Domain, es. .com, .it), Autoritativi.
+    \item \textbf{Processo di Risoluzione:}
+        \begin{itemize}
+            \item Client chiede a DNS Resolver locale.
+            \item Resolver interroga gerarchia DNS (iterativamente o ricorsivamente).
+        \end{itemize}
+    \item \textbf{Record DNS Comuni:} \texttt{A} (IPv4), \texttt{AAAA} (IPv6), \texttt{MX} (Mail Exchange), \texttt{CNAME} (Alias).
+\end{itemize}
+
+\subsection{Livello Applicazione e Architetture}
+\begin{itemize}
+    \item \textbf{Protocolli Comuni:}
+        \begin{itemize}
+            \item \textbf{HTTP/HTTPS:} Web (TCP porte 80/443).
+            \item \textbf{SMTP:} Invio E-mail (TCP porta 25).
+            \item \textbf{POP3/IMAP:} Ricezione/Gestione E-mail (TCP porte 110/143).
+        \end{itemize}
+    \item \textbf{Architetture:}
+        \begin{itemize}
+            \item \textbf{Client/Server:} Client richiede, Server fornisce (es. Web).
+            \item \textbf{Peer-to-Peer (P2P):} Ogni nodo è sia client che server (es. BitTorrent).
+            \item \textbf{Ibrida:} Elementi di entrambe.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Configurazione TCP/IP Host e Sicurezza}
+\begin{itemize}
+    \item \textbf{Configurazione Host (per Internet):}
+        \begin{itemize}
+            \item Indirizzo IP (statico o via DHCP)
+            \item Subnet Mask
+            \item Default Gateway (router ISP)
+            \item Server DNS (dell'ISP o pubblici)
+        \end{itemize}
+    \item \textbf{Concetti Base di Sicurezza:}
+        \begin{itemize}
+            \item \textbf{Prevenzione Malware:} Antivirus, aggiornamenti.
+            \item \textbf{Controllo Accessi:}
+                \begin{itemize}
+                    \item \textbf{Firewall:} Filtra traffico al perimetro.
+                    \item \textbf{Autenticazione/Autorizzazione:} Login, password, ACL.
+                    \item \textbf{Proxy (Application Gateway):} Intermediario per specifiche applicazioni.
+                \end{itemize}
+            \item \textbf{Segretezza Dati:}
+                \begin{itemize}
+                    \item \textbf{Crittografia:} Rende i dati illeggibili senza chiave (es. SSL/TLS per HTTPS, VPN).
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
+
+\subsection{Qualità del Servizio (QoS)}
+\begin{itemize}
+    \item \textbf{Internet Tradizionale:} "Best-effort", nessuna garanzia su tempi di consegna.
+    \item \textbf{Servizi Differenziati (IntServ, DiffServ) / Internet2:}
+        \begin{itemize}
+            \item \textbf{Scopo:} Fornire QoS per applicazioni critiche (es. video real-time).
+            \item \textbf{Meccanismi:} Prioritizzazione traffico, riservazione banda, classificazione pacchetti.
+        \end{itemize}
+\end{itemize}
+
 
 \end{document}

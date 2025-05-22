@@ -3,6 +3,7 @@
 # Parse command line arguments
 DARK_MODE=false
 COMPILE_ONCE=false
+SKIP_IMAGES=false
 for arg in "$@"; do
   case "$arg" in
   "--dark")
@@ -10,6 +11,9 @@ for arg in "$@"; do
     ;;
   "--once")
     COMPILE_ONCE=true
+    ;;
+  "--no-images")
+    SKIP_IMAGES=true
     ;;
   esac
 done
@@ -24,6 +28,11 @@ if [ "$DARK_MODE" = true ]; then
   echo "📝 Tema scuro selezionato"
 else
   echo "📝 Tema chiaro selezionato (default)"
+fi
+
+# Show image generation status
+if [ "$SKIP_IMAGES" = true ]; then
+  echo "🖼️ Generazione immagini disattivata"
 fi
 
 # Prima verifica che tutti i file esistano
@@ -89,7 +98,7 @@ else
   HYPERSETUP='
 \hypersetup{
     colorlinks=true,
-    linkcolor=white,
+    linkcolor=black,
     filecolor=magenta,
     urlcolor=cyan,
     pdftitle={Appunti Completi di Reti di Calcolatori},
@@ -205,27 +214,31 @@ echo "✅ Estrazione e correzione completate."
 # 4. Esegui tutti i file Python per generare le immagini
 echo
 echo "==================================================================="
-echo "Esecuzione di tutti gli script Python per generare immagini..."
-
-PYTHON_FILES=($(find . -maxdepth 1 -name "*.py"))
-
-if [ ${#PYTHON_FILES[@]} -eq 0 ]; then
-  echo "Nessun file Python trovato nella directory corrente."
+if [ "$SKIP_IMAGES" = true ]; then
+  echo "Generazione immagini saltata (parametro --no-images attivo)."
 else
-  echo "Trovati ${#PYTHON_FILES[@]} file Python da eseguire."
+  echo "Esecuzione di tutti gli script Python per generare immagini..."
 
-  for PY_FILE in "${PYTHON_FILES[@]}"; do
-    echo "Eseguendo $PY_FILE..."
-    python3 "$PY_FILE"
+  PYTHON_FILES=($(find . -maxdepth 1 -name "*.py"))
 
-    if [ $? -eq 0 ]; then
-      echo "✅ $PY_FILE eseguito con successo."
-    else
-      echo "⚠️ $PY_FILE ha restituito un errore."
-    fi
-  done
+  if [ ${#PYTHON_FILES[@]} -eq 0 ]; then
+    echo "Nessun file Python trovato nella directory corrente."
+  else
+    echo "Trovati ${#PYTHON_FILES[@]} file Python da eseguire."
 
-  echo "✅ Esecuzione degli script Python completata."
+    for PY_FILE in "${PYTHON_FILES[@]}"; do
+      echo "Eseguendo $PY_FILE..."
+      python3 "$PY_FILE"
+
+      if [ $? -eq 0 ]; then
+        echo "✅ $PY_FILE eseguito con successo."
+      else
+        echo "⚠️ $PY_FILE ha restituito un errore."
+      fi
+    done
+
+    echo "✅ Esecuzione degli script Python completata."
+  fi
 fi
 
 # 5. Compila il documento automaticamente
