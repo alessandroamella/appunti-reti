@@ -41,16 +41,16 @@ echo "Verifico che tutti i file necessari siano presenti..."
 FILES=(
   "01-introduzione.tex"
   "02-networking.tex"
-  "02-aritmetica-binaria.tex"
-  "03-ip-subnetting.tex"
-  "04-ipv4-vlsm.tex"
-  "05-application-layer.tex"
-  "06-security.tex"
-  "07-wireless-1.tex"
-  "07-wireless-2.tex"
-  "08-wireless-protocols.tex"
-  "09-routing.tex"
-  "10-esercitazioni.tex"
+  "03-aritmetica-binaria.tex"
+  "04-ip-subnetting.tex"
+  "05-ipv4-vlsm.tex"
+  "06-application-layer.tex"
+  "07-security.tex"
+  "08-wireless-1.tex"
+  "09-wireless-2.tex"
+  "10-wireless-protocols.tex"
+  "11-routing.tex"
+  "12-esercitazioni.tex"
 )
 
 # Generate the appropriate preamble
@@ -156,34 +156,34 @@ Sentiti libero di utilizzare, condividere o contribuire a questi appunti attrave
 \input{02-networking-content}
 
 \chapter{Aritmetica Binaria}
-\input{02-aritmetica-binaria-content}
+\input{03-aritmetica-binaria-content}
 
 \chapter{Indirizzamento IP, Subnetting e Instradamento}
-\input{03-ip-subnetting-content}
+\input{04-ip-subnetting-content}
 
 \chapter{Progettazione Reti IPv4 e Subnetting}
-\input{04-ipv4-vlsm-content}
+\input{05-ipv4-vlsm-content}
 
 \chapter{Livello Applicazione}
-\input{05-application-layer-content}
+\input{06-application-layer-content}
 
 \chapter{Sicurezza nelle Reti di Calcolatori}
-\input{06-security-content}
+\input{07-security-content}
 
 \chapter{Wireless: Livello Fisico e Segnali}
-\input{07-wireless-1-content}
+\input{08-wireless-1-content}
 
 \chapter{Wireless: Spettro Fisico, Canali Logici, Modulazione Digitale}
-\input{07-wireless-2-content}
+\input{09-wireless-2-content}
 
 \chapter{Protocolli MAC Wireless}
-\input{08-wireless-protocols-content}
+\input{10-wireless-protocols-content}
 
 \chapter{Reti Wireless: Routing e Trasporto}
-\input{09-routing-content}
+\input{11-routing-content}
 
 \chapter{Esercitazioni}
-\input{10-esercitazioni-content}
+\input{12-esercitazioni-content}
 
 \end{document}
 EOT
