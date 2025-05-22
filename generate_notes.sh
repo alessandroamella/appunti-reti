@@ -41,6 +41,7 @@ echo "Verifico che tutti i file necessari siano presenti..."
 FILES=(
   "01-introduzione.tex"
   "02-networking.tex"
+  "02-aritmetica-binaria.tex"
   "03-ip-subnetting.tex"
   "04-ipv4-vlsm.tex"
   "05-application-layer.tex"
@@ -154,6 +155,9 @@ Sentiti libero di utilizzare, condividere o contribuire a questi appunti attrave
 \chapter{Principi di Networking}
 \input{02-networking-content}
 
+\chapter{Aritmetica Binaria}
+\input{02-aritmetica-binaria-content}
+
 \chapter{Indirizzamento IP, Subnetting e Instradamento}
 \input{03-ip-subnetting-content}
 
@@ -189,24 +193,27 @@ echo "✅ appunti_completi.tex creato."
 # 3. Per ogni file .tex, estrai il contenuto e correggi l'indentazione minted
 echo "Estraendo contenuto dai file e correggendo l'indentazione minted..."
 
-for FILE in "${FILES[@]:0:11}"; do
-  CONTENT_FILE="${FILE%.tex}-content.tex"
-  TEMP_FILE="${FILE%.tex}-temp.tex"
-  echo "Elaborazione di $FILE -> $CONTENT_FILE"
+for FILE in "${FILES[@]}"; do
+  # Process only files that start with digits
+  if [[ $FILE =~ ^[0-9] ]]; then
+    CONTENT_FILE="${FILE%.tex}-content.tex"
+    TEMP_FILE="${FILE%.tex}-temp.tex"
+    echo "Elaborazione di $FILE -> $CONTENT_FILE"
 
-  # Estrai contenuto tra \begin{document} e \end{document}
-  sed -n '/\\begin{document}/,/\\end{document}/p' "$FILE" |
-    # Rimuovi righe specifiche
-    grep -v '\\begin{document}\|\\end{document}\|\\maketitle\|\\tableofcontents\|\\newpage' >"$TEMP_FILE"
+    # Estrai contenuto tra \begin{document} e \end{document}
+    sed -n '/\\begin{document}/,/\\end{document}/p' "$FILE" |
+      # Rimuovi righe specifiche
+      grep -v '\\begin{document}\|\\end{document}\|\\maketitle\|\\tableofcontents\|\\newpage' >"$TEMP_FILE"
 
-  # Correggi l'indentazione dei blocchi minted
-  echo "Correggendo l'indentazione minted in $TEMP_FILE..."
-  ./fix_minted_indent.sh "$TEMP_FILE" >"$CONTENT_FILE"
+    # Correggi l'indentazione dei blocchi minted
+    echo "Correggendo l'indentazione minted in $TEMP_FILE..."
+    ./fix_minted_indent.sh "$TEMP_FILE" >"$CONTENT_FILE"
 
-  # Rimuovi il file temporaneo
-  rm "$TEMP_FILE"
+    # Rimuovi il file temporaneo
+    rm "$TEMP_FILE"
 
-  echo "✅ $CONTENT_FILE creato con indentazione minted corretta."
+    echo "✅ $CONTENT_FILE creato con indentazione minted corretta."
+  fi
 done
 
 echo "✅ Estrazione e correzione completate."

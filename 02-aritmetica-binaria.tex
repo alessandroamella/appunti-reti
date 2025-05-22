@@ -1,0 +1,266 @@
+\input{preambolo_comune}
+
+% --- Titolo ---
+\title{Appunti di Reti di Calcolatori}
+\author{Basato sulle slide del Prof. Luciano Bononi}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduzione alla Rappresentazione dei Dati}
+I calcolatori memorizzano ed elaborano informazioni utilizzando il sistema binario, ovvero sequenze di \textbf{bit} (BInary digiT). Un bit può assumere solo due valori: 0 o 1.
+\begin{itemize}
+    \item Una sequenza di 8 bit forma un \textbf{Byte}.
+    \item Con $n$ bit, possiamo rappresentare $2^n$ diverse sequenze (e quindi $2^n$ valori o simboli distinti). Ad esempio, con 8 bit (1 Byte), abbiamo $2^8 = 256$ possibili combinazioni, che possono rappresentare numeri da 0 a 255, oppure 256 simboli diversi (come nel codice ASCII).
+\end{itemize}
+La \textbf{condizione necessaria} per una codifica completa di M informazioni o dati è che il numero di configurazioni binarie disponibili ($2^n$) sia maggiore o uguale al numero di informazioni da codificare (M): $2^n \ge M$.
+
+\section{Sistemi di Numerazione Posizionali}
+Nei sistemi di numerazione \textbf{posizionali}, il valore di un simbolo (cifra) dipende dalla sua posizione all'interno della configurazione (numero).
+\begin{itemize}
+    \item \textbf{Base (B)}: indica il numero di simboli unici usati dal sistema.
+    \item Decimale: B=10 (cifre 0-9)
+    \item Binario: B=2 (cifre 0-1)
+    \item Ottale: B=8 (cifre 0-7)
+    \item Esadecimale: B=16 (cifre 0-9, A-F, dove A=10, B=11, ..., F=15)
+\end{itemize}
+Contrariamente, nei sistemi \textbf{non posizionali} (es. Numeri Romani), il valore di un simbolo non dipende strettamente dalla sua posizione.
+
+\subsection{Interpretazione (Funzione Valore)}
+Il valore $V$ di un numero in un sistema posizionale è dato dal polinomio:
+\[ V = \sum_{i=-m}^{n-1} d_i \cdot B^i \]
+Dove:
+\begin{itemize}
+    \item $B$ è la base del sistema.
+    \item $d_i$ è la cifra $i$-esima (coefficiente), $d_i \in [0 \dots B-1]$.
+    \item $n$ è il numero di cifre della parte intera.
+    \item $m$ è il numero di cifre della parte frazionaria.
+    \item La virgola (o punto decimale) è posta tra la cifra di posizione $0$ e quella di posizione $-1$.
+\end{itemize}
+
+\textbf{Esempio (Sistema Decimale):} Numero $245.6_{10}$
+\begin{itemize}
+    \item B = 10
+    \item n = 3 (cifre 2, 4, 5)
+    \item m = 1 (cifra 6)
+    \item Cifre: $d_2=2, d_1=4, d_0=5, d_{-1}=6$
+\end{itemize}
+$V = (2 \cdot 10^2) + (4 \cdot 10^1) + (5 \cdot 10^0) + (6 \cdot 10^{-1})$
+$V = (2 \cdot 100) + (4 \cdot 10) + (5 \cdot 1) + (6 \cdot 0.1)$
+$V = 200 + 40 + 5 + 0.6 = 245.6_{10}$
+
+\section{Conversioni di Base}
+
+\subsection{Da Binario (Base 2) a Decimale (Base 10)}
+Si utilizza la funzione valore con $B=2$.
+\textbf{Esempio:} Convertire $1101.010_2$ in decimale.
+Cifre: $d_3=1, d_2=1, d_1=0, d_0=1$ (parte intera) e $d_{-1}=0, d_{-2}=1, d_{-3}=0$ (parte frazionaria).
+\begin{align*} V &= (1 \cdot 2^3) + (1 \cdot 2^2) + (0 \cdot 2^1) + (1 \cdot 2^0) + (0 \cdot 2^{-1}) + (1 \cdot 2^{-2}) + (0 \cdot 2^{-3}) \\ &= (1 \cdot 8) + (1 \cdot 4) + (0 \cdot 2) + (1 \cdot 1) + (0 \cdot 0.5) + (1 \cdot 0.25) + (0 \cdot 0.125) \\ &= 8 + 4 + 0 + 1 + 0 + 0.25 + 0 \\ &= 13.25_{10} \end{align*}
+Quindi, $1101.010_2 = 13.25_{10}$.
+
+\subsection{Da Decimale (Base 10) a Binario (Base B)}
+
+\subsubsection{Parte Intera: Metodo delle Divisioni Successive}
+Per convertire la parte intera di un numero decimale in base B:
+\begin{enumerate}
+    \item Dividi il numero decimale per la base B.
+    \item Il resto della divisione è la cifra meno significativa (più a destra) del numero in base B.
+    \item Il quoziente diventa il nuovo numero da dividere.
+    \item Ripeti i passaggi 1-3 finché il quoziente non diventa 0.
+    \item Le cifre binarie ottenute (i resti) vanno lette dall'ultimo resto al primo (dal basso verso l'alto).
+\end{enumerate}
+\textbf{Esempio:} Convertire $26_{10}$ in binario (B=2).
+\begin{align*} 26 \div 2 &= 13 \quad \text{resto } \mathbf{0} \quad \text{(LSB - Least Significant Bit)} \\ 13 \div 2 &= 6  \quad \text{resto } \mathbf{1} \\ 6 \div 2  &= 3  \quad \text{resto } \mathbf{0} \\ 3 \div 2  &= 1  \quad \text{resto } \mathbf{1} \\ 1 \div 2  &= 0  \quad \text{resto } \mathbf{1} \quad \text{(MSB - Most Significant Bit)} \end{align*}
+Leggendo i resti dal basso verso l'alto: $11010_2$.
+Quindi, $26_{10} = 11010_2$.
+
+\subsubsection{Parte Frazionaria: Metodo delle Moltiplicazioni Successive}
+Per convertire la parte frazionaria di un numero decimale in base B:
+\begin{enumerate}
+    \item Moltiplica la parte frazionaria per la base B.
+    \item La parte intera del risultato è la prima cifra più significativa (più a sinistra, dopo la virgola) del numero frazionario in base B.
+    \item La parte frazionaria del risultato diventa la nuova parte frazionaria da moltiplicare.
+    \item Ripeti i passaggi 1-3 finché la parte frazionaria non diventa 0 o si raggiunge la precisione desiderata.
+    \item Le cifre binarie ottenute (le parti intere) vanno lette dall'alto verso il basso.
+\end{enumerate}
+\textbf{Esempio:} Convertire $0.625_{10}$ in binario (B=2).
+\begin{align*} 0.625 \times 2 &= \mathbf{1}.25 \quad \text{Parte intera: } \mathbf{1} \quad \text{(Prima cifra dopo la virgola)} \\ 0.25 \times 2  &= \mathbf{0}.5   \quad \text{Parte intera: } \mathbf{0} \\ 0.5 \times 2   &= \mathbf{1}.0   \quad \text{Parte intera: } \mathbf{1} \\ \text{Parte frazionaria è 0, stop.} \end{align*}
+Leggendo le parti intere dall'alto verso il basso: $0.101_2$.
+Quindi, $0.625_{10} = 0.101_2$.
+
+\textbf{Esempio combinato:} Convertire $26.625_{10}$ in binario.
+Parte intera: $26_{10} = 11010_2$.
+Parte frazionaria: $0.625_{10} = 0.101_2$.
+Risultato: $26.625_{10} = 11010.101_2$.
+
+\subsubsection{Metodo Veloce (Pratico) per Interi Decimali a Binario}
+Questo metodo è utile per conversioni rapide "a mente" o su carta.
+\begin{enumerate}
+    \item Trova la più alta potenza di 2 ($2^k$) che sia inferiore o uguale al numero decimale N.
+    \item Scrivi '1' nella posizione $k$ del numero binario.
+    \item Sottrai $2^k$ da N: $N' = N - 2^k$.
+    \item Se $N'=0$, hai finito. Altrimenti, ripeti dal passo 1 con $N'$.
+    \item Le posizioni delle potenze di 2 non utilizzate (non sottratte) avranno un '0'.
+\end{enumerate}
+\textbf{Esempio:} Convertire $349_{10}$ in binario.
+Potenze di 2: ..., 512, \textbf{256}, 128, \textbf{64}, 32, \textbf{16}, \textbf{8}, \textbf{4}, 2, \textbf{1}.
+(Corrispondono a $2^8, 2^7, 2^6, 2^5, 2^4, 2^3, 2^2, 2^1, 2^0$)
+\begin{itemize}
+    \item $349 \ge 256 (2^8)$. Bit in posizione 8 è \textbf{1}.
+    $349 - 256 = 93$.
+    \item $93 < 128 (2^7)$. Bit in posizione 7 è \textbf{0}.
+    \item $93 \ge 64 (2^6)$. Bit in posizione 6 è \textbf{1}.
+    $93 - 64 = 29$.
+    \item $29 < 32 (2^5)$. Bit in posizione 5 è \textbf{0}.
+    \item $29 \ge 16 (2^4)$. Bit in posizione 4 è \textbf{1}.
+    $29 - 16 = 13$.
+    \item $13 \ge 8 (2^3)$. Bit in posizione 3 è \textbf{1}.
+    $13 - 8 = 5$.
+    \item $5 \ge 4 (2^2)$. Bit in posizione 2 è \textbf{1}.
+    $5 - 4 = 1$.
+    \item $1 < 2 (2^1)$. Bit in posizione 1 è \textbf{0}.
+    \item $1 \ge 1 (2^0)$. Bit in posizione 0 è \textbf{1}.
+    $1 - 1 = 0$. Finito.
+\end{itemize}
+Il numero binario, leggendo le posizioni da $k=8$ (MSB) a $k=0$ (LSB): $101011101_2$.
+$V = 1 \cdot 2^8 + 0 \cdot 2^7 + 1 \cdot 2^6 + 0 \cdot 2^5 + 1 \cdot 2^4 + 1 \cdot 2^3 + 1 \cdot 2^2 + 0 \cdot 2^1 + 1 \cdot 2^0$
+$V = 256 + 0 + 64 + 0 + 16 + 8 + 4 + 0 + 1 = 349_{10}$.
+
+\subsection{Cambiamenti di Base Veloci (Potenze della Base di Partenza)}
+Se la base di arrivo (BA) è una potenza della base di partenza (BP), cioè $BA = BP^k$, la conversione è molto rapida.
+
+\subsubsection{Da Binario (BP=2) a Ottale (BA=8, $8=2^3 \implies k=3$)}
+\begin{itemize}
+    \item \textbf{Da Binario a Ottale:} Raggruppa le cifre binarie a gruppi di 3, partendo da destra (dalla virgola, se presente, sia verso sinistra per la parte intera, sia verso destra per la parte frazionaria). Aggiungi zeri iniziali o finali se necessario per completare i gruppi. Sostituisci ogni gruppo di 3 bit con la cifra ottale corrispondente.
+    \textbf{Esempio:} $111001010_2$
+    Gruppi: $\underbrace{111}_{7} \underbrace{001}_{1} \underbrace{010}_{2}$
+    Risultato: $712_8$.
+
+    \item \textbf{Da Ottale a Binario:} Sostituisci ogni cifra ottale con la sua rappresentazione binaria a 3 bit.
+    \textbf{Esempio:} $302_8$
+    Cifre: $3 \rightarrow 011$, $0 \rightarrow 000$, $2 \rightarrow 010$
+    Risultato: $011000010_2$ (gli zeri iniziali possono essere omessi se non sono significativi per la lunghezza desiderata: $11000010_2$).
+\end{itemize}
+
+\subsubsection{Da Binario (BP=2) a Esadecimale (BA=16, $16=2^4 \implies k=4$)}
+\begin{itemize}
+    \item \textbf{Da Binario a Esadecimale:} Raggruppa le cifre binarie a gruppi di 4, partendo da destra (dalla virgola). Aggiungi zeri se necessario. Sostituisci ogni gruppo di 4 bit con la cifra esadecimale corrispondente (0-9, A-F).
+    \textbf{Esempio:} $100100011111_2$
+    Gruppi: $\underbrace{1001}_{9} \underbrace{0001}_{1} \underbrace{1111}_{F}$
+    Risultato: $91F_{16}$.
+
+    \item \textbf{Da Esadecimale a Binario:} Sostituisci ogni cifra esadecimale con la sua rappresentazione binaria a 4 bit.
+    \textbf{Esempio:} $A7F_{16}$
+    Cifre: $A \rightarrow 1010$, $7 \rightarrow 0111$, $F \rightarrow 1111$
+    Risultato: $101001111111_2$.
+\end{itemize}
+
+\subsection{Strategia Generale per Conversioni tra Basi Diverse}
+Se non si può usare il metodo veloce (potenze della base), una strategia comune per convertire da una base $B_1$ a una base $B_2$ è:
+\begin{enumerate}
+    \item Convertire il numero da base $B_1$ a base 10 (usando la funzione valore).
+    \item Convertire il numero da base 10 a base $B_2$ (usando i metodi di divisione/moltiplicazione).
+\end{enumerate}
+Ad esempio, per convertire da ottale a esadecimale: Ottale $\rightarrow$ Decimale $\rightarrow$ Esadecimale.
+Oppure, più velocemente se una delle basi è binario o una sua potenza: Ottale $\rightarrow$ Binario $\rightarrow$ Esadecimale.
+
+\section{Somma di Valori in Binario Naturale}
+L'addizione binaria segue regole simili a quella decimale, tenendo conto dei riporti.
+Regole base:
+\begin{itemize}
+    \item $0 + 0 = 0$
+    \item $0 + 1 = 1$
+    \item $1 + 0 = 1$
+    \item $1 + 1 = 0$ con riporto di $1$
+    \item $1 + 1 + 1 = 1$ con riporto di $1$ (quando c'è un riporto precedente)
+\end{itemize}
+
+\textbf{Esempi:} Assumiamo n=3 bit disponibili (valori da 0 a 7).
+\begin{enumerate}
+    \item $5_{10} + 1_{10} = 6_{10}$
+    \begin{tabular}{>{$}r<{$}@{} >{$}c<{$} >{$}c<{$} >{$}c<{$} >{$}l<{$}}
+        & 1 & 0 & 1_2 & (5_{10}) \\
+      + & 0 & 0 & 1_2 & (1_{10}) \\
+      \hline
+        & 1 & 1 & 0_2 & (6_{10}) \\
+    \end{tabular}
+    Nessun problema.
+
+    \item $2_{10} + 3_{10} = 5_{10}$
+    \begin{tabular}{>{$}r<{$}@{} >{$}c<{$} >{$}c<{$} >{$}c<{$} >{$}l<{$}}
+          & 0 & 1 & 0_2 & (2_{10}) \\
+        + & 0 & 1 & 1_2 & (3_{10}) \\
+        \hline
+          & 1 & 0 & 1_2 & (5_{10}) \\
+    \end{tabular}
+    Nessun problema.
+
+    \item $5_{10} + 3_{10} = 8_{10}$
+    \begin{tabular}{>{$}r<{$}@{} >{$}c<{$} >{$}c<{$} >{$}c<{$} >{$}c<{$} >{$}l<{$}}
+        \text{riporti} & 1 & 1 &   &      \\
+          &   & 1 & 0 & 1_2 & (5_{10}) \\
+        + &   & 0 & 1 & 1_2 & (3_{10}) \\
+        \hline
+          & \mathbf{1} & 0 & 0 & 0_2 & (\mathbf{8_{10}}) \\
+    \end{tabular}
+    \textbf{Overflow!} Il risultato $1000_2$ (che è $8_{10}$) richiede 4 bit. Con soli 3 bit a disposizione, il bit più significativo (il riporto finale sulla quarta posizione) verrebbe perso, e il risultato memorizzato sarebbe $000_2$, che è errato.
+    Per rappresentare il risultato corretto (8) sono necessari 4 bit.
+\end{enumerate}
+L'\textbf{overflow} si verifica quando il risultato di un'operazione aritmetica eccede la capacità di rappresentazione del numero di bit disponibili.
+
+\section{Tabella di Conversione Riassuntiva}
+\begin{table}[H]
+\centering
+\caption{Esempi di conversione tra basi comuni.}
+\begin{tabular}{cccc}
+\toprule
+\textbf{Decimale} & \textbf{Binario} & \textbf{Ottale} & \textbf{Esadecimale} \\
+\midrule
+0 & 0000 & 00 & 0 \\
+1 & 0001 & 01 & 1 \\
+2 & 0010 & 02 & 2 \\
+3 & 0011 & 03 & 3 \\
+4 & 0100 & 04 & 4 \\
+5 & 0101 & 05 & 5 \\
+6 & 0110 & 06 & 6 \\
+7 & 0111 & 07 & 7 \\
+8 & 1000 & 10 & 8 \\
+9 & 1001 & 11 & 9 \\
+10 & 1010 & 12 & A \\
+11 & 1011 & 13 & B \\
+12 & 1100 & 14 & C \\
+13 & 1101 & 15 & D \\
+14 & 1110 & 16 & E \\
+15 & 1111 & 17 & F \\
+\bottomrule
+\end{tabular}
+\label{tab:conversion_summary}
+\end{table}
+
+\textbf{Altro esempio:}
+
+Convertire $125_{10}$ in binario, ottale ed esadecimale.
+\begin{itemize}
+    \item \textbf{Binario:} $125_{10}$
+        $125 \ge 64 (2^6) \rightarrow 1$; $125-64 = 61$
+        $61 \ge 32 (2^5) \rightarrow 1$; $61-32 = 29$
+        $29 \ge 16 (2^4) \rightarrow 1$; $29-16 = 13$
+        $13 \ge 8 (2^3) \rightarrow 1$; $13-8 = 5$
+        $5 \ge 4 (2^2) \rightarrow 1$; $5-4 = 1$
+        $1 < 2 (2^1) \rightarrow 0$;
+        $1 \ge 1 (2^0) \rightarrow 1$; $1-1=0$.
+        Risultato: $1111101_2$.
+    \item \textbf{Ottale (da binario):} $1111101_2$
+        Raggruppa: $\underbrace{001}_{1} \underbrace{111}_{7} \underbrace{101}_{5}$ (aggiunto 00 iniziale per gruppo di 3)
+        Risultato: $175_8$.
+    \item \textbf{Esadecimale (da binario):} $1111101_2$
+        Raggruppa: $\underbrace{0111}_{7} \underbrace{1101}_{D}$ (aggiunto 0 iniziale per gruppo di 4)
+        Risultato: $7D_{16}$.
+\end{itemize}
+
+
+\end{document}
