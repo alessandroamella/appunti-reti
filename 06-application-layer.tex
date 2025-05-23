@@ -60,14 +60,15 @@ Esistono due strutture principali:
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[node distance=2cm and 3cm]
+    \begin{tikzpicture}[node distance=2cm and 3cm,
+        every node/.style={text=primarytext}]
         \node[servernode, label=below:Server] (server) {};
         \node[host, left=of server, label=below:Client 1] (client1) {};
         \node[host, above=of client1, label=below:Client 2] (client2) {};
         \node[host, right=of server, label=below:Client 3] (client3) {};
 
-        \draw[arrow] (client1.east) -- (server.west) node[midway, above, sloped, font=\tiny]{Richiesta};
-        \draw[r_arrow] (client1.east) -- (server.west) node[midway, below, sloped, font=\tiny]{Risposta};
+        \draw[arrow] (client1.east) -- (server.west) node[midway, above, sloped, font=\small]{Richiesta};
+        \draw[r_arrow] (client1.east) -- (server.west) node[midway, below, sloped, font=\small]{Risposta};
         \draw[arrow] (client2.east) -- (server.west);
         \draw[arrow] (client3.west) -- (server.east);
     \end{tikzpicture}
@@ -118,21 +119,21 @@ Esistono due strutture principali:
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=0.5cm and 1cm]
+\begin{tikzpicture}[node distance=1.5cm and 1cm]
     % Host Sinistro
-    \node[host] (hostL) {Host A};
-    \node[process, above=0.2cm of hostL.north] (appL) {Applicazione A};
-    \node[rectangle, draw=blue, fill=blue!10, minimum width=2.5cm, minimum height=0.7cm, below=0.1cm of appL, yshift=-0.3cm] (transportL) {Trasporto};
-    \node[rectangle, draw=yellow, fill=yellow!20, minimum width=0.5cm, minimum height=0.5cm, text=black, yshift=-0.15cm] at ($(appL.south)!0.5!(transportL.north)$) (socketL) {S};
+    \node[host] (hostL) {\textcolor{black}{Host A}};
+    \node[process, above=2cm of hostL.north] (appL) {\textcolor{black}{Applicazione A}};
+    \node[rectangle, draw=blue, fill=blue!10, minimum width=2.5cm, minimum height=0.7cm, below=1cm of appL] (transportL) {\textcolor{black}{Trasporto}};
+    \node[rectangle, draw=yellow, fill=yellow!20, minimum width=1.2cm, minimum height=0.5cm, text=black] at ($(appL.south)!0.5!(transportL.north)$) (socketL) {Socket};
     
     % Host Destro
-    \node[host, right=4cm of hostL] (hostR) {Host B};
-    \node[process, above=0.2cm of hostR.north] (appR) {Applicazione B};
-    \node[rectangle, draw=blue, fill=blue!10, minimum width=2.5cm, minimum height=0.7cm, below=0.1cm of appR, yshift=-0.3cm] (transportR) {Trasporto};
-    \node[rectangle, draw=yellow, fill=yellow!20, minimum width=0.5cm, minimum height=0.5cm, text=black, yshift=-0.15cm] at ($(appR.south)!0.5!(transportR.north)$) (socketR) {S};
+    \node[host, right=4cm of hostL] (hostR) {\textcolor{black}{Host B}};
+    \node[process, above=2cm of hostR.north] (appR) {\textcolor{black}{Applicazione B}};
+    \node[rectangle, draw=blue, fill=blue!10, minimum width=2.5cm, minimum height=0.7cm, below=1cm of appR] (transportR) {\textcolor{black}{Trasporto}};
+    \node[rectangle, draw=yellow, fill=yellow!20, minimum width=1.2cm, minimum height=0.5cm, text=black] at ($(appR.south)!0.5!(transportR.north)$) (socketR) {Socket};
 
     % Connessione
-    \node[cloud, below right=0.5cm and 0.5cm of transportL, minimum width=3cm] (internet) {Internet};
+    \node[cloud, below right=2cm and 0.5cm of transportL, minimum width=3cm] (internet) {\textcolor{black}{Internet}};
     \draw[line] (transportL.east) -- (internet.west);
     \draw[line] (transportR.west) -- (internet.east);
     
@@ -142,8 +143,8 @@ Esistono due strutture principali:
     \draw[line, red, dashed] (socketL.south) -- (transportL.north);
     \draw[line, red, dashed] (socketR.south) -- (transportR.north);
 
-    \node[font=\tiny, red, above left=0.1cm and -0.3cm of socketL] {Controllato da App Dev};
-    \node[font=\tiny, red, below left=0.1cm and -0.3cm of socketL] {Controllato da OS};
+    \node[font=\tiny, red, above left=1cm and -0.3cm of socketL] {Controllato da App Dev};
+    \node[font=\tiny, red, below left=1cm and -0.3cm of socketL] {Controllato da OS};
 \end{tikzpicture}
 \caption{Concetto di Socket tra due processi applicativi.}
 \end{figure}
@@ -177,21 +178,49 @@ Esistono due strutture principali:
 \end{itemize}
 
 \subsection{Servizi dei Protocolli di Trasporto Internet}
-\begin{description}
-    \item[TCP (Transmission Control Protocol)]
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{TCP (Transmission Control Protocol)} & \textbf{UDP (User Datagram Protocol)} \\
+\hline
+\begin{itemize}[leftmargin=*]
+    \item Trasporto \textbf{affidabile}
+    \item \textbf{Controllo di flusso} e \textbf{controllo della congestione}
+    \item \textbf{Orientato alla connessione}
+    \item NON fornisce:
     \begin{itemize}
-        \item Trasporto \textbf{affidabile}.
-        \item \textbf{Controllo di flusso} e \textbf{controllo della congestione}.
-        \item \textbf{Orientato alla connessione}.
-        \item NON fornisce: garanzie di timing, throughput minimo, sicurezza intrinseca.
+        \item garanzie di timing
+        \item throughput minimo
+        \item sicurezza intrinseca
     \end{itemize}
-    \item[UDP (User Datagram Protocol)]
+\end{itemize}
+&
+\begin{itemize}[leftmargin=*]
+    \item Trasferimento dati \textbf{non affidabile}
+    \item NON fornisce:
     \begin{itemize}
-        \item Trasferimento dati \textbf{non affidabile}.
-        \item NON fornisce: affidabilità, controllo di flusso/congestione, timing, throughput, sicurezza, setup di connessione.
-        \item \textit{Perché usarlo?} Più veloce, più controllo all'applicazione, no controllo congestione. Utile per app che tollerano perdite o per query-risposta veloci (DNS).
+        \item affidabilità
+        \item controllo di flusso/congestione
+        \item timing
+        \item throughput
+        \item sicurezza
+        \item setup di connessione
     \end{itemize}
-\end{description}
+    \item \textit{Vantaggi:}
+    \begin{itemize}
+        \item Più veloce
+        \item Più controllo all'applicazione
+        \item No controllo congestione
+        \item Utile per app che tollerano perdite
+        \item Ideale per query-risposta veloci (es. DNS)
+    \end{itemize}
+\end{itemize} \\
+\hline
+\end{tabular}
+\caption{Confronto tra TCP e UDP.}
+\label{tab:tcp-vs-udp}
+\end{table}
 
 \subsection{Applicazioni Internet e Protocolli di Trasporto}
 \begin{table}[H]
