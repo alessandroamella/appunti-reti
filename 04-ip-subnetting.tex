@@ -56,8 +56,7 @@ Per una rete con $N$ bit per la parte host, ci sono $2^N$ indirizzi totali, ma s
 
 \section{Maschera di Rete (Netmask)}
 
-\subsection{Scopo}
-La maschera di rete serve a distinguere, in un indirizzo IP, quale parte identifica la \textbf{rete} (o sottorete) e quale parte identifica l'textbf{host}.
+\subsection{Ripasso}
 È una sequenza di bit \texttt{1} consecutivi seguiti da bit \texttt{0} consecutivi. Gli \texttt{1} corrispondono alla parte di rete, gli \texttt{0} alla parte host.
 
 \subsection{Notazione CIDR (Classless Inter-Domain Routing)}
@@ -71,6 +70,33 @@ Indica il numero di bit \texttt{1} iniziali nella maschera.
 11111111.11111111.11111111.11000000
     \end{minted}
 \end{itemize}
+
+\textbf{Esempio:}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        % IP address box
+        \node[fill=blue!20, rounded corners, minimum height=0.7cm, text width=3.5cm, align=center] (ip) {\textcolor{black}{\texttt{192.168.1.0}}};
+        % CIDR prefix box
+        \node[fill=orange!30, rounded corners, minimum height=0.7cm, text width=1cm, right=0pt of ip, align=center] (cidr) {\textcolor{black}{\texttt{/24}}};
+        
+        % Legend/explanation table below
+        \node[below=0.5cm of ip.south west, anchor=north west, align=left, text width=4.5cm] (table) {
+            \begin{tabular}{|l|l|}
+                \hline
+                \cellcolor{blue!20} \textcolor{black}{\textbf{192.168.1.0}} & Indirizzo IP \\
+                \hline
+                \cellcolor{orange!30} \textcolor{black}{\textbf{/24}} & Prefisso di rete \\
+                \hline
+            \end{tabular}
+        };
+        
+        % Draw an arrow pointing to the notation
+        \draw[->, thick] (ip.north) -- ++(0,0.5) -| (2.5,1.2) node[above] {Notazione CIDR};
+    \end{tikzpicture}
+    \caption{Esempio di notazione CIDR}
+\end{figure}
 
 \subsection{Validità delle Maschere}
 Una maschera è valida se è composta da una sequenza ininterrotta di \texttt{1} seguita da una sequenza ininterrotta di \texttt{0}.
@@ -93,7 +119,7 @@ Si ottiene eseguendo un'operazione di \textbf{AND logico} bit a bit tra l'indiri
     \end{minted}
 \end{itemize}
 
-\section{Subnetting (Creazione di Sottoreti)}
+\section{Subnetting: Creazione di Sottoreti}
 
 \subsection{Scopo}
 Il subnetting permette di dividere una rete IP più grande in sottoreti più piccole per:
@@ -179,21 +205,119 @@ Quando un host (mittente) deve inviare un pacchetto:
 \end{itemize}
 
 \subsection{Processo Decisionale del Router}
-Quando un router riceve un pacchetto:
-\begin{enumerate}
-    \item \textbf{Controllo Destinazione:} Guarda l'IP di destinazione.
-    \item \textbf{Confronto con Reti Connesse Direttamente:} Per ogni interfaccia, calcola \texttt{Rete\_Destinatario\_Vista\_Dal\_Router = IP\_Destinatario AND Maschera\_Interfaccia\_Router}.
-    \item \textbf{Decisione:}
-    \begin{itemize}
-        \item Se corrisponde a una rete direttamente connessa: inoltra su quell'interfaccia.
-        \item Altrimenti: consulta la \textbf{tabella di instradamento (routing table)}.
-        \begin{itemize}
-            \item Cerca la corrispondenza più specifica (\textit{longest prefix match}).
-            \item Se non c'è rotta specifica, usa la \textbf{rotta di default} (\texttt{0.0.0.0/0}), se configurata.
-            \item Se nessuna corrispondenza, pacchetto scartato (ICMP "Destination Unreachable").
-        \end{itemize}
-    \end{itemize}
-\end{enumerate}
+Quando un router riceve un pacchetto, segue questo processo decisionale:
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|p{2.5cm}|p{5cm}|p{6cm}|}
+    \hline
+    \rowcolor{bg_custom}
+    \textbf{Fase} & \textbf{Operazione} & \textbf{Dettaglio} \\
+    \hline
+    1. Analisi & \textbf{Controllo Destinazione} & Il router esamina l'indirizzo IP di destinazione nel pacchetto \\
+    \hline
+    2. Verifica & \textbf{Confronto con Interfacce} & Per ogni interfaccia calcola:\\
+    \texttt{IP\_Dest AND Maschera\_Interfaccia} & \\
+    \hline
+    \multirow{4}{*}{3. Decisione} & \multirow{4}{*}{\textbf{Scelta Percorso}} & \textbf{a)} Se la destinazione è su una rete direttamente connessa: inoltra sulla relativa interfaccia \\
+    \cline{3-3}
+    & & \textbf{b)} Altrimenti: consulta la tabella di routing \\
+    \cline{3-3}
+    & & \textbf{c)} Cerca corrispondenza più specifica (\textit{longest prefix match}) \\
+    \cline{3-3}
+    & & \textbf{d)} Se nessuna corrispondenza: usa rotta di default o scarta \\
+    \hline
+    \end{tabular}
+    \caption{Processo decisionale del router per l'instradamento}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm, 
+                        block/.style={rectangle, draw, text width=5cm, text centered, rounded corners, minimum height=1cm, fill=blue!10},
+                        decision/.style={diamond, draw, text width=4.5cm, text badly centered, inner sep=0pt, fill=orange!20},
+                        arrow/.style={thick,->,>=stealth}]
+                        
+        % Nodi
+        \node[block] (start) {\textcolor{black}{Router riceve un pacchetto}};
+        \node[block, below of=start] (check) {\textcolor{black}{Controlla IP di destinazione}};
+        \node[decision, below=1cm of check, node distance=2.5cm] (connected) {\textcolor{black}{È collegato a una rete direttamente connessa?}};
+        \node[block, right=2cm of connected] (direct) {\textcolor{black}{Invia sulla relativa interfaccia}};
+        \node[block, below=1cm of connected] (routing) {\textcolor{black}{Consulta routing table}};
+        \node[decision, below=1cm of routing] (route) {\textcolor{black}{Esiste una route conosciuta?}};
+        \node[block, right=2cm of route] (specific) {\textcolor{black}{Usa la route più specifica (longest prefix match)}};
+        \node[decision, below=1cm of route] (default) {\textcolor{black}{Esiste route di default?}};
+        \node[block, right=2cm of default] (usedefault) {\textcolor{black}{Usa default route}};
+        \node[block, below=1cm of default] (discard) {\textcolor{black}{Scarta pacchetto (ICMP Destination Unreachable)}};
+        
+        % Collegamenti
+        \draw[arrow] (start) -- (check);
+        \draw[arrow] (check) -- (connected);
+        \draw[arrow] (connected) -- node[anchor=south] {Sì} (direct);
+        \draw[arrow] (connected) -- node[anchor=east] {No} (routing);
+        \draw[arrow] (routing) -- (route);
+        \draw[arrow] (route) -- node[anchor=south] {Sì} (specific);
+        \draw[arrow] (route) -- node[anchor=east] {No} (default);
+        \draw[arrow] (default) -- node[anchor=south] {Sì} (usedefault);
+        \draw[arrow] (default) -- node[anchor=east] {No} (discard);
+    \end{tikzpicture}
+    \caption{Flowchart del processo decisionale del router}
+\end{figure}
+  
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[
+        transform shape,
+        router/.style={rectangle, draw, thick, fill=blue!20, minimum width=1.7cm, minimum height=1cm, rounded corners},
+        network/.style={cloud, draw, thick, fill=green!10, minimum width=2cm, minimum height=1.2cm, cloud puffs=10, text=black},
+        host/.style={circle, draw, thick, fill=yellow!20, minimum size=0.7cm},
+        arrow/.style={->, thick, >=stealth},
+        every node/.style={text=black},
+        packet/.style={rectangle, draw, thick, fill=red!10, minimum width=0.5cm, minimum height=0.3cm, font=\scriptsize}
+    ]
+    
+    % Networks - Adjusted positions
+    \node[network, align=center] (net1) at (-2,4) {Rete A\\192.168.1.0/24};
+    \node[network, align=center] (net2) at (8,4) {Rete B\\10.0.0.0/24};
+    \node[network, align=center] (net3) at (3,0) {Rete C\\172.16.0.0/24};
+    
+    % Routers - Adjusted positions
+    \node[router, align=center] (r1) at (1,2) {Router R1\\192.168.1.1\\10.0.0.254};
+    \node[router, align=center] (r2) at (5,2) {Router R2\\10.0.0.1\\172.16.0.254};
+    
+    % Hosts - Adjusted positions
+    \node[host] (h1) at (-2,2.5) {H1};
+    \node[host] (h2) at (8,2.5) {H2};
+    \node[host] (h3) at (3,-1.5) {H3};
+    
+    % IP addresses - Adjusted positions
+    \node[font=\footnotesize] at (-2,2) {192.168.1.10};
+    \node[font=\footnotesize] at (8,2) {10.0.0.20};
+    \node[font=\footnotesize] at (3,-2) {172.16.0.30};
+    
+    % Connections - Made more direct
+    \draw[arrow] (net1) -- (r1);
+    \draw[arrow] (r1) -- (net2);
+    \draw[arrow] (net2) -- (r2);
+    \draw[arrow] (r2) -- (net3);
+    \draw[arrow] (h1) -- (net1);
+    \draw[arrow] (h2) -- (net2);
+    \draw[arrow] (h3) -- (net3);
+    
+    % Decision process - Moved higher and adjusted width
+    \node[align=left, fill=white, draw, rounded corners] at (3,7) {
+        1. H1 invia pacchetto per H3 (172.16.0.30)\\
+        2. H1 confronta rete: $192.168.1.10 \land 255.255.255.0 \neq 172.16.0.30 \land 255.255.255.0$\\
+        3. H1 invia al gateway (R1)\\
+        4. R1 consulta tabella, inoltra a R2\\
+        5. R2 rileva rete direttamente connessa\\
+        6. R2 consegna a H3
+    };
+    
+    \end{tikzpicture}
+    \caption{Esempio di instradamento attraverso più reti}
+\end{figure}
 
 \textbf{Esempio di instradamento (dalle slide):} Pacchetto da \texttt{140.217.2.10} a \texttt{130.136.2.33}.
 \begin{itemize}

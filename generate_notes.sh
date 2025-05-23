@@ -235,7 +235,14 @@ else
 
     for PY_FILE in "${PYTHON_FILES[@]}"; do
       echo "Eseguendo $PY_FILE..."
-      python3 "$PY_FILE"
+
+      # Check if dark mode is enabled and file contains "--dark"
+      if [ "$DARK_MODE" = true ] && grep -q "\-\-dark" "$PY_FILE"; then
+        echo "  → Modalità scura attiva, aggiungendo parametro --dark"
+        python3 "$PY_FILE" --dark
+      else
+        python3 "$PY_FILE"
+      fi
 
       if [ $? -eq 0 ]; then
         echo "✅ $PY_FILE eseguito con successo."

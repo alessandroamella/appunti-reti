@@ -10,19 +10,113 @@
 \tableofcontents
 \newpage
 
-\section{Introduzione alla Progettazione di Reti IPv4 e Subnetting (VLSM)}
-L'obiettivo della progettazione di reti IPv4 è allocare in modo efficiente lo spazio di indirizzamento IP disponibile per soddisfare i requisiti di host di diverse sottoreti (subnet), minimizzando lo spreco di indirizzi. Questo approccio utilizza spesso il Variable Length Subnet Masking (VLSM).
+\section{Introduzione alla Progettazione di Reti IPv4 e Subnetting VLSM}
+L'obiettivo della progettazione di reti IPv4 è allocare in modo efficiente lo spazio di indirizzamento IP disponibile per soddisfare i requisiti di host di diverse sottoreti, minimizzando lo spreco di indirizzi. Questo approccio utilizza spesso il Variable Length Subnet Masking (VLSM).
 
 \subsection{Concetti Fondamentali}
 \begin{itemize}
     \item \textbf{Indirizzo di Rete (Network Address):} Il primo indirizzo di un blocco IP, con tutti i bit della parte host a 0. Non è assegnabile a un host. Esempio: \texttt{192.168.1.0}.
     \item \textbf{Indirizzo di Broadcast:} L'ultimo indirizzo di un blocco IP, con tutti i bit della parte host a 1. Invia dati a tutti gli host in quella specifica sottorete. Non è assegnabile a un host. Esempio: \texttt{192.168.1.255} per una rete /24.
     \item \textbf{Host Utilizzabili:} Gli indirizzi compresi tra l'indirizzo di rete e l'indirizzo di broadcast. Il numero di host utilizzabili è $(2^h) - 2$, dove $h$ è il numero di bit dedicati alla parte host.
-    \item \textbf{Netmask (Maschera di Sottorete):} Una sequenza di bit che distingue la parte di rete dalla parte host in un indirizzo IP. I bit a 1 indicano la parte di rete, i bit a 0 la parte host. Esempio: \texttt{255.255.255.0}.
+    \item \textbf{Netmask (Subnet Mask):} Una sequenza di bit che distingue la parte di rete dalla parte host in un indirizzo IP. I bit a 1 indicano la parte di rete, i bit a 0 la parte host. Esempio: \texttt{255.255.255.0}.
     \item \textbf{Notazione CIDR (Classless Inter-Domain Routing):} Indica il numero di bit a 1 consecutivi nella netmask (cioè i bit della parte di rete). Esempio: \texttt{/24} corrisponde a \texttt{255.255.255.0}.
     \item \textbf{Router:} Un dispositivo che connette diverse reti o sottoreti. Ogni interfaccia del router ha un indirizzo IP che appartiene alla sottorete a cui è connessa e funge da gateway per gli host di quella sottorete. Solitamente si assegna il primo o l'ultimo indirizzo IP \textit{utilizzabile} della sottorete al router.
     \item \textbf{Router di Default (Default Gateway):} L'indirizzo IP del router che gli host di una sottorete usano per comunicare con host esterni alla loro sottorete.
 \end{itemize}
+
+\textbf{Esempio Visuale: Come Leggere un Indirizzo IP con CIDR}
+
+% Definiamo alcuni colori specifici per la tabella
+\definecolor{retecolor}{RGB}{100,150,255}
+\definecolor{hostcolor}{RGB}{255,150,100}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Componente}} & \textcolor{white}{\textbf{Valore}} \\
+\hline
+\textbf{Indirizzo IP} & \texttt{192.168.1.64} \\
+\hline
+\textbf{Prefisso CIDR} & \texttt{/26} (26 bit per la rete, 6 bit per gli host) \\
+\hline
+\textbf{Subnet Mask} & \texttt{255.255.255.192} \\
+\hline
+\textcolor{retecolor}{\textbf{Rete} (26 bit)} / \textcolor{hostcolor}{\textbf{Host} (6 bit)} & \textcolor{retecolor}{\texttt{11000000.10101000.00000001.01}}\textcolor{hostcolor}{\texttt{000000}} \\
+\hline
+\textbf{Indirizzo di Rete} & \texttt{192.168.1.64} (tutti i bit host = 0) \\
+\hline
+\textbf{Indirizzo di Broadcast} & \texttt{192.168.1.127} (tutti i bit host = 1) \\
+\hline
+\textbf{Range Indirizzi per Host} & \texttt{192.168.1.65} - \texttt{192.168.1.126} \\
+\hline
+\textbf{Numero Host Utilizzabili} & $2^6 - 2 = 64 - 2 = 62$ host \\
+\hline
+\textbf{Router/Gateway} & \texttt{192.168.1.126} (convenzionalmente l'ultimo) \\
+\hline
+\end{tabular}
+\caption{Esempio: 192.168.1.64/26}
+\end{table}
+
+\vspace{1em}
+
+\textbf{Confronto tra Diverse Dimensioni di Sottoreti}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{CIDR}} & \textcolor{white}{\textbf{Subnet Mask}} & \textcolor{white}{\textbf{Bit Host}} & \textcolor{white}{\textbf{Tot. Indirizzi}} & \textcolor{white}{\textbf{Host Utili}} & \textcolor{white}{\textbf{Uso Tipico}} \\
+\hline
+\texttt{/24} & \texttt{255.255.255.0} & 8 & 256 & 254 & LAN media \\
+\hline
+\rowcolor{retecolor!20}
+\textcolor{black}{\texttt{/25}} & \textcolor{black}{\texttt{255.255.255.128}} & \textcolor{black}{7} & \textcolor{black}{128} & \textcolor{black}{126} & \textcolor{black}{LAN piccola} \\
+\hline
+\texttt{/26} & \texttt{255.255.255.192} & 6 & 64 & 62 & Ufficio \\
+\hline
+\rowcolor{hostcolor!20}
+\textcolor{black}{\texttt{/27}} & \textcolor{black}{\texttt{255.255.255.224}} & \textcolor{black}{5} & \textcolor{black}{32} & \textcolor{black}{30} & \textcolor{black}{Dipartimento} \\
+\hline
+\texttt{/28} & \texttt{255.255.255.240} & 4 & 16 & 14 & Piccolo gruppo \\
+\hline
+\rowcolor{retecolor!20}
+\textcolor{black}{\texttt{/29}} & \textcolor{black}{\texttt{255.255.255.248}} & \textcolor{black}{3} & \textcolor{black}{8} & \textcolor{black}{6} & \textcolor{black}{Link P2P} \\
+\hline
+\texttt{/30} & \texttt{255.255.255.252} & 2 & 4 & 2 & Connessione diretta \\
+\hline
+\end{tabular}
+\caption{Confronto tra diverse maschere di sottorete}
+\end{table}
+
+\vspace{1em}
+
+\textbf{Esempio Dettagliato: Rete 10.0.0.0/8 Suddivisa}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Sottorete}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Range Host}} & \textcolor{white}{\textbf{Broadcast}} & \textcolor{white}{\textbf{Gateway}} \\
+\hline
+\rowcolor{retecolor!30}
+\textcolor{black}{Rete A (/16)} & \textcolor{black}{\texttt{10.1.0.0}} & \textcolor{black}{\texttt{10.1.0.1 - 10.1.255.254}} & \textcolor{black}{\texttt{10.1.255.255}} & \textcolor{black}{\texttt{10.1.255.254}} \\
+\hline
+\rowcolor{hostcolor!30}
+\textcolor{black}{Rete B (/16)} & \textcolor{black}{\texttt{10.2.0.0}} & \textcolor{black}{\texttt{10.2.0.1 - 10.2.255.254}} & \textcolor{black}{\texttt{10.2.255.255}} & \textcolor{black}{\texttt{10.2.255.254}} \\
+\hline
+\rowcolor{retecolor!30}
+\textcolor{black}{Rete C (/24)} & \textcolor{black}{\texttt{10.3.1.0}} & \textcolor{black}{\texttt{10.3.1.1 - 10.3.1.254}} & \textcolor{black}{\texttt{10.3.1.255}} & \textcolor{black}{\texttt{10.3.1.254}} \\
+\hline
+\rowcolor{hostcolor!30}
+\textcolor{black}{Rete D (/28)} & \textcolor{black}{\texttt{10.4.1.16}} & \textcolor{black}{\texttt{10.4.1.17 - 10.4.1.30}} & \textcolor{black}{\texttt{10.4.1.31}} & \textcolor{black}{\texttt{10.4.1.30}} \\
+\hline
+\end{tabular}
+\caption{Suddivisione di 10.0.0.0/8 in sottoreti}
+\end{table}
 
 \subsection{Processo di Subnetting con VLSM}
 VLSM permette di usare maschere di sottorete di lunghezza variabile per diverse sottoreti, ottimizzando l'uso degli indirizzi. La strategia generale è:
@@ -37,19 +131,53 @@ VLSM permette di usare maschere di sottorete di lunghezza variabile per diverse 
 \newpage
 \section{Esempio 1: Rete N: \texttt{199.201.17.0 / 24}}
 Si dispone di un blocco iniziale \texttt{199.201.17.0 / 24}.
-\begin{minted}{text}
-Netmask: 255.255.255.0
-Indirizzi totali: 256 (da .0 a .255)
-Host utilizzabili: 254 (da .1 a .254)
-Indirizzo di Rete N: 199.201.17.0
-Primo Host N: 199.201.17.1
-Ultimo Host N (convenzionale): 199.201.17.253
-Router N (convenzionale): 199.201.17.254
-Broadcast N: 199.201.17.255
-\end{minted}
+
+\textbf{Analisi del Blocco Iniziale:}
+\begin{itemize}
+    \item \textbf{Prefisso CIDR:} \texttt{/24} $\rightarrow$ 24 bit per la rete, 8 bit per gli host
+    \item \textbf{Netmask:} \texttt{255.255.255.0} (equivalente di /24)
+    \item \textbf{Indirizzi totali:} $2^8 = 256$ (da \texttt{.0} a \texttt{.255})
+    \item \textbf{Host utilizzabili:} $2^8 - 2 = 254$ (esclusi network e broadcast)
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Spiegazione}} \\
+\hline
+\textbf{Indirizzo di Rete N} & \texttt{199.201.17.0} & Tutti i bit host = 0 \\
+\hline
+\textbf{Primo Host N} & \texttt{199.201.17.1} & Network + 1 \\
+\hline
+\textbf{Ultimo Host N} & \texttt{199.201.17.253} & Broadcast - 2 (riservato per router) \\
+\hline
+\textbf{Router N (Gateway)} & \texttt{199.201.17.254} & Convenzionalmente penultimo indirizzo \\
+\hline
+\textbf{Broadcast N} & \texttt{199.201.17.255} & Tutti i bit host = 1 \\
+\hline
+\end{tabular}
+\caption{Struttura della rete iniziale N}
+\end{table}
 
 \subsection{Suddivisione}
 La suddivisione considera la gerarchia delle reti e alloca blocchi contigui.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/subnet_pie_chart.png}
+    \caption{Visualizzazione a torta della suddivisione dello spazio di indirizzi della rete 199.201.17.0/24}
+    \label{fig:subnet_pie}
+\end{figure}
+    
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/subnet_linear_diagram.png}
+    \caption{Diagramma lineare della suddivisione sequenziale delle subnet}
+    \label{fig:subnet_linear}
+\end{figure}
+        
 
 \subsubsection{Sottorete N2A (42 hosts)}
 \begin{itemize}
@@ -58,15 +186,36 @@ La suddivisione considera la gerarchia delle reti e alloca blocchi contigui.
     \item Prefisso: $32 - 6 = /26$. Netmask: \texttt{255.255.255.192}.
     \item Allocazione N2A: \texttt{199.201.17.0 / 26}.
 \end{itemize}
-\begin{minted}{text}
-Rete N2A:
-Network:    199.201.17.0
-Netmask:    255.255.255.192
-First Host: 199.201.17.1
-Last Host:  199.201.17.61
-Router:     199.201.17.62
-Broadcast:  199.201.17.63
-\end{minted}
+
+\textbf{Calcolo della Netmask /26:}
+\begin{itemize}
+    \item 26 bit di rete = \texttt{11111111.11111111.11111111.11000000}
+    \item In decimale: \texttt{255.255.255.192}
+    \item Dimensione blocco: $2^6 = 64$ indirizzi (da \texttt{.0} a \texttt{.63})
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Calcolo}} \\
+\hline
+\textbf{Network N2A} & \texttt{199.201.17.0} & Indirizzo base con /26 \\
+\hline
+\textbf{Netmask} & \texttt{255.255.255.192} & 26 bit a 1, 6 bit a 0 \\
+\hline
+\textbf{First Host} & \texttt{199.201.17.1} & Network + 1 \\
+\hline
+\textbf{Last Host} & \texttt{199.201.17.61} & Broadcast - 2 \\
+\hline
+\textbf{Router} & \texttt{199.201.17.62} & Broadcast - 1 \\
+\hline
+\textbf{Broadcast} & \texttt{199.201.17.63} & Network + $2^6 - 1$ = 0 + 63 \\
+\hline
+\end{tabular}
+\caption{Struttura della sottorete N2A}
+\end{table}
 
 \subsubsection{Sottorete N2 (119 hosts, include N2A)}
 \begin{itemize}
@@ -75,15 +224,36 @@ Broadcast:  199.201.17.63
     \item Prefisso: $32 - 7 = /25$. Netmask: \texttt{255.255.255.128}.
     \item N2 ingloba N2A (\texttt{.0} - \texttt{.63}). Allocazione N2: \texttt{199.201.17.0 / 25}.
 \end{itemize}
-\begin{minted}{text}
-Rete N2:
-Network:    199.201.17.0
-Netmask:    255.255.255.128
-First Host: 199.201.17.1 (in N2A)
-Last Host:  199.201.17.125
-Router:     199.201.17.126 (per host in N2 ma non N2A)
-Broadcast:  199.201.17.127
-\end{minted}
+
+\textbf{Calcolo della Netmask /25:}
+\begin{itemize}
+    \item 25 bit di rete = \texttt{11111111.11111111.11111111.10000000}
+    \item In decimale: \texttt{255.255.255.128}
+    \item Dimensione blocco: $2^7 = 128$ indirizzi (da \texttt{.0} a \texttt{.127})
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Note}} \\
+\hline
+\textbf{Network N2} & \texttt{199.201.17.0} & Stesso network di N2A ma /25 \\
+\hline
+\textbf{Netmask} & \texttt{255.255.255.128} & 25 bit a 1, 7 bit a 0 \\
+\hline
+\textbf{First Host} & \texttt{199.201.17.1} & Coincide con primo host N2A \\
+\hline
+\textbf{Last Host} & \texttt{199.201.17.125} & Broadcast - 2 \\
+\hline
+\textbf{Router N2} & \texttt{199.201.17.126} & Per host in N2 ma non in N2A \\
+\hline
+\textbf{Broadcast} & \texttt{199.201.17.127} & Network + $2^7 - 1$ = 0 + 127 \\
+\hline
+\end{tabular}
+\caption{Struttura della sottorete N2 (contiene N2A)}
+\end{table}
 
 \subsubsection{Sottorete N1B (15 hosts)}
 Il prossimo blocco disponibile dopo N2 (\texttt{.0} - \texttt{.127}) inizia da \texttt{199.201.17.128}.
@@ -93,15 +263,29 @@ Il prossimo blocco disponibile dopo N2 (\texttt{.0} - \texttt{.127}) inizia da \
     \item Prefisso: $32 - 5 = /27$. Netmask: \texttt{255.255.255.224}.
     \item Allocazione N1B: \texttt{199.201.17.128 / 27}.
 \end{itemize}
-\begin{minted}{text}
-Rete N1B:
-Network:    199.201.17.128
-Netmask:    255.255.255.224
-First Host: 199.201.17.129
-Last Host:  199.201.17.157
-Router:     199.201.17.158
-Broadcast:  199.201.17.159
-\end{minted}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} \\
+\hline
+\textbf{Network N1B} & \texttt{199.201.17.128} \\
+\hline
+\textbf{Netmask} & \texttt{255.255.255.224} \\
+\hline
+\textbf{First Host} & \texttt{199.201.17.129} \\
+\hline
+\textbf{Last Host} & \texttt{199.201.17.157} \\
+\hline
+\textbf{Router} & \texttt{199.201.17.158} \\
+\hline
+\textbf{Broadcast} & \texttt{199.201.17.159} \\
+\hline
+\end{tabular}
+\caption{Struttura della sottorete N1B}
+\end{table}
 
 \subsubsection{Sottorete N1A (6 hosts)}
 Il prossimo blocco disponibile dopo N1B (\texttt{.128} - \texttt{.159}) inizia da \texttt{199.201.17.160}.
@@ -111,15 +295,29 @@ Il prossimo blocco disponibile dopo N1B (\texttt{.128} - \texttt{.159}) inizia d
     \item Prefisso: $32 - 3 = /29$. Netmask: \texttt{255.255.255.248}.
     \item Allocazione N1A: \texttt{199.201.17.160 / 29}.
 \end{itemize}
-\begin{minted}{text}
-Rete N1A:
-Network:    199.201.17.160
-Netmask:    255.255.255.248
-First Host: 199.201.17.161
-Last Host:  199.201.17.165
-Router:     199.201.17.166
-Broadcast:  199.201.17.167
-\end{minted}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} \\
+\hline
+\textbf{Network N1A} & \texttt{199.201.17.160} \\
+\hline
+\textbf{Netmask} & \texttt{255.255.255.248} \\
+\hline
+\textbf{First Host} & \texttt{199.201.17.161} \\
+\hline
+\textbf{Last Host} & \texttt{199.201.17.165} \\
+\hline
+\textbf{Router} & \texttt{199.201.17.166} \\
+\hline
+\textbf{Broadcast} & \texttt{199.201.17.167} \\
+\hline
+\end{tabular}
+\caption{Struttura della sottorete N1A}
+\end{table}
 
 \subsubsection{Sottorete N1 (64 hosts, include N1A e N1B)}
 \begin{itemize}
@@ -128,15 +326,51 @@ Broadcast:  199.201.17.167
     \item Prefisso: $32 - 7 = /25$. Netmask: \texttt{255.255.255.128}.
     \item N1 ingloba N1B (\texttt{.128} - \texttt{.159}) e N1A (\texttt{.160} - \texttt{.167}). Allocazione N1: \texttt{199.201.17.128 / 25}.
 \end{itemize}
-\begin{minted}{text}
-Rete N1:
-Network:    199.201.17.128
-Netmask:    255.255.255.128
-First Host: 199.201.17.129 (in N1B)
-Last Host:  199.201.17.252 (per host in N1 ma non N1A/N1B)
-Router:     199.201.17.253 (per host in N1 ma non N1A/N1B)
-Broadcast:  199.201.17.255
-\end{minted}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\rowcolor{bg_custom}
+\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Note}} \\
+\hline
+\textbf{Network N1} & \texttt{199.201.17.128} & Stesso network di N1B ma /25 \\
+\hline
+\textbf{Netmask} & \texttt{255.255.255.128} & 25 bit a 1, 7 bit a 0 \\
+\hline
+\textbf{First Host} & \texttt{199.201.17.129} & Coincide con primo host N1B \\
+\hline
+\textbf{Last Host} & \texttt{199.201.17.252} & Per host in N1 ma non N1A/N1B \\
+\hline
+\textbf{Router N1} & \texttt{199.201.17.253} & Per host in N1 ma non N1A/N1B \\
+\hline
+\textbf{Broadcast} & \texttt{199.201.17.255} & Network + $2^7 - 1$ = 128 + 127 \\
+\hline
+\end{tabular}
+\caption{Struttura della sottorete N1 (contiene N1A e N1B)}
+\end{table}
+
+\subsection{Visualizzazione della Gerarchia delle Subnet}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/subnet_hierarchy.png}
+\caption{Diagramma gerarchico delle subnet dell'Esempio 1}
+\label{fig:subnet_hierarchy}
+\end{figure}
+
+Come mostrato nel diagramma \ref{fig:subnet_hierarchy}, la gerarchia delle subnet riflette la struttura ad albero della suddivisione VLSM. La rete principale N si divide in due grandi blocchi (N1 e N2), ognuno dei quali contiene sottoreti più piccole e specifiche.
+
+\subsection{Mappa Completa degli Indirizzi}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{images/subnet_address_blocks.png}
+\caption{Mappa dettagliata di tutti gli indirizzi IP della rete 199.201.17.0/24}
+\label{fig:subnet_blocks}
+\end{figure}
+
+La figura \ref{fig:subnet_blocks} mostra come ogni indirizzo IP (rappresentato da un quadratino) viene assegnato alle diverse subnet. Questa visualizzazione permette di vedere chiaramente la distribuzione dello spazio di indirizzamento e l'efficienza della suddivisione VLSM.
 
 \subsection{Considerazioni sull'Esempio 1}
 \begin{itemize}
@@ -278,7 +512,7 @@ Broadcast:  130.136.2.71
     \item L'allocazione dei blocchi di indirizzi dovrebbe essere contigua per evitare la frammentazione dello spazio di indirizzamento e semplificare la gestione.
     \item Ogni sottorete definita ha il suo indirizzo di rete, il suo indirizzo di broadcast e necessita di un router (gateway) per la comunicazione esterna.
     \item La gerarchia delle reti implica che i router delle sottoreti più piccole puntino ai router delle reti che le contengono come loro default gateway, fino al router principale della rete o del provider.
-    \item La comprensione della maschera di sottorete è cruciale per ogni host per determinare quali altri host sono nella sua stessa sottorete e quale indirizzo usare come broadcast.
+    \item La comprensione della subnet mask è cruciale per ogni host per determinare quali altri host sono nella sua stessa sottorete e quale indirizzo usare come broadcast.
 \end{itemize}
 
 \end{document}

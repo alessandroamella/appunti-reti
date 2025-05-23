@@ -177,6 +177,10 @@ cat >>"$OUTPUT_FILE" <<EOF
 % Pacchetto xcolor (necessario per \definecolor e TikZ)
 \\usepackage[table]{xcolor}
 
+% Multicolonna e multirow per tabelle
+\\usepackage{multicol}
+\\usepackage{multirow}
+
 % Definizioni colori tema-specifiche
 ${COLOR_DEF_LIGHTTEXT}
 ${COLOR_DEF_DARKTEXT}
