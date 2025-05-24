@@ -35,7 +35,7 @@ L'obiettivo della progettazione di reti IPv4 è allocare in modo efficiente lo s
 \begin{tabular}{|l|l|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Componente}} & \textcolor{white}{\textbf{Valore}} \\
+\textcolor{primarytext}{\textbf{Componente}} & \textcolor{primarytext}{\textbf{Valore}} \\
 \hline
 \textbf{Indirizzo IP} & \texttt{192.168.1.64} \\
 \hline
@@ -68,7 +68,7 @@ L'obiettivo della progettazione di reti IPv4 è allocare in modo efficiente lo s
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{CIDR}} & \textcolor{white}{\textbf{Subnet Mask}} & \textcolor{white}{\textbf{Bit Host}} & \textcolor{white}{\textbf{Tot. Indirizzi}} & \textcolor{white}{\textbf{Host Utili}} & \textcolor{white}{\textbf{Uso Tipico}} \\
+\textcolor{primarytext}{\textbf{CIDR}} & \textcolor{primarytext}{\textbf{Subnet Mask}} & \textcolor{primarytext}{\textbf{Bit Host}} & \textcolor{primarytext}{\textbf{Tot. Indirizzi}} & \textcolor{primarytext}{\textbf{Host Utili}} & \textcolor{primarytext}{\textbf{Uso Tipico}} \\
 \hline
 \texttt{/24} & \texttt{255.255.255.0} & 8 & 256 & 254 & LAN media \\
 \hline
@@ -100,7 +100,7 @@ L'obiettivo della progettazione di reti IPv4 è allocare in modo efficiente lo s
 \begin{tabular}{|l|c|c|c|c|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Sottorete}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Range Host}} & \textcolor{white}{\textbf{Broadcast}} & \textcolor{white}{\textbf{Gateway}} \\
+\textcolor{primarytext}{\textbf{Sottorete}} & \textcolor{primarytext}{\textbf{Indirizzo}} & \textcolor{primarytext}{\textbf{Range Host}} & \textcolor{primarytext}{\textbf{Broadcast}} & \textcolor{primarytext}{\textbf{Gateway}} \\
 \hline
 \rowcolor{retecolor!30}
 \textcolor{black}{Rete A (/16)} & \textcolor{black}{\texttt{10.1.0.0}} & \textcolor{black}{\texttt{10.1.0.1 - 10.1.255.254}} & \textcolor{black}{\texttt{10.1.255.255}} & \textcolor{black}{\texttt{10.1.255.254}} \\
@@ -145,7 +145,7 @@ Si dispone di un blocco iniziale \texttt{199.201.17.0 / 24}.
 \begin{tabular}{|l|c|l|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Spiegazione}} \\
+\textcolor{primarytext}{\textbf{Elemento}} & \textcolor{primarytext}{\textbf{Indirizzo}} & \textcolor{primarytext}{\textbf{Spiegazione}} \\
 \hline
 \textbf{Indirizzo di Rete N} & \texttt{199.201.17.0} & Tutti i bit host = 0 \\
 \hline
@@ -199,7 +199,7 @@ La suddivisione considera la gerarchia delle reti e alloca blocchi contigui.
 \begin{tabular}{|l|c|l|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Calcolo}} \\
+\textcolor{primarytext}{\textbf{Elemento}} & \textcolor{primarytext}{\textbf{Indirizzo}} & \textcolor{primarytext}{\textbf{Calcolo}} \\
 \hline
 \textbf{Network N2A} & \texttt{199.201.17.0} & Indirizzo base con /26 \\
 \hline
@@ -237,7 +237,7 @@ La suddivisione considera la gerarchia delle reti e alloca blocchi contigui.
 \begin{tabular}{|l|c|l|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Note}} \\
+\textcolor{primarytext}{\textbf{Elemento}} & \textcolor{primarytext}{\textbf{Indirizzo}} & \textcolor{primarytext}{\textbf{Note}} \\
 \hline
 \textbf{Network N2} & \texttt{199.201.17.0} & Stesso network di N2A ma /25 \\
 \hline
@@ -301,7 +301,7 @@ Il prossimo blocco disponibile dopo N1B (\texttt{.128} - \texttt{.159}) inizia d
 \begin{tabular}{|l|c|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} \\
+\textcolor{primarytext}{\textbf{Elemento}} & \textcolor{primarytext}{\textbf{Indirizzo}} \\
 \hline
 \textbf{Network N1A} & \texttt{199.201.17.160} \\
 \hline
@@ -332,7 +332,7 @@ Il prossimo blocco disponibile dopo N1B (\texttt{.128} - \texttt{.159}) inizia d
 \begin{tabular}{|l|c|l|}
 \hline
 \rowcolor{bg_custom}
-\textcolor{white}{\textbf{Elemento}} & \textcolor{white}{\textbf{Indirizzo}} & \textcolor{white}{\textbf{Note}} \\
+\textcolor{primarytext}{\textbf{Elemento}} & \textcolor{primarytext}{\textbf{Indirizzo}} & \textcolor{primarytext}{\textbf{Note}} \\
 \hline
 \textbf{Network N1} & \texttt{199.201.17.128} & Stesso network di N1B ma /25 \\
 \hline

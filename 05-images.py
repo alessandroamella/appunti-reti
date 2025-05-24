@@ -406,7 +406,8 @@ def create_address_blocks(dark_mode=False):
     """Crea un diagramma a blocchi degli indirizzi"""
     text_color, colors = setup_theme(dark_mode)
 
-    fig, ax = plt.subplots(figsize=(16, 10))
+    # Reduce figure size to make rectangles smaller
+    fig, ax = plt.subplots(figsize=(12, 8))
 
     # Configurazione griglia 16x16 per rappresentare 256 indirizzi
     grid_size = 16
@@ -465,7 +466,7 @@ def create_address_blocks(dark_mode=False):
                 str(i),
                 ha="center",
                 va="center",
-                fontsize=6,
+                fontsize=8,  # Increased from 6 to 8
                 fontweight="bold",
                 color=text_color,
             )
@@ -484,6 +485,7 @@ def create_address_blocks(dark_mode=False):
         loc="center left",
         bbox_to_anchor=(1, 0.5),
         labelcolor=text_color,
+        fontsize=12,  # Increased legend font size
     )
 
     ax.set_xlim(0, grid_size)
@@ -491,7 +493,7 @@ def create_address_blocks(dark_mode=False):
     ax.set_aspect("equal")
     ax.set_title(
         "Mappa degli Indirizzi IP\nRete 199.201.17.0/24 (griglia 16×16 = 256 indirizzi)",
-        fontsize=14,
+        fontsize=16,  # Increased from 14 to 16
         fontweight="bold",
         pad=20,
         color=text_color,
@@ -508,7 +510,7 @@ def create_address_blocks(dark_mode=False):
         "Ogni quadrato = 1 indirizzo IP",
         ha="center",
         va="top",
-        fontsize=10,
+        fontsize=12,  # Increased from 10 to 12
         style="italic",
         color=text_color,
     )

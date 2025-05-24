@@ -182,6 +182,7 @@ Esistono due strutture principali:
 \centering
 \begin{tabular}{|p{0.45\textwidth}|p{0.45\textwidth}|}
 \hline
+\rowcolor{bg_custom}
 \textbf{TCP (Transmission Control Protocol)} & \textbf{UDP (User Datagram Protocol)} \\
 \hline
 \begin{itemize}[leftmargin=*]
@@ -227,6 +228,7 @@ Esistono due strutture principali:
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
+\rowcolor{bg_custom}
 \textbf{Applicazione}     & \textbf{Protocollo Liv. App.} & \textbf{Protocollo Trasporto} \\ \hline
 E-mail                 & SMTP [RFC 2821]           & TCP                           \\
 Accesso terminale remoto & Telnet [RFC 854]          & TCP                           \\
@@ -689,7 +691,7 @@ Tempo per distribuire file (dimensione $F$) a $N$ peer.
     
     \node[servernode, label=left:CDN Node A, below left=of origin] (cdnA) {\textcolor{black}{CDN A}};
     \node[servernode, label=right:CDN Node B, below right=of origin] (cdnB) {\textcolor{black}{CDN B}};
-    \node[servernode, label=below:CDN Node C, below=2cm of origin] (cdnC) {CDN C};
+    \node[servernode, label=below:CDN Node C, below=2cm of origin] (cdnC) {\textcolor{black}{CDN C}};
 
     \node[host, label=left:User 1, below left=of cdnA] (user1) {};
     \node[host, label=right:User 2, below right=of cdnB] (user2) {};
@@ -942,24 +944,24 @@ Router NAT deve:
     \begin{tikzpicture}[scale=1.2]  % Reduced scale
         % Host, NAT, Server with reduced spacing
         \node[draw, rectangle, rounded corners, fill=blue!40!black, text=lighttext, minimum width=2.5cm, minimum height=1cm] (host) at (0,0) {Host 10.0.0.1};
-        \node[draw, rectangle, fill=red!40!black, text=lighttext, minimum width=3cm, minimum height=1cm, align=center] (nat) at (4,0) {NAT Router\\(138.76.29.7)};  % Moved closer
-        \node[draw, cylinder, fill=orange!40!black, text=lighttext, shape border rotate=90, aspect=0.3, minimum width=2.5cm, minimum height=2cm, align=center] (server) at (8,0) {Server\\128.119.40.186};  % Moved closer
+        \node[draw, rectangle, fill=red!40!black, text=lighttext, minimum width=3cm, minimum height=1cm, align=center] (nat) at (5,0) {NAT Router\\(138.76.29.7)};  % Moved further right
+        \node[draw, cylinder, fill=orange!40!black, text=lighttext, shape border rotate=90, aspect=0.3, minimum width=2.5cm, minimum height=2cm, align=center] (server) at (10,0) {Server\\128.119.40.186};  % Moved further right
         
         % NAT Table - more compact
-        \node[draw, rectangle, text width=5cm, align=center, font=\small, fill=gray!30!black, text=lighttext] (table) at (4,-2.5) {  % Moved up
+        \node[draw, rectangle, text width=5cm, align=center, font=\small, fill=gray!30!black, text=lighttext] (table) at (5,-2.5) {  % Moved up
             \textbf{Tabella NAT}\\[0.1cm]
             138.76.29.7:5001 $\leftrightarrow$ 10.0.0.1:3345
         };
         
         % Connections with shorter labels
         \draw[->, thick, cyan] (host.east) -- (nat.west) 
-            node[midway, above, font=\small, text=lighttext] {10.0.0.1:3345};
+            node[midway, above, font=\small, text=primarytext] {10.0.0.1:3345};
         \draw[->, thick, cyan] (nat.east) -- (server.west) 
-            node[midway, above, font=\small, text=lighttext] {138.76.29.7:5001};
+            node[midway, above, font=\small, text=primarytext] {138.76.29.7:5001};
         \draw[<-, thick, orange] (host.east) -- (nat.west) 
-            node[midway, below, font=\small, text=lighttext] {128...:80};
+            node[midway, below, font=\small, text=primarytext] {128...:80};
         \draw[<-, thick, orange] (nat.east) -- (server.west) 
-            node[midway, below, font=\small, text=lighttext] {128...:80};
+            node[midway, below, font=\small, text=primarytext] {128...:80};
         
         % Table connection
         \draw[dashed, white, thick] (nat.south) -- (table.north);

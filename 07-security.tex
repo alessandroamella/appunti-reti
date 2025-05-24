@@ -407,8 +407,8 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
         \draw[message_l] (client.east) -- node[midway, below, yshift=-0.5cm, font=\scriptsize] {4. ChangeCipherSpec, Finished} (server.west);
 
         % Data Transfer (Encrypted)
-        \node (encrypted_data_label) [below=1.5cm of client, xshift=3cm, font=\small\itshape, text=green!50!white] {Trasferimento Dati Crittografati};
-        \draw[<->, green!50!white, thick, dashed] ($(client.south east) + (0,-0.5)$) -- node[midway, below, font=\scriptsize] {Record SSL} ($(server.south west) + (0,-0.5)$);
+        \node (encrypted_data_label) [below=1.5cm of client, xshift=3cm, font=\small\itshape, text=green] {Trasferimento Dati Crittografati};
+        \draw[<->, green, thick, dashed] ($(client.south east) + (0,-0.5)$) -- node[midway, below, font=\scriptsize] {Record SSL} ($(server.south west) + (0,-0.5)$);
 
         % Vertical lines for phases
         \coordinate (midpoint) at ($(client)!0.5!(server)$);

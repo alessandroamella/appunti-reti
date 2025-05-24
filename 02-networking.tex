@@ -220,8 +220,8 @@ Il concetto di rete si estende dalla LAN locale alla rete globale (Internet).
             \draw[thick,fill=gray!20] (0,0) circle (0.8) node {\textcolor{black}{Router}};
             
             % Subnet 1
-            \draw[thick,fill=themeblue] (-4.5,-2) rectangle (-0.5,-3.5);
-            \node at (-2.5,-2.3) {\textcolor{black}{Subnet 130.136.1.0/24}};
+            \draw[thick,fill=blue] (-4.5,-2) rectangle (-0.5,-3.5);
+            \node at (-2.5,-2.3) {\textcolor{white}{Subnet 130.136.1.0/24}};
             \draw[fill=red!20] (-3.5,-3) circle (0.3) node {\textcolor{black}{H1}};
             \draw[fill=red!20] (-1.5,-3) circle (0.3) node {\textcolor{black}{H2}};
             
@@ -757,23 +757,27 @@ Il controllo della congestione modifica dinamicamente la dimensione della finest
         ]
         
         % Fase di Slow Start e prima congestione
-        \addplot[thick, themeblue, mark=*] coordinates {
+        \addplot[thick, blue, mark=*] coordinates {
             (0,1) (1,2) (2,4) (3,8) (4,16) (5,32) (6,16) (7,17) (8,18) (9,19) 
             (10,20) (11,21) (12,22) (13,11) (14,12) (15,13) (16,14) (17,15) 
             (18,16) (19,17) (20,9) (21,10) (22,11) (23,12)
         };
         
-        % Annotazioni
-        \node[align=center, text width=2.5cm] at (axis cs:3,12) {Slow Start};
-        \node[align=center, text width=2.5cm] at (axis cs:9,22) {Crescita lineare};
-        \node[align=center, text width=2.5cm] at (axis cs:6,26) {Congestione rilevata};
-        \node[align=center, text width=2.5cm] at (axis cs:13,16) {Congestione rilevata};
-        \node[align=center, text width=2.5cm] at (axis cs:20,14) {Congestione rilevata};
+        % Annotazioni posizionate per evitare sovrapposizioni
+        \node[align=center, text width=2cm, font=\small] at (axis cs:2,25) {Slow Start};
         
-        % Frecce
-        \draw[->, thick] (axis cs:5.5,30) -- (axis cs:6,20);
-        \draw[->, thick] (axis cs:12.5,22) -- (axis cs:13,15);
-        \draw[->, thick] (axis cs:19.5,17) -- (axis cs:20,12);
+        \node[align=center, text width=2.5cm, font=\small] at (axis cs:9,25) {Crescita\\lineare};
+        
+        \node[align=center, text width=2.5cm, font=\small] at (axis cs:5,27) {Congestione\\rilevata};
+        
+        \node[align=center, text width=2.5cm, font=\small] at (axis cs:13,7) {Congestione\\rilevata};
+        
+        \node[align=center, text width=2.5cm, font=\small] at (axis cs:21,6) {Congestione\\rilevata};
+        
+        % Frecce che puntano ai punti di congestione
+        \draw[->, thick, red] (axis cs:5,26) -- (axis cs:5.8,20);
+        \draw[->, thick, red] (axis cs:13,8) -- (axis cs:13,12);
+        \draw[->, thick, red] (axis cs:20.5,7) -- (axis cs:20,10);
         
         \end{axis}
     \end{tikzpicture}
