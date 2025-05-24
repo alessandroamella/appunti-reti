@@ -57,7 +57,7 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
     \begin{tikzpicture}[node distance=2cm and 4cm, auto]
         \node (alice) [actor, text=black] {Alice};
         \node (bob) [actor, text=black, right=of alice] {Bob};
-        \node (trudy) [intruder, below = 0.7cm of alice, xshift=2cm] {Trudy};
+        \node (trudy) [intruder, above = 0.7cm of alice, xshift=2cm] {Trudy};
 
         \draw[message_r] (alice.east) -- node[midway, above, sloped, text=primarytext] {canale dati/controllo} (bob.west);
         \draw[->, red, thick, dashed] (trudy.north) |- ($(alice.east)!0.5!(bob.west)$) node[right, text=red, yshift=-0.2cm] {intercetta};
@@ -105,16 +105,16 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
         \node (enc_algo) [process, right=of plaintext1, text=black] {Encryption Algorithm};
         \node (ciphertext) [block, right=of enc_algo, text=black] {ciphertext $K_A(m)$};
         
+        % Trudy (moved above ciphertext)
+        \node (trudy_crypto) [intruder, above=of ciphertext] {Trudy};
+        
         % Second row
         \node (dec_algo) [process, below=of ciphertext, text=black] {Decryption Algorithm};
         \node (plaintext2) [block, right=of dec_algo, text=black] {plaintext ($m$)};
         
         % Keys
-        \node (keyA) [key, above=0.3cm of enc_algo, label=left:Alice's Key] {$K_A$};
-        \node (keyB) [key, above=0.3cm of dec_algo, label=right:Bob's Key] {$K_B$};
-        
-        % Trudy
-        \node (trudy_crypto) [intruder, below=of dec_algo] {Trudy};
+        \node (keyA) [key, above=0.3cm of enc_algo, label=left:Alice's Key, text=black] {$K_A$};
+        \node (keyB) [key, above=0.3cm of dec_algo, label=right:Bob's Key, text=black] {$K_B$};
 
         % Connections
         \draw[dataflow] (plaintext1) -- (enc_algo);
@@ -130,13 +130,13 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
 
 \subsection{Rompere uno Schema di Crittografia (Attacchi)}
 \begin{enumerate}
-    \item \textbf{Ciphertext-only attack (Attacco al solo ciphertext):} Trudy ha solo il ciphertext e cerca di decifrarlo.
+    \item \textbf{Ciphertext-only attack} Trudy ha solo il ciphertext e cerca di decifrarlo.
     \begin{itemize}
         \item \textbf{Brute force:} Provare tutte le possibili chiavi.
         \item \textbf{Analisi statistica:} Analizzare le frequenze delle lettere/simboli.
     \end{itemize}
-    \item \textbf{Known-plaintext attack (Attacco con plaintext noto):} Trudy ha accesso a coppie di plaintext e al corrispondente ciphertext.
-    \item \textbf{Chosen-plaintext attack (Attacco con plaintext scelto):} Trudy può scegliere dei plaintext, farli crittografare dal sistema e ottenere i ciphertext corrispondenti.
+    \item \textbf{Known-plaintext attack} Trudy ha accesso a coppie di plaintext e al corrispondente ciphertext.
+    \item \textbf{Chosen-plaintext attack} Trudy può scegliere dei plaintext, farli crittografare dal sistema e ottenere i ciphertext corrispondenti.
 \end{enumerate}
 
 \subsection{Crittografia a Chiave Simmetrica}
@@ -219,10 +219,10 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
 \textbf{Obiettivo:} Bob vuole che Alice \textquotedblleft provi\textquotedblright{} la sua identità.
 
 \begin{itemize}
-    \item \textbf{Protocollo ap1.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{}. \textit{Fallimento:} Trudy può dirlo.
-    \item \textbf{Protocollo ap2.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{} (con IP di Alice). \textit{Fallimento:} Trudy può fare IP spoofing.
-    \item \textbf{Protocollo ap3.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{} + password. \textit{Fallimento:} Playback attack.
-    \item \textbf{Protocollo ap3.1:} Alice: \textquotedblleft Sono Alice\textquotedblright{} + password crittografata. \textit{Fallimento:} Playback attack funziona ancora.
+    \item \textbf{Protocollo ap1.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{}. \textit{Fail:} Trudy può dirlo.
+    \item \textbf{Protocollo ap2.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{} (con IP di Alice). \textit{Fail:} Trudy può fare IP spoofing.
+    \item \textbf{Protocollo ap3.0:} Alice: \textquotedblleft Sono Alice\textquotedblright{} + password. \textit{Fail:} Playback attack.
+    \item \textbf{Protocollo ap3.1:} Alice: \textquotedblleft Sono Alice\textquotedblright{} + password crittografata. \textit{Fail:} Playback attack funziona ancora.
     \item \textbf{Protocollo ap4.0: Autenticazione con Nonce (per evitare playback):}
     \begin{itemize}
         \item \textbf{Nonce (R):} Numero usato una sola volta.
@@ -242,7 +242,7 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
         \item Alice $\rightarrow$ Bob: $K_A^-(R)$ (nonce crittografato con la chiave \textit{privata} di Alice).
         \item Bob verifica con $K_A^+(K_A^-(R)) \stackrel{?}{=} R$.
     \end{enumerate}
-    \textit{Buco di Sicurezza ap5.0:} \textbf{Man-in-the-Middle (MITM) Attack}. Trudy si frappone e scambia le sue chiavi pubbliche con Alice e Bob.
+    \textit{Falla di Sicurezza ap5.0:} \textbf{Man-in-the-Middle (MITM) Attack}. Trudy si frappone e scambia le sue chiavi pubbliche con Alice e Bob.
 \end{itemize}
 
 \subsection{Firme Digitali (Digital Signatures)}
@@ -397,8 +397,8 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=1.5cm and 2cm, auto]
-        \node (client) [actor] {Client (Alice)};
-        \node (server) [actor, right=6cm of client] {Server (Bob)};
+        \node (client) [actor, text=black] {Client (Alice)};
+        \node (server) [actor, text=black, right=6cm of client] {Server (Bob)};
 
         % Handshake
         \draw[message_r] (client.east) -- node[midway, above, font=\scriptsize] {1. ClientHello (ciphers, nonce C)} (server.west);
@@ -408,7 +408,7 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
 
         % Data Transfer (Encrypted)
         \node (encrypted_data_label) [below=1.5cm of client, xshift=3cm, font=\small\itshape, text=green!50!white] {Trasferimento Dati Crittografati};
-        \draw[<->, green!70!black, thick, dashed] ($(client.south east) + (0,-0.5)$) -- node[midway, below, font=\scriptsize] {Record SSL} ($(server.south west) + (0,-0.5)$);
+        \draw[<->, green!50!white, thick, dashed] ($(client.south east) + (0,-0.5)$) -- node[midway, below, font=\scriptsize] {Record SSL} ($(server.south west) + (0,-0.5)$);
 
         % Vertical lines for phases
         \coordinate (midpoint) at ($(client)!0.5!(server)$);
@@ -477,12 +477,12 @@ Integrità dati, autenticazione origine, prevenzione replay, confidenzialità.
     \centering
     \begin{tikzpicture}[node distance=0mm, scale=0.8, transform shape]
         \small % Smaller font for the diagram
-        \node (newip)   [draw, fill=blue!20, minimum height=0.7cm, minimum width=2.5cm, text=white] {New IP Hdr};
-        \node (esph)    [draw, fill=green!30, minimum height=0.7cm, minimum width=2.2cm, right=of newip, text=white] {ESP Hdr};
-        \node (origip)  [draw, fill=orange!40, minimum height=0.7cm, minimum width=2.5cm, right=of esph, text=white] {Original IP Hdr};
-        \node (origpay) [draw, fill=orange!40, minimum height=0.7cm, minimum width=3.0cm, right=of origip, text=white] {Original Payload};
-        \node (esptrl)  [draw, fill=orange!40, minimum height=0.7cm, minimum width=2.5cm, right=of origpay, text=white] {ESP Trailer};
-        \node (espauth) [draw, fill=purple!50, minimum height=0.7cm, minimum width=2.2cm, right=of esptrl, text=white] {ESP Auth (ICV)};
+        \node (newip)   [draw, fill=blue!20, minimum height=0.7cm, minimum width=2.5cm, text=black] {New IP Hdr};
+        \node (esph)    [draw, fill=green!30, minimum height=0.7cm, minimum width=2.2cm, right=of newip, text=black] {ESP Hdr};
+        \node (origip)  [draw, fill=orange!40, minimum height=0.7cm, minimum width=2.5cm, right=of esph, text=black] {Original IP Hdr};
+        \node (origpay) [draw, fill=orange!40, minimum height=0.7cm, minimum width=3.0cm, right=of origip, text=black] {Original Payload};
+        \node (esptrl)  [draw, fill=orange!40, minimum height=0.7cm, minimum width=2.5cm, right=of origpay, text=black] {ESP Trailer};
+        \node (espauth) [draw, fill=purple!50, minimum height=0.7cm, minimum width=2.2cm, right=of esptrl, text=black] {ESP Auth (ICV)};
 
         % Braces for encrypted and authenticated parts
         \draw [decorate,decoration={brace,amplitude=5pt,mirror},yshift=-0.5cm]
@@ -558,37 +558,69 @@ Isolano rete interna, permettendo/bloccando pacchetti secondo regole.
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[node distance=1.5cm and 2cm, scale=0.9, transform shape]
-        % Rete interna
-        \node (admin_net_label) [text width=3cm, align=center] {Rete Amministrata (trusted \textquotedblleft good guys\textquotedblright)};
-        \node (pc1) [computer, below left=0.5cm and -0.5cm of admin_net_label] {};
-        \node (pc2) [computer, below right=0.5cm and -0.5cm of admin_net_label] {};
-        \node (server_int) [server, below=0.5cm of pc1, xshift=0.7cm] {};
-
+    \begin{tikzpicture}[
+        node distance=2cm,
+        computer/.style={rectangle, draw, fill=gray!20, minimum width=1cm, minimum height=0.8cm, rounded corners=2pt, text=black},
+        server/.style={rectangle, draw, fill=blue!20, minimum width=1.2cm, minimum height=1cm, rounded corners=2pt, text=black},
+        firewall/.style={rectangle, draw, fill=red!70, text=white, font=\bfseries, minimum width=1.5cm, minimum height=2cm, rounded corners=3pt},
+        cloud/.style={ellipse, draw, fill=blue!30, minimum width=3cm, minimum height=1.5cm, text=black},
+        zone/.style={rectangle, draw, dashed, rounded corners=5pt, minimum width=4cm, minimum height=3cm}
+    ]
+        
+        % Trusted Zone (Internal Network)
+        \node[zone, fill=green!20] (trusted_zone) at (0,0) {};
+        \node[above=0.1cm of trusted_zone.north, font=\small\bfseries, text=green] {TRUSTED ZONE};
+        \node[below=0.1cm of trusted_zone.south, font=\small, text width=3.5cm, align=center] {Rete Amministrata\\(``good guys'')};
+        
+        % Internal devices
+        \node[computer] (pc1) at (-1, 0.5) {PC};
+        \node[computer] (pc2) at (1, 0.5) {PC};
+        \node[server] (server) at (0, -0.8) {Server};
+        
+        % Internal switch/hub representation
+        \coordinate (internal_hub) at (0, -0.1);
+        \draw[thick] (pc1) -- (internal_hub);
+        \draw[thick] (pc2) -- (internal_hub);
+        \draw[thick] (server) -- (internal_hub);
+        
         % Firewall
-        \node (firewall_obj) [cylinder, shape border rotate=90, draw, fill=red!70!black, minimum width=0.8cm, minimum height=1.5cm, aspect=0.3, right=2cm of server_int, yshift=0.5cm, text=white, font=\bfseries\tiny] {FW};
-        \node (firewall_label) [below=0.1cm of firewall_obj, font=\small] {Firewall};
-
-        % Internet
-        \node (internet_cloud) [cloud, cloud puffs=10, draw, fill=blue!30, minimum width=3cm, minimum height=2cm, right=1.5cm of firewall_obj, text=white] {Internet};
-        \node (internet_label) [below=0.1cm of internet_cloud, text width=3cm, align=center] {Internet (untrusted \textquotedblleft bad guys\textquotedblright)};
-
-        \draw[<->, thick] ($(admin_net_label.west) - (0.5,0)$) -- (admin_net_label.east);
-        \draw[<->, thick] (firewall_obj.west) -- ($(admin_net_label.east) + (1,0)$);
-        \draw[<->, thick] (firewall_obj.east) -- (internet_cloud.west);
-        \draw[<->, thick] (internet_cloud.west) -- ($(internet_label.east) + (0.5,0)$);
-
-        % Connect internal devices to a conceptual switch before firewall
-        \coordinate (sw_internal) at ($(server_int)!0.5!(firewall_obj) - (1cm,0)$);
-        \draw (pc1.east) -- (sw_internal);
-        \draw (pc2.east) -- (sw_internal);
-        \draw (server_int.east) -- (sw_internal);
-        \draw (sw_internal) -- (firewall_obj.west);
-
+        \node[firewall] (fw) at (6, 0) {FIREWALL};
+        
+        % Connection from internal network to firewall
+        \draw[thick, ->] (internal_hub) -- node[above, font=\small, xshift=0.8cm] {traffico interno} (fw.west);
+        
+        % Untrusted Zone (Internet)
+        \node[zone, fill=red!30] (untrusted_zone) at (12,0) {};
+        \node[above=0.1cm of untrusted_zone.north, font=\small\bfseries, text=red] {UNTRUSTED ZONE};
+        \node[below=0.1cm of untrusted_zone.south, font=\small, text width=3.5cm, align=center] {Internet\\(``bad guys'')};
+        
+        % Internet cloud
+        \node[cloud] (internet) at (12, 0) {Internet};
+        
+        % Connection from firewall to internet
+        \draw[thick, <->] (fw.east) -- node[above, font=\small] {traffico filtrato} (internet.west);
+        
+        % Firewall rules annotations
+        \node[below=1.5cm of fw, font=\small, text width=4cm, align=center, fill=yellow!20, rounded corners=2pt, text=black] (rules) {
+            \textbf{Regole Firewall:}\\
+            • Blocca traffico sospetto\\
+            • Permette connessioni autorizzate\\
+            • Log degli accessi
+        };
+        
+        % Legend
+        \node[right=1cm of rules, font=\small] (legend) {
+            \begin{tabular}{ll}
+                \textcolor{green!60!black}{$\bullet$} & Zona Fidata \\
+                \textcolor{red!60!black}{$\bullet$} & Zona Non Fidata \\
+                $\rightarrow$ & Traffico Outbound \\
+                $\leftrightarrow$ & Traffico Bidirezionale Filtrato
+            \end{tabular}
+        };
+        
     \end{tikzpicture}
-    \caption{Concetto di Firewall tra rete interna e Internet.}
+    \caption{Architettura Firewall: Separazione tra Zona Fidata e Non Fidata}
 \end{figure}
-
 
 \subsubsection{Perché usare i Firewall?}
 \begin{itemize}
