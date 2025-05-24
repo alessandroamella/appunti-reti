@@ -259,15 +259,31 @@ fi
 echo
 echo "==================================================================="
 echo "Compilando il documento..."
-pdflatex -shell-escape appunti_completi.tex
+
+# Use a temporary file for compilation
+TEMP_PDF="appunti_completi_temp.pdf"
+FINAL_PDF="appunti_completi.pdf"
+
+# First compilation
+pdflatex -shell-escape -jobname="${TEMP_PDF%.pdf}" appunti_completi.tex
 
 if [ "$COMPILE_ONCE" = false ]; then
   echo "Compilando una seconda volta per l'indice..."
-  pdflatex -shell-escape appunti_completi.tex
+  pdflatex -shell-escape -jobname="${TEMP_PDF%.pdf}" appunti_completi.tex
 fi
 
-echo "✅ Compilazione completata."
-echo "Il documento PDF è stato generato come 'appunti_completi.pdf'"
+# Check if compilation was successful
+if [ $? -eq 0 ] && [ -f "$TEMP_PDF" ]; then
+  # Move the temporary file to the final location
+  mv "$TEMP_PDF" "$FINAL_PDF"
+  echo "✅ Compilazione completata con successo."
+  echo "Il documento PDF è stato generato come '$FINAL_PDF'"
+else
+  echo "❌ Errore durante la compilazione. Il PDF non è stato generato."
+  # Clean up temporary files if they exist
+  [ -f "$TEMP_PDF" ] && rm "$TEMP_PDF"
+  exit 1
+fi
 
 echo "==================================================================="
 echo "Processo completato con successo!"

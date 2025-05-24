@@ -270,7 +270,7 @@ Telefonia Internet     & SIP, RTP, proprietari     & TCP o UDP                  
 
 \subsection{Connessioni HTTP}
 \begin{description}
-    \item[HTTP Non Persistente]
+    \item[HTTP Non Persistente]\mbox{}\\
     \begin{itemize}
         \item Max un oggetto per connessione TCP. Connessione chiusa dopo.
         \item Oggetti multipli richiedono connessioni multiple.
@@ -278,32 +278,53 @@ Telefonia Internet     & SIP, RTP, proprietari     & TCP o UDP                  
     \end{itemize}
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1cm and 2.5cm, >=Stealth]
-    \node[host, label=left:Client] (client) {};
-    \node[servernode, label=right:Server] (server) {};
+\begin{tikzpicture}[
+    % Define consistent spacing parameters
+    node distance=2cm,
+    horiz_space/.style={minimum width=6cm},
+    vert_step/.style={minimum height=1cm},
+    % Define common arrow styles
+    req_arrow/.style={arrow, thick},
+    resp_arrow/.style={arrow, dashed, thick},
+    >=Stealth
+]
+    % Define base coordinates for better positioning
+    \coordinate (base_left) at (0,0);
+    \coordinate (base_right) at (8,0);
     
-    % RTT 1 (TCP Setup)
-    \draw[arrow, blue] (client.east) ++(0,0.4) -- ++(2.5,0) node[midway, above, font=\tiny, black]{1a. Rich. TCP};
-    \draw[arrow, blue, dashed] (server.west) ++(0,0.2) -- ++(-2.5,0) node[midway, above, font=\tiny, black]{1b. Ack TCP};
-    \node[font=\tiny, below left=0.1cm and 0cm of client.east, yshift=0.2cm, black] {RTT 1};
+    % Place main nodes with good spacing
+    \node[host, label=left:Client] (client) at (base_left) {};
+    \node[servernode, label=right:Server] (server) at (base_right) {};
     
-    % RTT 2 (HTTP Request/Response)
-    \draw[arrow, red] (client.east) ++(0,-0.2) -- ++(2.5,0) node[midway, above, font=\tiny, black]{2. Rich. HTTP};
-    \draw[arrow, red, dashed] (server.west) ++(0,-0.4) -- ++(-2.5,0) node[midway, above, font=\tiny, black]{3. Risp. HTTP (inizio)};
-     \node[font=\tiny, below left=0.1cm and 0cm of client.east, yshift=-0.4cm, black] {RTT 2};
+    % RTT 1 - TCP Setup (with better spacing)
+    \node[font=\small, text=primarytext] (rtt1_label) at ($(client.east)+(1.2,2)$) {RTT 1};
+    \draw[req_arrow, themeblue] ($(client.east)+(0,2)$) -- node[above, font=\small, text=primarytext] 
+        {1a. Richiesta TCP} ($(server.west)+(0,2)$);
+    \draw[resp_arrow, themeblue] ($(client.east)+(0,1.4)$) -- node[above, font=\small, text=primarytext] 
+        {1b. Ack TCP} ($(server.west)+(0,1.4)$);
     
-    % File Transmission
-    \draw[decoration={brace,amplitude=5pt},decorate, thick, green!70!black]
-        ($(server.west)+(-2.5,-0.6)$) -- ($(server.west)+(0,-0.6)$) node[midway,below,yshift=-2pt,font=\tiny,black]{Tempo Trasmissione File};
+    % RTT 2 - HTTP Exchange (well separated)
+    \node[font=\small, text=primarytext] (rtt2_label) at ($(client.east)+(1.2,0.5)$) {RTT 2};
+    \draw[req_arrow, red] ($(client.east)+(0,0.7)$) -- node[above, font=\small, text=primarytext] 
+        {2. Richiesta HTTP} ($(server.west)+(0,0.7)$);
+    \draw[resp_arrow, red] ($(client.east)+(0,0.1)$) -- node[above, font=\small, text=primarytext] 
+        {3. Risposta HTTP} ($(server.west)+(0,0.1)$);
+    
+    % File Transmission (with clear separation)
+    \draw[decoration={brace,amplitude=8pt}, decorate, thick, green!70!primarytext]
+        ($(client.east)+(0,-1)$) -- node[below=8pt, font=\small, text=primarytext] 
+        {Tempo Trasmissione File} ($(server.west)+(0,-1)$);
+    
+    % TCP Close (at bottom with good spacing)
+    \draw[dotted, thick, themeblue] ($(client.east)+(0,-2)$) -- node[above, font=\small, text=primarytext] 
+        {4. Chiusura TCP} ($(server.west)+(0,-2)$);
 
-    % TCP Close
-    \draw[arrow, blue, dotted] (server.west) ++(0,-0.8) -- ++(-2.5,0) node[midway, above, font=\tiny, black]{4. Chiusura TCP};
 \end{tikzpicture}
 \caption{Flusso di una richiesta HTTP Non Persistente (semplificato).}
 \label{fig:http_non_persistent}
 \end{figure}
 
-    \item[HTTP Persistente]
+    \item[HTTP Persistente]\mbox{}\\
     \begin{itemize}
         \item Oggetti multipli su una singola connessione TCP.
         \item Il server lascia la connessione aperta.
@@ -371,25 +392,8 @@ HTTP è stateless. I cookies permettono di mantenere lo stato.
 \end{itemize}
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1cm and 2cm, >=Stealth]
-    \node[host, label=left:Client] (client) {};
-    \node[servernode, label=right:Server] (server) {};
-    \node[cylinder, shape border rotate=90, draw=gray, fill=gray!20, aspect=0.4, minimum height=1.5em, text=lighttext, label=below:DB, right=0.5cm of server] (db) {};
-    \draw[line, <->] (server.east) -- (db.west);
-    
-    \node[rectangle, draw=yellow!50!black, fill=yellow!20, font=\tiny, label=left:Cookie File, below=0.5cm of client] (cookiefile) {ID=1678};
-
-    \draw[arrow] (client.east) ++(0,0.5) -- node[midway, above, font=\tiny]{1. Richiesta HTTP (prima volta)} (server.west) ++(0,0.5);
-    \draw[r_arrow] (client.east) ++(0,0.2) -- node[midway, above, font=\tiny]{2. Risposta HTTP + \texttt{Set-Cookie: ID=1678}} (server.west) ++(0,0.2);
-    \draw[arrow, red, dashed] ($(server.west)+(0,0.2)$) to[bend left=20] node[midway, above, font=\tiny]{Crea ID} (db.north);
-    \draw[arrow, red, dashed] ($(client.east)+(0,0.2)$) to[bend right=20] node[midway, below, font=\tiny]{Salva Cookie} (cookiefile.north);
-
-    \draw[arrow] (client.east) ++(0,-0.3) -- node[midway, above, font=\tiny]{3. Richiesta HTTP + \texttt{Cookie: ID=1678}} (server.west) ++(0,-0.3);
-    \draw[r_arrow] (client.east) ++(0,-0.6) -- node[midway, above, font=\tiny]{4. Risposta HTTP (personalizzata)} (server.west) ++(0,-0.6);
-    \draw[arrow, red, dashed] ($(server.west)+(0,-0.3)$) to[bend right=20] node[midway, below, font=\tiny]{Recupera info} (db.south);
-    \draw[arrow, red, dashed] (cookiefile.north) to[bend left=20] node[midway, above, font=\tiny]{Leggi Cookie} ($(client.east)+(0,-0.3)$);
-\end{tikzpicture}
-\caption{Flusso di interazione con i Cookies.}
+\includegraphics[width=\textwidth]{images/cookie_flow}
+\caption{Cookie Interaction Flow Between Client and Server}
 \end{figure}
 
 
@@ -412,8 +416,8 @@ HTTP è stateless. I cookies permettono di mantenere lo stato.
     \draw[r_arrow] (client1.east) -- (cache.west |- client1.east) node[midway, below, font=\tiny]{Resp (da cache)};
 
     \draw[arrow] (client2.east) -- (cache.west |- client2.east) node[midway, above, font=\tiny]{Req};
-    \draw[r_arrow, dashed, blue] (cache.east) -- (origin.west) node[midway, above, font=\tiny]{Req (cache miss)};
-    \draw[arrow, dashed, blue] (cache.east) -- (origin.west) node[midway, below, font=\tiny]{Resp (da origine)};
+    \draw[r_arrow, dashed, themeblue] (cache.east) -- (origin.west) node[midway, above, font=\tiny]{Req (cache miss)};
+    \draw[arrow, dashed, themeblue] (cache.east) -- (origin.west) node[midway, below, font=\tiny]{Resp (da origine)};
     \draw[r_arrow] (client2.east) -- (cache.west |- client2.east) node[midway, below, font=\tiny]{Resp (da cache dopo fetch)};
 \end{tikzpicture}
 \caption{Funzionamento di una Web Cache.}
@@ -448,18 +452,8 @@ HTTP è stateless. I cookies permettono di mantenere lo stato.
 \subsection{Scenario: Alice invia un messaggio a Bob}
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.5cm and 2.5cm, >=Stealth]
-    \node[host, label=below:Alice's UA] (uaA) {UA};
-    \node[servernode, label=below:Alice's Mail Server, right=of uaA] (msA) {MS-A};
-    \node[servernode, label=below:Bob's Mail Server, right=of msA] (msB) {MS-B};
-    \node[host, label=below:Bob's UA, right=of msB] (uaB) {UA};
-
-    \draw[arrow] (uaA.east) -- (msA.west) node[midway, above, font=\tiny]{1. Compose \& Send};
-    \path (msA.east) edge[arrow, bend left=15] node[midway, above, font=\tiny]{2. SMTP (TCP)} (msB.west);
-    \path (msB.west) edge[r_arrow, bend left=15] node[midway, below, font=\tiny]{Message in queue} (msA.east);
-    \draw[arrow] (msB.east) -- (uaB.west) node[midway, above, font=\tiny]{3. Bob retrieves mail};
-\end{tikzpicture}
-\caption{Flusso di invio email da Alice a Bob.}
+\includegraphics[width=\textwidth]{images/email_flow}
+\caption{Email Flow Between Alice and Bob}
 \end{figure}
 
 \subsection{Confronto SMTP vs HTTP}
@@ -504,11 +498,6 @@ Tradurre nomi host leggibili (es. \url{www.google.com}) in indirizzi IP e viceve
 Single point of failure, volume traffico, latenza, manutenzione. \textbf{Non scala!}
 
 \subsection{DNS: Un Database Distribuito e Gerarchico}
-\begin{enumerate}
-    \item \textbf{Root DNS Servers:} 13 server logici, replicati. Indirizzano ai TLD server.
-    \item \textbf{Top-Level Domain (TLD) Servers:} Per \texttt{.com, .org, .it}, etc. Indirizzano ai server autoritativi.
-    \item \textbf{Authoritative DNS Servers:} Forniscono mappature autorevoli per un'organizzazione.
-\end{enumerate}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
@@ -516,7 +505,8 @@ Single point of failure, volume traffico, latenza, manutenzione. \textbf{Non sca
     level 2/.style={sibling distance=2.5cm, level distance=1.5cm},
     level 3/.style={sibling distance=1.5cm, level distance=1.5cm},
     edge from parent/.style={draw, -latex, gray},
-    tnode/.style={rectangle, rounded corners, draw=cyan, fill=blue!10, text=lighttext, align=center}
+    every node/.style={text=black},
+    tnode/.style={rectangle, rounded corners, draw=cyan, fill=blue!10, text=black, align=center}
 ]
     \node[tnode] {Root DNS Servers}
     child { node[tnode] {.com DNS Servers}
@@ -528,7 +518,7 @@ Single point of failure, volume traffico, latenza, manutenzione. \textbf{Non sca
     }
     child { node[tnode] {.edu DNS Servers}
         child { node[tnode] {mit.edu\\DNS Server} }
-        child { node[tnode] {unibo.it\\(via .it TLD)\\DNS Server}}
+        child { node[tnode] {unibo.it\\(via .it TLD)\\DNS Server} }
     };
 \end{tikzpicture}
 \caption{Gerarchia semplificata dei server DNS.}
@@ -549,12 +539,12 @@ Single point of failure, volume traffico, latenza, manutenzione. \textbf{Non sca
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1cm and 1.5cm, >=Stealth,
-    tnode/.style={rectangle, rounded corners, draw=cyan, fill=blue!10, text=lighttext, align=center, minimum height=1cm}]
-    \node[host] (client) {Client Host};
-    \node[tnode, right=of client, label=above:Local DNS] (local) {Local DNS};
-    \node[tnode, above right=0.5cm and 1cm of local, label=above:Root DNS] (root) {Root};
-    \node[tnode, right=of root, label=above:TLD DNS (.com)] (tld) {TLD};
-    \node[tnode, below right=0.5cm and 1cm of tld, label=above:Authoritative DNS (example.com)] (auth) {Authoritative};
+    tnode/.style={rectangle, rounded corners, draw=cyan, fill=blue!10, text=black, align=center, minimum height=1cm}]
+    \node[host] (client) {\textcolor{black}{Client Host}};
+    \node[tnode, right=of client, label=above:Local DNS] (local) {\textcolor{black}{Local DNS}};
+    \node[tnode, above right=0.5cm and 1cm of local, label=above:Root DNS] (root) {\textcolor{black}{Root}};
+    \node[tnode, right=of root, label=above:TLD DNS (.com)] (tld) {\textcolor{black}{TLD}};
+    \node[tnode, below right=0.5cm and 1cm of tld, label=above:Authoritative DNS (example.com)] (auth) {\textcolor{black}{Authoritative}};
 
     \draw[arrow] (client.east) -- (local.west) node[midway, above, sloped, font=\tiny]{1. Query: www.example.com};
     \draw[arrow] (local.north east) -- (root.south west) node[midway, above, sloped, font=\tiny]{2. Query};
@@ -604,7 +594,7 @@ Es. Nuova startup "Network Utopia", \url{networkutopia.com}.
     \item Nel tuo server DNS autoritativo: crea record A per \url{www.networkutopia.com}, MX per \url{networkutopia.com}.
 \end{enumerate}
 
-\subsection{Attacchi a DNS}
+\subsection{Attacchi DNS}
 \begin{itemize}
     \item \textbf{DDoS attacks:} Bombardare server root/TLD.
     \item \textbf{Redirect attacks:} Man-in-the-middle, DNS poisoning.
@@ -697,8 +687,8 @@ Tempo per distribuire file (dimensione $F$) a $N$ peer.
 \begin{tikzpicture}[node distance=1.5cm and 2cm, scale=0.9, transform shape]
     \node[servernode, label=above:Origin Server] (origin) {};
     
-    \node[servernode, label=left:CDN Node A, below left=of origin] (cdnA) {CDN A};
-    \node[servernode, label=right:CDN Node B, below right=of origin] (cdnB) {CDN B};
+    \node[servernode, label=left:CDN Node A, below left=of origin] (cdnA) {\textcolor{black}{CDN A}};
+    \node[servernode, label=right:CDN Node B, below right=of origin] (cdnB) {\textcolor{black}{CDN B}};
     \node[servernode, label=below:CDN Node C, below=2cm of origin] (cdnC) {CDN C};
 
     \node[host, label=left:User 1, below left=of cdnA] (user1) {};
@@ -716,7 +706,7 @@ Tempo per distribuire file (dimensione $F$) a $N$ peer.
     \draw[arrow, green!50!black] (user3) -- (cdnC) node[midway, right, font=\tiny]{Req/Str};
     \draw[arrow, green!50!black] (user4) -- (cdnC) node[midway, left, font=\tiny]{Req/Str};
 
-    \node[cloud, below=0.5cm of user3, minimum width=8cm, minimum height=1.5cm] (internet) {Internet Backbone / Regional Networks};
+    \node[cloud, below=0.5cm of user3, minimum width=8cm, minimum height=1.5cm] (internet) {\textcolor{black}{Internet Backbone / Regional Networks}};
     \draw[line, gray!70] (cdnA) -- (internet.north -| cdnA);
     \draw[line, gray!70] (cdnB) -- (internet.north -| cdnB);
     \draw[line, gray!70] (cdnC) -- (internet.north);
@@ -747,8 +737,8 @@ Bob richiede \url{http://netcinema.com/video}. Video su CDN KingCDN.
 
 \subsection{Due tipi di socket}
 \begin{itemize}
-    \item \textbf{UDP:} Datagramma non affidabile.
-    \item \textbf{TCP:} Byte-stream, affidabile, in ordine.
+    \item \textbf{UDP:} Datagramma non affidabile, veloce.
+    \item \textbf{TCP:} Byte-stream, affidabile, in ordine, lento.
 \end{itemize}
 
 \subsection{Esempio di Applicazione Semplice}
@@ -768,26 +758,26 @@ Client invia stringa, server la converte in maiuscolo, client la visualizza.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1.5cm and 3cm]
-    \node[process, label=above:Server (UDP)] (server) {Server Process};
-    \node[process, label=above:Client (UDP), right=of server] (client) {Client Process};
+    \node[process, label=above:Server (UDP), text=black] (server) {Server Process};
+    \node[process, label=above:Client (UDP), text=black, right=of server] (client) {Client Process};
 
-    \node[font=\tiny, below=0.1cm of server, align=center] (s1) {1. \texttt{socket(AF\_INET, SOCK\_DGRAM)}};
-    \node[font=\tiny, below=0.3cm of s1, align=center] (s2) {2. \texttt{bind(port\_x)}};
-    \node[font=\tiny, below=0.3cm of s2, align=center] (s3) {3. \texttt{recvfrom()} (attesa)};
+    \node[font=\small, below=0.1cm of server, align=center] (s1) {1. \texttt{socket(AF\_INET, SOCK\_DGRAM)}};
+    \node[font=\small, below=0.3cm of s1, align=center] (s2) {2. \texttt{bind(port\_x)}};
+    \node[font=\small, below=0.3cm of s2, align=center] (s3) {3. \texttt{recvfrom()} (attesa)};
 
-    \node[font=\tiny, below=0.1cm of client, align=center] (c1) {1. \texttt{socket(AF\_INET, SOCK\_DGRAM)}};
-    \node[font=\tiny, below=0.3cm of c1, align=center] (c2) {2. Prepara datagramma};
-    \node[font=\tiny, below=0.3cm of c2, align=center] (c3) {3. \texttt{sendto(serverIP, port\_x)}};
+    \node[font=\small, below=0.1cm of client, align=center] (c1) {1. \texttt{socket(AF\_INET, SOCK\_DGRAM)}};
+    \node[font=\small, below=0.3cm of c1, align=center] (c2) {2. Prepara datagramma};
+    \node[font=\small, below=0.3cm of c2, align=center] (c3) {3. \texttt{sendto(serverIP, port\_x)}};
     
-    \draw[arrow, red] (c3.west) -- (s3.east) node[midway, above, font=\tiny]{Dati};
+    \draw[arrow, red] (c3.west) -- (s3.east) node[midway, above, font=\small]{Dati};
     
-    \node[font=\tiny, below=0.3cm of s3, align=center] (s4) {4. Processa};
-    \node[font=\tiny, below=0.3cm of s4, align=center] (s5) {5. \texttt{sendto(clientAddr)}};
+    \node[font=\small, below=0.3cm of s3, align=center] (s4) {4. Processa};
+    \node[font=\small, below=0.3cm of s4, align=center] (s5) {5. \texttt{sendto(clientAddr)}};
     
-    \node[font=\tiny, below=0.3cm of c3, align=center] (c4) {4. \texttt{recvfrom()} (attesa)};
-    \node[font=\tiny, below=0.3cm of c4, align=center] (c5) {5. \texttt{close()}};
+    \node[font=\small, below=0.3cm of c3, align=center] (c4) {4. \texttt{recvfrom()} (attesa)};
+    \node[font=\small, below=0.3cm of c4, align=center] (c5) {5. \texttt{close()}};
     
-    \draw[r_arrow, blue] (c4.west) -- (s5.east) node[midway, above, font=\tiny]{Risposta};
+    \draw[r_arrow, themeblue] (c4.west) -- (s5.east) node[midway, above, font=\small]{Risposta};
 \end{tikzpicture}
 \caption{Interazione Socket UDP Client/Server (semplificata).}
 \end{figure}
@@ -807,8 +797,8 @@ Client invia stringa, server la converte in maiuscolo, client la visualizza.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1.5cm and 4cm]
-    \node[process, label=above:Server (TCP)] (server) {Server Process};
-    \node[process, label=above:Client (TCP), right=of server] (client) {Client Process};
+    \node[process, label=above:Server (TCP), text=black] (server) {Server Process};
+    \node[process, label=above:Client (TCP), text=black, right=of server] (client) {Client Process};
 
     \node[font=\footnotesize, below=0.3cm of server, align=center] (s1) {1. \texttt{socket(SOCK\_STREAM)} (welcoming)};
     \node[font=\footnotesize, below=0.3cm of s1, align=center] (s2) {2. \texttt{bind(port\_x)}};
@@ -827,7 +817,7 @@ Client invia stringa, server la converte in maiuscolo, client la visualizza.
     \node[font=\footnotesize, below=0.3cm of s5, align=center] (s6) {6. Processa};
     \node[font=\footnotesize, below=0.3cm of s6, align=center] (s7) {7. \texttt{send(reply)} (su connSocket)};
     \node[font=\footnotesize, below=0.3cm of c3, align=center] (c4) {4. \texttt{recv(reply)}};
-    \draw[r_arrow, blue] (c4.west) -- (s7.east) node[midway, above, font=\footnotesize, text=lighttext]{Risposta};
+    \draw[r_arrow, themeblue] (c4.west) -- (s7.east) node[midway, above, font=\footnotesize, text=lighttext]{Risposta};
     
     \node[font=\footnotesize, below=0.3cm of s7, align=center] (s8) {8. \texttt{close(connSocket)}};
     \node[font=\footnotesize, below=0.3cm of c4, align=center] (c5) {5. \texttt{close()}};
@@ -906,7 +896,7 @@ while True:
     connectionSocket.close() # Close connection socket, not welcoming socket
 \end{minted}
 
-\section{Sommario Capitolo 2}
+\section{Recap}
 \begin{itemize}
     \item \textbf{Architetture Applicative:} Client-server, P2P.
     \item \textbf{Requisiti Servizio Applicativo:} Affidabilità, banda, ritardo.
@@ -926,36 +916,9 @@ while True:
     \item "Complessità ai margini della rete".
 \end{itemize}
 
-\appendix
 \section{NAT (Network Address Translation)}
 \subsection{Concetto}
 Permette a una rete locale di usare un solo IP pubblico.
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}
-    % Host, NAT, Server
-    \node[draw, rectangle, rounded corners, fill=blue!40!black, text=lighttext] (host) at (0,0) {Host 10.0.0.1};
-    \node[draw, rectangle, fill=red!40!black, text=lighttext] (nat) at (3,0) {NAT Router (138.76.29.7)};
-    \node[draw, cylinder, fill=orange!40!black, text=lighttext, shape border rotate=90, aspect=0.3] (server) at (6,0) {Server 128.119.40.186};
-    
-    % NAT Table
-    \node[draw, rectangle, text width=4cm, align=center, font=\tiny, fill=gray!30!black, text=lighttext] (table) at (3,-2) {
-        \textbf{Tabella NAT}\\
-        138.76.29.7:5001 $\leftrightarrow$ 10.0.0.1:3345
-    };
-    
-    % Connections
-    \draw[->, thick, cyan] (host) -- (nat) node[midway, above, font=\small, text=lighttext] {10.0.0.1:3345 $\to$ 128...:80};
-    \draw[->, thick, cyan] (nat) -- (server) node[midway, above, font=\small, text=lighttext] {138.76.29.7:5001 $\to$ 128...:80};
-    \draw[<-, thick, orange] (host) -- (nat) node[midway, below, font=\small, text=lighttext] {128...:80 $\to$ 10.0.0.1:3345};
-    \draw[<-, thick, orange] (nat) -- (server) node[midway, below, font=\small, text=lighttext] {128...:80 $\to$ 138.76.29.7:5001};
-    
-    % Table connection
-    \draw[dashed, white] (nat) -- (table);
-\end{tikzpicture}
-\caption{Esempio di flusso di un datagramma attraverso NAT.}
-\end{figure}
-
 
 \subsection{Motivazione per NAT}
 \begin{itemize}
@@ -973,38 +936,86 @@ Router NAT deve:
 \end{enumerate}
 
 \subsection{Esempio Flusso NAT}
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}
-    % Host, NAT, Server
-    \node[draw, rectangle, rounded corners, fill=blue!40!black, text=lighttext] (host) at (0,0) {Host 10.0.0.1};
-    \node[draw, rectangle, fill=red!40!black, text=lighttext] (nat) at (3,0) {NAT Router (138.76.29.7)};
-    \node[draw, cylinder, fill=orange!40!black, text=lighttext, shape border rotate=90, aspect=0.3] (server) at (6,0) {Server 128.119.40.186};
-    
-    % NAT Table
-    \node[draw, rectangle, text width=4cm, align=center, font=\tiny, fill=gray!30!black, text=lighttext] (table) at (3,-2) {
-        \textbf{Tabella NAT}\\
-        138.76.29.7:5001 $\leftrightarrow$ 10.0.0.1:3345
-    };
-    
-    % Connections
-    \draw[->, thick, cyan] (host) -- (nat) node[midway, above, font=\small, text=lighttext] {10.0.0.1:3345 $\to$ 128...:80};
-    \draw[->, thick, cyan] (nat) -- (server) node[midway, above, font=\small, text=lighttext] {138.76.29.7:5001 $\to$ 128...:80};
-    \draw[<-, thick, orange] (host) -- (nat) node[midway, below, font=\small, text=lighttext] {128...:80 $\to$ 10.0.0.1:3345};
-    \draw[<-, thick, orange] (nat) -- (server) node[midway, below, font=\small, text=lighttext] {128...:80 $\to$ 138.76.29.7:5001};
-    
-    % Table connection
-    \draw[dashed, white] (nat) -- (table);
-\end{tikzpicture}
-\caption{Esempio di flusso di un datagramma attraverso NAT.}
-\end{figure}
 
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.2]  % Reduced scale
+        % Host, NAT, Server with reduced spacing
+        \node[draw, rectangle, rounded corners, fill=blue!40!black, text=lighttext, minimum width=2.5cm, minimum height=1cm] (host) at (0,0) {Host 10.0.0.1};
+        \node[draw, rectangle, fill=red!40!black, text=lighttext, minimum width=3cm, minimum height=1cm, align=center] (nat) at (4,0) {NAT Router\\(138.76.29.7)};  % Moved closer
+        \node[draw, cylinder, fill=orange!40!black, text=lighttext, shape border rotate=90, aspect=0.3, minimum width=2.5cm, minimum height=2cm, align=center] (server) at (8,0) {Server\\128.119.40.186};  % Moved closer
+        
+        % NAT Table - more compact
+        \node[draw, rectangle, text width=5cm, align=center, font=\small, fill=gray!30!black, text=lighttext] (table) at (4,-2.5) {  % Moved up
+            \textbf{Tabella NAT}\\[0.1cm]
+            138.76.29.7:5001 $\leftrightarrow$ 10.0.0.1:3345
+        };
+        
+        % Connections with shorter labels
+        \draw[->, thick, cyan] (host.east) -- (nat.west) 
+            node[midway, above, font=\small, text=lighttext] {10.0.0.1:3345};
+        \draw[->, thick, cyan] (nat.east) -- (server.west) 
+            node[midway, above, font=\small, text=lighttext] {138.76.29.7:5001};
+        \draw[<-, thick, orange] (host.east) -- (nat.west) 
+            node[midway, below, font=\small, text=lighttext] {128...:80};
+        \draw[<-, thick, orange] (nat.east) -- (server.west) 
+            node[midway, below, font=\small, text=lighttext] {128...:80};
+        
+        % Table connection
+        \draw[dashed, white, thick] (nat.south) -- (table.north);
+    \end{tikzpicture}
+    \caption{Esempio di flusso di un datagramma attraverso NAT.}
+\end{figure}
 
 \subsection{Considerazioni su NAT}
 \begin{itemize}
-    \item Campo porta 16-bit: ~60.000 connessioni simultanee.
-    \item \textbf{Controverso:} Router modifica L4, viola end-to-end, carenza IP $\rightarrow$ IPv6.
-    \item Impatto su app P2P. \textbf{NAT traversal} necessario.
+    \item \textbf{Limitazione del Numero di Connessioni:}
+    \begin{itemize}
+        \item Il campo porta è di 16 bit $\rightarrow$ $2^{16} = 65.536$ porte totali
+        \item Alcune porte sono riservate (0-1023)
+        \item Quindi circa 60.000 connessioni simultanee possibili
+        \item \textit{Esempio:} Se 100 dispositivi interni tentano di accedere ciascuno a 1000 servizi esterni, il NAT potrebbe esaurire le porte disponibili
+    \end{itemize}
+    
+    \item \textbf{Controversie Architetturali:}
+    \begin{itemize}
+        \item Il router NAT modifica i pacchetti a livello trasporto (L4)
+        \item Viola il principio end-to-end di Internet:
+        \begin{center}
+        \begin{tikzpicture}
+            \node[host] (h1) at (0,0) {\textcolor{black}{Host A}};
+            \node[draw=red, circle, fill=red!20] (nat) at (3,0) {\textcolor{black}{NAT}};
+            \node[host] (h2) at (6,0) {\textcolor{black}{Host B}};
+            
+            \draw[->, thick, themeblue] (h1) -- node[above, yshift=0.3cm] {\small Dovrebbe essere diretto} (h2);
+            \draw[->, thick, red, dashed] (h1) -- (nat);
+            \draw[->, thick, red, dashed] (nat) -- (h2);
+            \node[below, text width=6cm, align=center] at (3,-1) 
+                {\small Il NAT interrompe la comunicazione diretta tra gli endpoint};
+        \end{tikzpicture}
+        \end{center}
+        \item NAT è nato come soluzione temporanea alla carenza di IPv4
+        \item La vera soluzione sarebbe la migrazione a IPv6 ($2^{128}$ indirizzi)
+    \end{itemize}
+    
+    \item \textbf{Problemi con Applicazioni P2P:}
+    \begin{itemize}
+        \item In P2P, ogni peer dovrebbe poter accettare connessioni in ingresso
+        \item Con NAT, i peer interni non sono direttamente raggiungibili dall'esterno
+        \item \textbf{NAT traversal} necessario:
+        \begin{center}
+        \begin{tikzpicture}
+            \node[host, label=below:Peer A] (p1) at (0,0) {};
+            \node[draw=red, circle, fill=red!20, label=below:NAT] (nat) at (3,0) {};
+            \node[host, label=below:Peer B] (p2) at (6,0) {};
+            
+            \draw[->, thick, red] (p2) -- node[above, yshift=0.3cm] {\small Bloccato dal NAT} (p1);
+            \node[below, text width=8cm, align=center] at (3,-2) 
+                {\small Soluzioni: STUN, TURN, ICE\\
+                (protocolli per permettere la connessione attraverso NAT)};
+        \end{tikzpicture}
+        \end{center}
+    \end{itemize}
 \end{itemize}
 
 \end{document}
