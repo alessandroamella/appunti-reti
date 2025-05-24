@@ -680,28 +680,218 @@ Rilevano attività sospette o dannose.
     \item Posizionati in vari punti della rete (interna, DMZ).
 \end{itemize}
 
-\section{Riassunto sulla Sicurezza di Rete}
-\label{sec:riassunto_sicurezza}
+\section{Recap della Sicurezza di Rete}
+\label{sec:recap_sicurezza}
 
-\subsection{Tecniche di Base}
+Questa sezione riassume i concetti fondamentali della sicurezza di rete, con esempi pratici per illustrarne l'applicazione.
+
+\subsection{Pilastri della Sicurezza}
 \begin{itemize}
-    \item \textbf{Crittografia} (simmetrica e a chiave pubblica)
-    \item \textbf{Integrità dei messaggi} (hash crittografici e MAC)
-    \item \textbf{Autenticazione degli endpoint}
+    \item \textbf{Riservatezza (Confidentiality):} Solo le parti autorizzate possono accedere/comprendere l'informazione.
+    \begin{itemize}
+        \item \textbf{Tecnica principale:} Crittografia (simmetrica e asimmetrica).
+        \item \emph{Esempio Pratico:} Quando inserisci la password per l'online banking, questa viene crittografata per impedire a Trudy di leggerla se la intercettasse.
+        \item \emph{Dall'esame (Q3 Giu2022, Q4 Mag2023, Q4 Lug2023):} La necessità di \textit{privacy} per il messaggio \texttt{m2} o per i messaggi scambiati implica la crittografia.
+    \end{itemize}
+
+    \item \textbf{Autenticazione (Authentication):} Verificare l'identità di un utente, dispositivo o servizio.
+    \begin{itemize}
+        \item \textbf{Tecniche principali:} Password, certificati digitali, firme digitali, protocolli di autenticazione (con nonce).
+        \item \emph{Esempio Pratico:} Il server della banca vuole essere sicuro che sei tu a fare login (autenticazione utente); tu vuoi essere sicuro di parlare con il vero sito della banca (autenticazione server).
+        \item \emph{Dall'esame (Q3 Giu2022, Q4 Mag2023):} La \textit{garanzia del mittente} (es. "solo Bob può averlo spedito") è un requisito di autenticazione.
+    \end{itemize}
+
+    \item \textbf{Integrità del Messaggio (Message Integrity):} Assicurarsi che il messaggio non sia stato alterato durante la trasmissione.
+    \begin{itemize}
+        \item \textbf{Tecniche principali:} Funzioni hash crittografiche, Message Authentication Codes (MAC), firme digitali.
+        \item \emph{Esempio Pratico:} Se invii un bonifico da 100€, l'integrità garantisce che la banca riceva 100€ e non 10.000€ a causa di una modifica da parte di Trudy.
+        \item \emph{Dall'esame (Q4 Mag2023):} L'integrità dei messaggi \texttt{m1} e \texttt{m2} è un requisito esplicito.
+    \end{itemize}
+
+    \item \textbf{Non Ripudio (Non-Repudiation):} Impedire che il mittente neghi di aver inviato un messaggio.
+    \begin{itemize}
+        \item \textbf{Tecnica principale:} Firme digitali.
+        \item \emph{Esempio Pratico:} Una firma digitale su un contratto elettronico impedisce al firmatario di negare successivamente di averlo approvato.
+        \item \emph{Dall'esame (Q3 Giu2022):} La garanzia di non ripudiabilità per il messaggio \texttt{M1}.
+    \end{itemize}
+
+    \item \textbf{Disponibilità (Availability):} I servizi e i dati devono essere accessibili agli utenti autorizzati quando necessario.
+    \begin{itemize}
+        \item \textbf{Contromisure:} Protezione da attacchi DoS/DDoS, ridondanza.
+        \item \emph{Esempio Pratico:} Il sito web dell'università deve essere raggiungibile dagli studenti, non reso inaccessibile da un attacco.
+    \end{itemize}
+
+    \item \textbf{Prevenzione del Replay (No-Replay):} Impedire a un attaccante di intercettare un messaggio valido e riutilizzarlo in un secondo momento.
+    \begin{itemize}
+        \item \textbf{Tecniche principali:} Nonce, numeri di sequenza, timestamp.
+        \item \emph{Esempio Pratico:} Evitare che Trudy registri una transazione di login valida e la riproduca per accedere all'account di Alice.
+        \item \emph{Dall'esame (Q3 Giu2022, Q4 Lug2023):} La garanzia di \textit{non Replay} per il messaggio \texttt{m2} o per i messaggi scambiati.
+    \end{itemize}
 \end{itemize}
 
-\subsection{Usate in Diversi Scenari di Sicurezza}
+\subsection{Primitive Crittografiche Fondamentali}
 \begin{itemize}
-    \item Email sicure (PGP, S/MIME)
-    \item Trasporto sicuro (SSL/TLS)
-    \item Sicurezza a livello di rete (IPsec, VPN)
-    \item Sicurezza Wireless (802.11i - WPA2/WPA3)
+    \item \textbf{Crittografia Simmetrica ($K_S$):} Stessa chiave per crittografare e decrittografare.
+    \begin{itemize}
+        \item \textbf{Algoritmi comuni:} AES (Advanced Encryption Standard), DES (obsoleto).
+        \item \textbf{Vantaggi:} Veloce ed efficiente per grandi quantità di dati.
+        \item \textbf{Svantaggi:} Problema della distribuzione sicura della chiave condivisa $K_S$.
+        \item \emph{Esempio Pratico:} Crittografare il contenuto di un'email con AES dopo aver scambiato la chiave AES in modo sicuro.
+    \end{itemize}
+
+    \item \textbf{Crittografia Asimmetrica (a Chiave Pubblica $K^+, K^-$):} Coppia di chiavi (pubblica e privata).
+    \begin{itemize}
+        \item \textbf{Algoritmi comuni:} RSA.
+        \item \textbf{Uso per Riservatezza:} Si crittografa con la chiave pubblica ($K^+$) del destinatario, si decrittografa con la sua chiave privata ($K^-$).
+        \item \textbf{Uso per Autenticazione/Firma:} Si firma con la propria chiave privata ($K^-$), si verifica con la propria chiave pubblica ($K^+$).
+        \item \textbf{Vantaggi:} Risolve il problema della distribuzione delle chiavi per la crittografia simmetrica (usandola per scambiare $K_S$), abilita le firme digitali.
+        \item \textbf{Svantaggi:} Computazionalmente più costosa (lenta) della crittografia simmetrica.
+        \item \emph{Esempio Pratico:} Usare RSA per crittografare una chiave di sessione AES che verrà poi usata per la comunicazione vera e propria.
+    \end{itemize}
+
+    \item \textbf{Funzioni Hash Crittografiche ($H(m)$):} Producono un "fingerprint" (digest) di lunghezza fissa da un messaggio di lunghezza variabile.
+    \begin{itemize}
+        \item \textbf{Proprietà chiave:} Resistenza alla preimmagine (one-way), resistenza alla seconda preimmagine, resistenza alle collisioni.
+        \item \textbf{Algoritmi comuni:} SHA-256, SHA-512 (MD5 e SHA-1 sono considerati insicuri o deboli).
+        \item \emph{Esempio Pratico:} Usate per verificare l'integrità dei file scaricati o come parte delle firme digitali.
+    \end{itemize}
+
+    \item \textbf{Firme Digitali:} Combinano hashing e crittografia asimmetrica.
+    \begin{itemize}
+        \item \textbf{Processo (Bob firma $m$):} Bob calcola $H(m)$, poi crittografa $H(m)$ con la sua chiave privata $K_B^-$. Il risultato è la firma.
+        \item \textbf{Verifica (Alice verifica la firma di Bob):} Alice ricalcola $H(m)$ dal messaggio ricevuto. Decrittografa la firma ricevuta usando la chiave pubblica di Bob $K_B^+$. Se i due hash coincidono, la firma è valida e il messaggio è integro e autenticato.
+        \item \textbf{Forniscono:} Autenticazione del mittente, integrità del messaggio, non ripudio.
+        \item \emph{Esempio Pratico:} Firmare digitalmente un'email per garantirne l'autenticità e l'integrità.
+    \end{itemize}
+
+    \item \textbf{Certificati Digitali e Autorità di Certificazione (CA):}
+    \begin{itemize}
+        \item \textbf{Problema:} Come faccio a sapere che una chiave pubblica appartiene veramente a Bob e non a Trudy che si finge Bob (attacco Man-in-the-Middle)?
+        \item \textbf{Soluzione:} Una CA (entità fidata) emette un certificato digitale che lega un'identità (es. Bob) alla sua chiave pubblica. La CA firma digitalmente questo certificato con la propria chiave privata.
+        \item Chiunque voglia verificare la chiave pubblica di Bob può ottenere il suo certificato e verificarne la firma usando la chiave pubblica della CA (che deve essere conosciuta e fidata).
+        \item \emph{Esempio Pratico:} Il certificato SSL/TLS del sito della tua banca, firmato da una CA come Let's Encrypt o DigiCert.
+    \end{itemize}
 \end{itemize}
 
-\subsection{Sicurezza Operativa}
+\subsection{Protocolli e Meccanismi di Sicurezza Chiave}
+
+\subsubsection{Autenticazione degli Endpoint e Scambio di Chiavi}
 \begin{itemize}
-    \item Firewall
-    \item Intrusion Detection Systems (IDS)
+    \item \textbf{Nonce (Number used ONCE):} Valore casuale usato per prevenire attacchi di replay.
+    \begin{itemize}
+        \item \emph{Esempio Pratico (Protocollo ap4.0):} Bob invia un nonce $R$ ad Alice. Alice deve restituire $R$ crittografato con la chiave condivisa $K_{A-B}(R)$ per dimostrare di essere "live" e di conoscere la chiave.
+    \end{itemize}
+    \item \textbf{Attacco Man-in-the-Middle (MITM):} Trudy si interpone tra Alice e Bob, facendo credere ad Alice di parlare con Bob e a Bob di parlare con Alice, intercettando e/o modificando tutta la comunicazione. I certificati digitali aiutano a prevenire il MITM durante lo scambio di chiavi pubbliche.
 \end{itemize}
+
+\subsubsection{Protezione delle E-mail (es. PGP/GPG)}
+\begin{itemize}
+    \item \textbf{Obiettivo combinato:} Riservatezza, autenticazione, integrità.
+    \item \textbf{Schema tipico (Alice invia a Bob):}
+    \begin{enumerate}
+        \item Alice firma $H(m)$ con la sua chiave privata $K_A^-$.
+        \item Alice genera una chiave simmetrica di sessione $K_S$.
+        \item Alice crittografa il messaggio $m$ e la sua firma con $K_S$.
+        \item Alice crittografa $K_S$ con la chiave pubblica di Bob $K_B^+$.
+        \item Alice invia a Bob il messaggio crittografato e la chiave di sessione crittografata.
+    \end{enumerate}
+\end{itemize}
+
+\subsubsection{SSL/TLS (Secure Sockets Layer / Transport Layer Security)}
+\begin{itemize}
+    \item \textbf{Scopo:} Fornire un canale di comunicazione sicuro (riservatezza, integrità, autenticazione server, opzionalmente client) sopra TCP. Usato per HTTPS.
+    \item \textbf{Fasi principali:}
+    \begin{enumerate}
+        \item \textbf{Handshake:}
+        \begin{itemize}
+            \item Client e Server negoziano algoritmi crittografici (cipher suite).
+            \item Il Server invia il suo certificato digitale (contenente $K_{Server}^+$).
+            \item Il Client verifica il certificato del Server.
+            \item Il Client genera un \textit{Pre-Master Secret} (PMS), lo crittografa con $K_{Server}^+$, e lo invia al Server.
+            \item Entrambi derivano indipendentemente il \textit{Master Secret} (MS) e da esso le chiavi di sessione simmetriche (per crittografia e MAC).
+            \item Messaggi `Finished` scambiati per verificare l'integrità dell'handshake.
+        \end{itemize}
+        \item \textbf{Trasferimento Dati:} I dati applicativi sono frammentati in record. Ogni record include un MAC (calcolato con una chiave di sessione MAC) ed è poi crittografato con una chiave di sessione di crittografia. I numeri di sequenza sono impliciti o espliciti per prevenire replay.
+    \end{enumerate}
+    \item \emph{Dall'esame (Q4 Lug2023, stream di N messaggi):} Il protocollo descritto per inviare N messaggi segreti ordinati da Alice a Bob, con l'ultimo messaggio N identificato, assomiglia molto a come SSL/TLS gestisce i record di dati: uso di chiavi di sessione, MAC per integrità e autenticazione per messaggio, e crittografia per riservatezza, con meccanismi per ordinamento e fine-stream.
+\end{itemize}
+
+\subsubsection{IPsec (IP Security)}
+\begin{itemize}
+    \item \textbf{Scopo:} Fornire sicurezza a livello di rete IP (Layer 3). Spesso usato per VPN (Virtual Private Networks).
+    \item \textbf{Protocolli principali:}
+    \begin{itemize}
+        \item \textbf{AH (Authentication Header):} Fornisce autenticazione dell'origine e integrità dei dati. Non fornisce riservatezza.
+        \item \textbf{ESP (Encapsulating Security Payload):} Fornisce autenticazione, integrità E riservatezza (crittografia).
+    \end{itemize}
+    \item \textbf{Modalità operative:}
+    \begin{itemize}
+        \item \textbf{Transport Mode:} Protegge il payload del pacchetto IP originale. Tipicamente host-to-host.
+        \item \textbf{Tunnel Mode:} Incapsula l'intero pacchetto IP originale in un nuovo pacchetto IP. Tipicamente gateway-to-gateway (VPN site-to-site) o client-to-gateway (accesso VPN remoto).
+    \end{itemize}
+    \item \textbf{SA (Security Association):} Contratto unidirezionale che definisce algoritmi, chiavi, SPI (Security Parameter Index) usati tra due peer IPsec. Memorizzate nella SAD (Security Association Database).
+    \item \textbf{IKE (Internet Key Exchange):} Protocollo per negoziare e stabilire dinamicamente le SA IPsec.
+    \item \emph{Esempio Pratico:} Un dipendente si connette da casa alla rete aziendale tramite una VPN IPsec, creando un "tunnel" crittografato attraverso Internet.
+\end{itemize}
+
+\subsubsection{Sicurezza delle Reti Wireless (Wi-Fi)}
+\begin{itemize}
+    \item \textbf{WEP (Wired Equivalent Privacy):} \textbf{Obsoleto e insicuro.} Vulnerabile a causa del riutilizzo dell'IV (Initialization Vector) a 24 bit e di un ICV debole (CRC32).
+    \item \textbf{802.11i (WPA2/WPA3):} Standard di sicurezza moderni.
+    \begin{itemize}
+        \item Usano crittografia robusta (es. AES-CCMP).
+        \item Autenticazione robusta tramite un Authentication Server (AS, es. RADIUS) e il protocollo EAP (Extensible Authentication Protocol) tra la stazione (STA) e l'AS, con l'Access Point (AP) che fa da pass-through.
+        \item Derivazione gerarchica delle chiavi: PMK (Pairwise Master Key) generata durante l'autenticazione, usata per derivare chiavi temporanee (TK) per la sessione.
+    \end{itemize}
+    \item \emph{Esempio Pratico:} Connettersi alla rete Wi-Fi dell'università (che usa 802.1X/EAP con WPA2/3 Enterprise) o alla propria rete domestica protetta da WPA2/3-Personal (PSK).
+\end{itemize}
+
+\subsection{Sicurezza Operativa Perimetrale}
+\begin{itemize}
+    \item \textbf{Firewall:} Dispositivi che filtrano il traffico di rete tra diverse zone di sicurezza (es. rete interna e Internet).
+    \begin{itemize}
+        \item \textbf{Stateless Packet Filters:} Prendono decisioni pacchetto per pacchetto basate su header (IP src/dest, porte, protocollo). Usano ACL (Access Control Lists).
+        \item \textbf{Stateful Packet Filters:} Mantengono traccia dello stato delle connessioni (es. TCP). Permettono solo traffico che "ha senso" nel contesto di una connessione stabilita.
+        \item \textbf{Application Gateways (Proxy Firewall):} Operano a livello applicativo, possono ispezionare il contenuto dei dati e agire come intermediari per specifiche applicazioni (es. proxy HTTP).
+        \item \emph{Esempio Pratico:} Un firewall aziendale che blocca tutto il traffico in entrata tranne le connessioni HTTPS (porta 443) verso il server web pubblico e le connessioni VPN IPsec verso il gateway VPN.
+    \end{itemize}
+    \item \textbf{Intrusion Detection Systems (IDS):} Monitorano il traffico di rete o i log di sistema alla ricerca di attività sospette o malevole.
+    \begin{itemize}
+        \item \textbf{Deep Packet Inspection (DPI):} Analizzano il contenuto dei pacchetti.
+        \item Possono rilevare firme di attacchi noti, anomalie comportamentali, scansioni di porte.
+        \item \emph{Esempio Pratico:} Un IDS che rileva un numero anomalo di tentativi di connessione falliti verso un server, segnalando un possibile attacco brute-force.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Scenario Complesso (Ispirato da Esame Q4 Maggio 2023)}
+Alice deve inviare $m1$ a Bob e $m2$ a Charlie con:
+\begin{itemize}
+    \item \textbf{Confidenzialità:} Trudy non deve leggere $m1$ o $m2$.
+    \item \textbf{Autenticazione del mittente (Alice):} Bob e Charlie devono essere certi che i messaggi provengano da Alice.
+    \item \textbf{Integrità:} $m1$ e $m2$ non devono essere modificati.
+\end{itemize}
+Se Bob e Charlie poi si scambiano i messaggi, questo è un passo successivo. L'attacco di Trudy è sulla comunicazione Alice $\leftrightarrow$ Bob.
+
+\textbf{Possibile Soluzione per Alice (invio iniziale):}
+Alice deve trattare le due spedizioni separatamente, usando i principi della secure e-mail:
+\begin{enumerate}
+    \item \textbf{Per Bob ($m1$):}
+    \begin{itemize}
+        \item Alice firma $H(m1)$ con $K_A^-$.
+        \item Alice genera $K_{S1}$ (chiave simmetrica per $m1$).
+        \item Alice crittografa $(m1 \text{ + firma di } m1)$ con $K_{S1}$.
+        \item Alice crittografa $K_{S1}$ con $K_B^+$.
+        \item Alice invia $(K_{S1}(m1 + \text{firma})) \text{ e } K_B^+(K_{S1})$ a Bob.
+    \end{itemize}
+    \item \textbf{Per Charlie ($m2$):}
+    \begin{itemize}
+        \item Alice firma $H(m2)$ con $K_A^-$.
+        \item Alice genera $K_{S2}$ (chiave simmetrica per $m2$).
+        \item Alice crittografa $(m2 \text{ + firma di } m2)$ con $K_{S2}$.
+        \item Alice crittografa $K_{S2}$ con $K_C^+$.
+        \item Alice invia $(K_{S2}(m2 + \text{firma})) \text{ e } K_C^+(K_{S2})$ a Charlie.
+    \end{itemize}
+\end{enumerate}
+\textbf{Difesa da Trudy (attacco Alice $\leftrightarrow$ Bob):} Bob, ricevendo il messaggio da Alice, decrittografa $K_{S1}$ usando $K_B^-$, poi usa $K_{S1}$ per decrittografare il messaggio e la firma. Verifica la firma usando $K_A^+$. Se Trudy modifica il messaggio crittografato o la chiave crittografata, la decrittografia fallirà o la verifica della firma fallirà. L'uso di chiavi pubbliche certificate (non esplicitato nell'esame, ma best practice) preverrebbe MITM sullo scambio delle chiavi pubbliche.
 
 \end{document}
