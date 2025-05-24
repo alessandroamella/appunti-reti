@@ -55,12 +55,12 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm and 4cm, auto]
-        \node (alice) [actor] {Alice};
-        \node (bob) [actor, right=of alice] {Bob};
+        \node (alice) [actor, text=black] {Alice};
+        \node (bob) [actor, text=black, right=of alice] {Bob};
         \node (trudy) [intruder, below = 0.7cm of alice, xshift=2cm] {Trudy};
 
-        \draw[message_r] (alice.east) -- node[midway, above, sloped, text=black!40!white] {canale dati/controllo} (bob.west);
-        \draw[->, red, thick, dashed] (trudy.north) |- ($(alice.east)!0.5!(bob.west)$) node[right, text=red] {intercetta};
+        \draw[message_r] (alice.east) -- node[midway, above, sloped, text=primarytext] {canale dati/controllo} (bob.west);
+        \draw[->, red, thick, dashed] (trudy.north) |- ($(alice.east)!0.5!(bob.west)$) node[right, text=red, yshift=-0.2cm] {intercetta};
     \end{tikzpicture}
     \caption{Scenario base: Alice, Bob e l'intruso Trudy.}
 \end{figure}
@@ -99,23 +99,31 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[node distance=1.5cm and 2.5cm, auto]
-        \node (plaintext1) [block] {plaintext ($m$)};
-        \node (keyA) [key, above left=0.3cm and 0.2cm of plaintext1, label=left:Alice's Key] {$K_A$};
-        \node (enc_algo) [process, right=of plaintext1] {Encryption Algorithm};
-        \node (ciphertext) [block, right=of enc_algo] {ciphertext $K_A(m)$};
-        \node (keyB) [key, above right=0.3cm and 0.2cm of ciphertext, label=right:Bob's Key] {$K_B$};
-        \node (dec_algo) [process, right=of ciphertext] {Decryption Algorithm};
-        \node (plaintext2) [block, right=of dec_algo] {plaintext ($m$)};
-        \node (trudy_crypto) [intruder, below=of ciphertext] {Trudy};
+    \begin{tikzpicture}[node distance=1.2cm and 1.5cm, auto]
+        % First row
+        \node (plaintext1) [block, text=black] {plaintext ($m$)};
+        \node (enc_algo) [process, right=of plaintext1, text=black] {Encryption Algorithm};
+        \node (ciphertext) [block, right=of enc_algo, text=black] {ciphertext $K_A(m)$};
+        
+        % Second row
+        \node (dec_algo) [process, below=of ciphertext, text=black] {Decryption Algorithm};
+        \node (plaintext2) [block, right=of dec_algo, text=black] {plaintext ($m$)};
+        
+        % Keys
+        \node (keyA) [key, above=0.3cm of enc_algo, label=left:Alice's Key] {$K_A$};
+        \node (keyB) [key, above=0.3cm of dec_algo, label=right:Bob's Key] {$K_B$};
+        
+        % Trudy
+        \node (trudy_crypto) [intruder, below=of dec_algo] {Trudy};
 
+        % Connections
         \draw[dataflow] (plaintext1) -- (enc_algo);
-        \draw[dataflow] (keyA) |- (enc_algo);
+        \draw[dataflow] (keyA) -- (enc_algo);
         \draw[dataflow] (enc_algo) -- (ciphertext);
         \draw[dataflow] (ciphertext) -- (dec_algo);
-        \draw[dataflow] (keyB) |- (dec_algo);
+        \draw[dataflow] (keyB) -- (dec_algo);
         \draw[dataflow] (dec_algo) -- (plaintext2);
-        \draw[->, red, dashed] (trudy_crypto.north) -- (ciphertext);
+        \draw[->, red, dashed] (trudy_crypto) -- (ciphertext);
     \end{tikzpicture}
     \caption{Flusso base della crittografia.}
 \end{figure}
@@ -388,7 +396,7 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[node distance=1cm and 2.5cm]
+    \begin{tikzpicture}[node distance=1.5cm and 2cm, auto]
         \node (client) [actor] {Client (Alice)};
         \node (server) [actor, right=6cm of client] {Server (Bob)};
 

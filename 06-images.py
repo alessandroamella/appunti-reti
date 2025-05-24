@@ -1,14 +1,11 @@
 # Ensure the images directory exists
 import os
 
-from diagrams import Cluster, Diagram, Edge
-from diagrams.custom import Custom
+from diagrams import Diagram, Edge
 from diagrams.generic.database import SQL
-from diagrams.generic.device import Mobile
 from diagrams.generic.storage import Storage
 from diagrams.onprem.client import Client
 from diagrams.onprem.compute import Server
-from diagrams.programming.language import Python
 
 if not os.path.exists("images"):
     os.makedirs("images")
