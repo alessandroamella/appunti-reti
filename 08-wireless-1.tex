@@ -87,20 +87,33 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
     \end{itemize}
 \end{itemize}
 \begin{center}
-\begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
-    \draw[->] (0,0) -- (7,0) node[right] {Tempo/Fase (gradi)};
-    \draw[->] (0,-1.5) -- (0,1.5) node[above] {Ampiezza};
-    % Segnale principale (fase 0)
-    \draw[dashed, gray] (0,1) -- (6.5,1);
-    \draw[thick, themeblue] plot[domain=0:6.28, samples=100] (\x, {sin(\x r)});
-    \node[themeblue, above right] at (5,1) {Segnale (fase 0)};
-    % Segnale sfasato +90
-    \draw[thick, red] plot[domain=0:6.28, samples=100] (\x, {sin((\x+1.57) r)*0.5}); % 1.57 rad = 90 deg
-    \node[red, below right] at (1,-0.5) {Segnale (fase +90°)};
-    % Segnale sfasato +180
-    \draw[thick, green] plot[domain=0:6.28, samples=100] (\x, {sin((\x+3.14) r)*0.7}); % 3.14 rad = 180 deg
-    \node[green, above left] at (3,-0.7) {Segnale (fase +180°)};
-\end{tikzpicture}
+    \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+        % Axes
+        \draw[->] (0,0) -- (7,0) node[right] {Tempo/Fase (gradi)};
+        \draw[->] (0,-1.5) -- (0,1.5) node[above] {Ampiezza};
+        
+        % Reference dashed line
+        \draw[dashed, gray] (0,1) -- (6.5,1);
+        
+        % Signal plots
+        % Main signal (phase 0) - themeblue
+        \draw[thick, themeblue] plot[domain=0:6.28, samples=100] (\x, {sin(\x r)});
+        
+        % Phase +90° signal - red
+        \draw[thick, red] plot[domain=0:6.28, samples=100] (\x, {sin((\x+1.57) r)*0.5});
+        
+        % Phase +180° signal - green
+        \draw[thick, green] plot[domain=0:6.28, samples=100] (\x, {sin((\x+3.14) r)*0.7});
+        
+        % Legend in top right corner
+        \node[anchor=north east] at (11,2.2) {
+            \begin{tabular}{ll}
+                \textcolor{themeblue}{---} & Segnale (fase 0) \\
+                \textcolor{red}{---} & Segnale (fase +90°) \\
+                \textcolor{green}{---} & Segnale (fase +180°)
+            \end{tabular}
+        };
+    \end{tikzpicture}
 \end{center}
 
 \subsubsection{Polarizzazione (Polarization)}
@@ -146,33 +159,82 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
 
 \subsection{Copertura della Trasmissione Radio}
 \begin{itemize}
-    \item \textbf{Attenuazione con la Distanza:} La potenza del segnale (P) diminuisce con $P \propto \frac{P_{tx}}{d^k}$.
+    \item \textbf{Attenuazione con la Distanza:} La potenza del segnale (P) diminuisce con $P \propto \frac{P_{tx}}{d^k}$ (dove $\propto$ significa ``proporzionale a'', $P_{tx}$ è la potenza di trasmissione iniziale e $d^k$ è la distanza elevata all'esponente $k$).
     \begin{itemize}
         \item In spazio libero, $k \approx 2$.
         \item Con ostacoli, $k \ge 3$.
     \end{itemize}
-    \item \textbf{Effetto della Potenza di Trasmissione ($P_{tx}$):} Aumentando $P_{tx}$, il segnale arriva più lontano.
+    \item \textbf{Effetto della Potenza di Trasmissione $P_{tx}$:} Aumentando $P_{tx}$, il segnale arriva più lontano.
 \end{itemize}
+
 \begin{center}
 \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
     % Sorgente
-    \node[draw, circle, fill=blue!30] (A) at (0,0) {A};
-    % Onde
-    \draw[yellow, pattern=dots] (A) circle (2.5cm);
-    \draw[yellow, opacity=0.5] (A) circle (2cm);
-    \draw[yellow, opacity=0.8] (A) circle (1.5cm);
-    % Grafico attenuazione
-    \begin{scope}[xshift=5cm, yshift=-0.5cm]
-        \draw[->] (0,0) -- (3.5,0) node[right] {$d$};
-        \draw[->] (0,0) -- (0,2.5) node[above] {Potenza};
-        \draw[red, thick] plot[smooth, domain=0.5:3] (\x, {2/\x});
-        \node[red] at (1.5,2.2) {$\sim 4 P_{tx}$};
-        \draw[yellow, thick] plot[smooth, domain=0.5:3] (\x, {0.5/\x});
-        \node[yellow] at (2.5,0.8) {$P_{tx}$};
-        \draw[cyan, dashed] (0,0.3) -- (3,0.3) node[right] {Limite rilevamento};
+    \node[draw, circle, fill=themeblue!30, minimum size=8mm, text=black] (A) at (0,0) {A};
+    
+    % Onde radio con intensità decrescente
+    \draw[themeblue, very thick, opacity=0.9] (A) circle (0.8cm);
+    \draw[themeblue, thick, opacity=0.7] (A) circle (1.4cm);
+    \draw[themeblue, opacity=0.5] (A) circle (2.0cm);
+    \draw[themeblue, opacity=0.3] (A) circle (2.6cm);
+    
+    % Frecce per indicare la propagazione
+    \draw[->, themeblue, thick] (0.6,0.6) -- (1.2,1.2);
+    \draw[->, themeblue, thick] (0.6,-0.6) -- (1.2,-1.2);
+    \draw[->, themeblue, thick] (-0.6,0.6) -- (-1.2,1.2);
+    \draw[->, themeblue, thick] (-0.6,-0.6) -- (-1.2,-1.2);
+    
+    % Etichette per le zone (più in alto e a destra)
+    \node[themeblue, font=\small] at (0.85,0.55) {\textbf{Alta}};
+    \node[themeblue, font=\small] at (1.5,0.75) {\textbf{Media}};
+    \node[themeblue, font=\small] at (2.07,0.95) {\textbf{Bassa}};
+    \node[themeblue, font=\small] at (2.9,1.15) {\textbf{Molto bassa}};
+    
+    % Grafico attenuazione con miglioramenti
+    \begin{scope}[xshift=5.5cm, yshift=-0.5cm]
+        \draw[->] (0,0) -- (4.5,0) node[right] {\textbf{Distanza (d)}};
+        \draw[->] (0,0) -- (0,6) node[above] {\textbf{Potenza Ricevuta}};
+        
+        % Curve per diverse potenze di trasmissione (senza etichette)
+        \draw[red, very thick] plot[smooth, domain=0.5:4] (\x, {2.8/\x});
+        \draw[orange, thick] plot[smooth, domain=0.5:4] (\x, {2.0/\x});
+        \draw[themeblue, thick] plot[smooth, domain=0.5:4] (\x, {1.4/\x});
+        
+        % Legenda in alto a destra
+        \node[draw, align=left, font=\small] at (3.5,5) {
+            \textcolor{red}{— $P_{tx} = 4W$}\\
+            \textcolor{orange}{— $P_{tx} = 2W$}\\
+            \textcolor{themeblue}{— $P_{tx} = 1W$}
+        };
+        
+        % Limite di rilevamento
+        \draw[primarytext, dashed, thick] (0,0.3) -- (4,0.3) node[right, font=\small] {Limite rilevamento};
+        
+        % Punti di intersezione per mostrare il range (corretti)
+        \fill[red] (3.8,0.3) circle (2pt);
+        \fill[orange] (2.6,0.3) circle (2pt);
+        \fill[themeblue] (1.8,0.3) circle (2pt);
+        
+        % Linee verticali per mostrare il range massimo (corrette)
+        \draw[red, dotted] (3.8,0) -- (3.8,0.3);
+        \draw[orange, dotted] (2.6,0) -- (2.6,0.3);
+        \draw[themeblue, dotted] (1.8,0) -- (1.8,0.3);
+        
+        % Etichette per i range (dentro il grafico)
+        \node[red, font=\small] at (3.8,-0.2) {R$_{max}$};
+        \node[orange, font=\small] at (2.6,-0.2) {R$_{med}$};
+        \node[themeblue, font=\small] at (1.8,-0.2) {R$_{min}$};
     \end{scope}
 \end{tikzpicture}
 \end{center}
+
+\vspace{0.3cm}
+\textbf{Spiegazione dei grafici:}
+\begin{itemize}
+    \item \textbf{Grafico a sinistra (Propagazione):} Mostra come le onde radio si propagano dalla sorgente A in tutte le direzioni. I cerchi rappresentano zone con diversa intensità del segnale: più ci si allontana dalla sorgente, più il segnale diventa debole.
+    
+    \item \textbf{Grafico a destra (Attenuazione):} Mostra come la potenza ricevuta diminuisce con la distanza per diverse potenze di trasmissione. Il punto dove ogni curva interseca la linea tratteggiata rappresenta il range massimo di comunicazione per quella potenza.
+\end{itemize}
 
 \subsection{Portate (Ranges) della Propagazione del Segnale Wireless}
 \begin{itemize}
@@ -183,14 +245,17 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
 \textbf{Importante:} Queste portate \textbf{dipendono dalla sensibilità del ricevitore!}
 \begin{center}
 \begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
-    \node[draw, circle, fill=gray!70] (sender) at (0,0) {sender};
-    \draw[fill=gray!50, draw=white, opacity=0.7] (sender) circle (1cm);
-    \node at (0,0.3cm) {\tiny transmission};
-    \draw[fill=gray!30, draw=white, opacity=0.7] (sender) circle (2cm);
-    \node at (0,-1.5cm) {\tiny detection};
-    \draw[fill=gray!10, draw=white, opacity=0.7] (sender) circle (3cm);
-    \node at (0,-2.5cm) {\tiny interference};
-    \draw[->, thick] (sender) -- (3.5, -1) node[right] {distance};
+    % First draw all the circles with opacity
+    \draw[fill=gray!50, draw=white, opacity=0.7] (0,0) circle (1.5cm);
+    \draw[fill=gray!30, draw=white, opacity=0.7] (0,0) circle (3cm);
+    \draw[fill=gray!10, draw=white, opacity=0.7] (0,0) circle (4.5cm);
+    
+    % Then add all text nodes without opacity
+    \node[draw, circle, text=black] (sender) at (0,0) {mittente};
+    \node[text=black, font=\bfseries\small] at (0,0.5cm) {trasmissione};
+    \node[text=black, font=\bfseries\large] at (0,-2cm) {rilevamento};
+    \node[text=black, font=\bfseries\large] at (0,-3.5cm) {interferenza};
+    \draw[->, thick, red] (sender) -- (5, -1.5) node[right, text=red, font=\large] {distanza};
 \end{tikzpicture}
 \end{center}
 
@@ -211,6 +276,233 @@ Gli ostacoli possono \textbf{riflettere} o \textbf{assorbire} le onde RF. L'effe
     \item \textbf{Diffraction (Diffrazione):} Piegamento attorno ai bordi.
 \end{itemize}
 
+% Grid layout for propagation effects
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    % 1. REFLECTION (Riflessione)
+    \begin{tikzpicture}[scale=0.9]
+        \node at (0,3.5) {\textbf{Reflection (Riflessione)}};
+        
+        % Transmitter
+        \fill[red!70] (0,0) circle (0.1);
+        \node[below] at (0,-0.2) {TX};
+        
+        % Receiver
+        \fill[blue!70] (4,2) circle (0.1);
+        \node[above] at (4,2.2) {RX};
+        
+        % Edificio/Wall
+        \fill[gray!60] (2,-0.5) rectangle (2.5,3);
+        \node[rotate=90] at (2.25,1.2) {Edificio};
+        
+        % Direct path (blocked)
+        \draw[red, dashed, thick] (0,0) -- (1.8,1.5);
+        \draw[red, thick, cross out, draw=red] (1.9,1.6) circle (0.1);
+        
+        % Reflected path
+        \draw[->, red, thick] (0,0) -- (2,2.5);
+        \draw[->, red, thick] (2,2.5) -- (4,2);
+        
+        % Reflection point
+        \fill[green!70] (2,2.5) circle (0.05);
+        
+        % Angle indicators
+        \draw[thin] (1.8,2.5) -- (2.2,2.5);
+        \draw[thin] (2,2.3) -- (2,2.7);
+        \node[font=\small] at (1.7,2.2) {$\theta_i$};
+        \node[font=\small] at (2.3,2.2) {$\theta_r$};
+        
+        \node[below] at (2,-0.7) {$\theta_i = \theta_r$};
+    \end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    % 2. DIFFRACTION (Diffrazione)
+    \begin{tikzpicture}[scale=0.9]
+        \node at (0,3.5) {\textbf{Diffraction (Diffrazione)}};
+        
+        % Transmitter
+        \fill[red!70] (0,1) circle (0.1);
+        \node[below] at (0,0.8) {TX};
+        
+        % Receiver
+        \fill[blue!70] (4,1) circle (0.1);
+        \node[below] at (4,0.8) {RX};
+        
+        % Obstacle (building)
+        \fill[gray!60] (1.5,0) rectangle (2.5,2.5);
+        \node[rotate=90] at (2,1.2) {Edificio};
+        
+        % Direct path (blocked)
+        \draw[red, dashed, thick] (0,1) -- (1.4,1);
+        \draw[red, thick, cross out, draw=red] (1.5,1) circle (0.1);
+        
+        % Diffracted waves around top edge
+        \draw[->, red, thick] (0,1) -- (2,2.5);
+        \draw[->, red, thick, bend left=20] (2,2.5) to (4,1);
+        
+        % Additional diffracted rays
+        \draw[->, red!60, thick, bend left=30] (2,2.5) to (3.5,0.5);
+        \draw[->, red!60, thick, bend left=10] (2,2.5) to (3.5,1.5);
+        
+        % Edge point
+        \fill[green!70] (2,2.5) circle (0.05);
+        \node[right, font=\small] at (2.1,2.5) {Angolo};
+        
+        % Shadow region
+        \fill[black!30, opacity=0.4] (2.5,0) rectangle (4,2);
+        \node[font=\small] at (3.2,-0.4) {Shadow Region};
+    \end{tikzpicture}
+\end{minipage}
+
+\vspace{1cm}
+
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    % 3. SCATTERING (Diffusione)
+    \begin{tikzpicture}[scale=0.9]
+        \node at (0,3.5) {\textbf{Scattering (Diffusione)}};
+        
+        % Transmitter
+        \fill[red!70] (0,1.5) circle (0.1);
+        \node[below] at (0,1.3) {TX};
+        
+        % Receiver
+        \fill[blue!70] (4,1.5) circle (0.1);
+        \node[below] at (4,1.3) {RX};
+        
+        % Small obstacles (trees, poles, etc.)
+        \fill[green!60] (1.5,0.5) circle (0.15);
+        \fill[green!60] (2,2.2) circle (0.1);
+        \fill[green!60] (2.5,0.8) circle (0.12);
+        \fill[green!60] (1.8,1.8) circle (0.08);
+        \fill[green!60] (2.3,1.4) circle (0.1);
+        
+        \node[font=\small] at (1.5,-0.2) {Alberi/Pali};
+        
+        % Incident wave
+        \draw[->, red, thick] (0,1.5) -- (1.3,1.2);
+        
+        % Scattered waves in multiple directions
+        \draw[->, red!70, thick] (1.5,0.5) -- (1.2,0.2);
+        \draw[->, red!70, thick] (1.5,0.5) -- (1.8,0.2);
+        \draw[->, red!70, thick] (1.5,0.5) -- (1.7,0.8);
+        
+        \draw[->, red!70, thick] (2,2.2) -- (1.7,2.5);
+        \draw[->, red!70, thick] (2,2.2) -- (2.3,2.4);
+        \draw[->, red!70, thick] (2,2.2) -- (2.2,1.9);
+        
+        \draw[->, red!70, thick] (2.5,0.8) -- (2.8,0.5);
+        \draw[->, red!70, thick] (2.5,0.8) -- (2.7,1.1);
+        \draw[->, red!70, thick] (2.5,0.8) -- (3,1);
+        
+        % One scattered ray reaching receiver
+        \draw[->, red, thick] (2.3,1.4) -- (4,1.5);
+        
+        % Direct path (weakened)
+        \draw[red, dashed, thick, opacity=0.5] (0,1.5) -- (4,1.5);
+        \node[font=\small] at (2,2.9) {Diretto indebolito};
+    \end{tikzpicture}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    % 4. MULTIPATH FADING
+    \begin{tikzpicture}[scale=0.9]
+        \node at (0,3.5) {\textbf{Multipath Fading}};
+        
+        % Transmitter
+        \fill[red!70] (0,1) circle (0.1);
+        \node[below] at (0,0.8) {TX};
+        
+        % Receiver
+        \fill[blue!70] (5,1) circle (0.1);
+        \node[below] at (5,0.8) {RX};
+        
+        % Obstacles
+        \fill[gray!60] (1.5,0) rectangle (1.8,2);
+        \fill[gray!60] (3,1.5) rectangle (3.3,3);
+        
+        % Multiple paths with different delays and amplitudes
+        % Path 1 - Direct (strongest but partially blocked)
+        \draw[->, red, thick, line width=2pt] (0,1) -- (4.5,1);
+        \draw[->, red, thick, line width=2pt] (4.5,1) -- (5,1);
+        \node[font=\tiny] at (2.5,1.2) {Path 1 (strong)};
+        
+        % Path 2 - Reflected from building
+        \draw[->, red!70, thick] (0,1) -- (1.5,1.5);
+        \draw[->, red!70, thick] (1.5,1.5) -- (5,1);
+        \node[font=\tiny] at (1,1.7) {Path 2};
+        
+        % Path 3 - Over building
+        \draw[->, red!50, thick, bend left=30] (0,1) to (3,3.3);
+        \draw[->, red!50, thick, bend right=30] (3,3.3) to (5,1);
+        \node[font=\tiny] at (2.5,2.8) {Path 3};
+        
+        % Path 4 - Ground reflection
+        \draw[->, red!40, thick, bend right=20] (0,1) to (2.5,0.2);
+        \draw[->, red!40, thick, bend left=20] (2.5,0.2) to (5,1);
+        \node[font=\tiny] at (2.5,0) {Path 4 (ground)};
+        
+        % Signal combination at receiver
+        \node[right] at (5.2,1.5) {\begin{tabular}{l}
+            Combined\\
+            Signal\\
+            (constructive/\\
+            destructive\\
+            interference)
+        \end{tabular}};
+    \end{tikzpicture}
+\end{minipage}
+
+\vspace{1cm}
+
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    % 5. SHADOWING
+    \begin{tikzpicture}[scale=0.9]
+        \node at (0,4.5) {\textbf{Shadowing}};
+        
+        % Transmitter
+        \fill[red!70] (0,2) circle (0.1);
+        \node[below] at (0,1.8) {TX};
+        
+        % Large obstacle (mountain/large building)
+        \fill[gray!70] (2,0) -- (2,2.5) -- (3.5,4) -- (5,2.5) -- (5,0) -- cycle;
+        \node[font=\small] at (3.5,-0.4) {Large Obstacle};
+        
+        % Receivers at different positions
+        \fill[blue!70] (6,2) circle (0.1);
+        \node[below] at (6,1.8) {RX1};
+        \fill[blue!70] (7,1) circle (0.1);
+        \node[below] at (7,0.8) {RX2};
+        \fill[blue!70] (8,3) circle (0.1);
+        \node[above] at (8,3.2) {RX3};
+        
+        % Signal strength visualization
+        \draw[red, thick] (0,2) -- (1.8,2.2);
+        
+        % Shadow region
+        \fill[black!30, opacity=0.4] (5,0) -- (5,2.5) -- (9,1) -- (9,0) -- cycle;
+        \node[font=\small] at (7,-0.4) {Shadow Region};
+        
+        % Weak signals in shadow
+        \draw[red, dashed, very thin] (5,2.5) -- (6,2);
+        \draw[red, dashed, very thin] (5,2.2) -- (7,1);
+        
+        % Strong signal outside shadow
+        \draw[->, red, thick] (5,3.5) -- (8,3);
+        
+        % Signal strength indicators
+        \node[font=\small, red] at (6.3,2.3) {Debole};
+        \node[font=\small, red] at (7.8,1.3) {Molto debole};
+        \node[font=\small, red] at (8.2,2.7) {Forte};
+    \end{tikzpicture}
+\end{minipage}
+\end{center}
+
 \subsection{Propagazione Multipath (Percorsi Multipli)}
 Il segnale raggiunge il ricevitore tramite percorsi multipli.
 \begin{itemize}
@@ -220,24 +512,6 @@ Il segnale raggiunge il ricevitore tramite percorsi multipli.
     \end{itemize}
     \item \textbf{Distorsione del Segnale:} Il segnale risultante è la somma di copie con fasi e ampiezze diverse.
 \end{itemize}
-\begin{center}
-\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
-    \node (tx) at (0,1) [draw, trapezium, trapezium angle=60, minimum width=0.5cm, minimum height=1cm, fill=gray!30] {}; % Antenna TX
-    \node (rx) at (6,1) [draw, trapezium, trapezium angle=60, minimum width=0.5cm, minimum height=1cm, fill=gray!30, shape border rotate=180] {}; % Antenna RX
-    \node (building) at (3,2.5) [draw, fill=brown!50, minimum width=0.5cm, minimum height=1cm] {Edificio};
-    \draw[->, thick, themeblue] (tx.east) -- (rx.west) node[midway, below, sloped] {LOS};
-    \draw[->, thick, red] (tx.east) .. controls (1.5,2) and (2.5,2.8) .. (building.south) .. controls (3.5,2.8) and (4.5,2) .. (rx.west);
-    \draw[->, thick, orange] (tx.east) .. controls (2,-0.5) and (4,-0.5) .. (rx.west);
-    
-    \node at (0,-1) {Segnale trasmesso:};
-    \draw[thick] (1.5,-1) -- (1.5, -0.5); % singolo impulso
-
-    \node at (4.5,-1) {Segnale ricevuto:};
-    \draw[thick, themeblue] (5.8,-1) -- (5.8, -0.5); % LOS
-    \draw[thick, red, opacity=0.7] (6.1,-1) -- (6.1, -0.7); % Riflesso 1
-    \draw[thick, orange, opacity=0.5] (6.4,-1) -- (6.4, -0.6); % Riflesso 2
-\end{tikzpicture}
-\end{center}
 
 \subsection{Effetti della Mobilità}
 Il movimento cambia le caratteristiche del canale.
@@ -247,40 +521,152 @@ Il movimento cambia le caratteristiche del canale.
 \end{itemize}
 
 \subsection{Voltage Standing Wave Ratio (VSWR)}
-\begin{itemize}
-    \item \textbf{Causa:} Discrepanza di impedenza (Ohm) tra trasmettitore, cavo, antenna.
-    \item \textbf{Effetto (``Return Loss''):} Energia riflessa indietro verso il trasmettitore.
-    \item \textbf{Misura:} Rapporto tra impedenze. Ideale 1:1.
-    \item \textbf{Conseguenze Negative:} Danneggiamento Tx, instabilità.
-    \item \textbf{Soluzione VSWR:} Usare componenti con la \textbf{stessa impedenza} (tipica \SI{50}{\ohm} nelle WLAN).
-\end{itemize}
-\begin{center}
-\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
-    \node (tx) [draw, rectangle, fill=blue!30, minimum height=1cm, minimum width=1.5cm] at (0,0) {Trasmettitore $Z_{out}=\SI{75}{\ohm}$};
-    \node (cable1) [draw, rectangle, fill=green!30, minimum height=0.5cm, minimum width=2cm] at (2.5,0) {Cavo $Z_c=\SI{75}{\ohm}$};
-    \node (cable2) [draw, rectangle, fill=red!30, minimum height=0.5cm, minimum width=2cm] at (5.5,0) {Cavo $Z_c=\SI{50}{\ohm}$};
-    \node (ant) [trapezium, draw, fill=yellow!30, minimum height=1cm, shape border rotate=270] at (7.5,0) {Antenna $Z_L=\SI{50}{\ohm}$};
+\subsubsection{Cos'è il VSWR?}
+Il VSWR è un fenomeno che si verifica nei sistemi di trasmissione RF quando c'è un "disadattamento di impedenza" tra i vari componenti.
 
-    \draw (tx.east) -- (cable1.west);
-    \node at (1.25,0.5) {VSWR 1:1};
-    \draw (cable1.east) -- (cable2.west);
-    \node at (4,0.5) {VSWR 1.5:1};
-    \draw [dashed, red, <-] (4, -0.3) to [out=180,in=-45] (3.5,-0.8) node[below] {Riflessione};
-    \draw (cable2.east) -- (ant.west);
-    \node at (6.5,0.5) {VSWR 1:1};
-\end{tikzpicture}
+Con un'analogia, si può immaginare un tubo dell'acqua (il cavo) che collega una pompa (il trasmettitore) a un irrigatore (l'antenna):
+\begin{itemize}
+    \item Se il tubo ha lo stesso diametro ovunque, l'acqua scorre senza problemi
+    \item Se improvvisamente il tubo cambia diametro, parte dell'acqua "rimbalza" indietro, creando turbolenze
+\end{itemize}
+
+Allo stesso modo, nelle trasmissioni RF:
+\begin{itemize}
+    \item L'impedenza (misurata in Ohm $\Omega$) è come il "diametro del tubo" per i segnali RF
+    \item Se tutti i componenti hanno la stessa impedenza, il segnale viaggia senza problemi
+    \item Se c'è un cambio di impedenza, parte del segnale viene riflesso indietro
+\end{itemize}
+
+\subsubsection{Problemi del VSWR}
+\begin{itemize}
+    \item \textbf{Causa:} Discrepanza di impedenza ($\Omega$) tra trasmettitore, cavo, antenna
+    \item \textbf{Effetto (``Return Loss''):} 
+    \begin{itemize}
+        \item Parte dell'energia viene riflessa indietro verso il trasmettitore
+        \item Si creano "onde stazionarie" nel cavo (da qui il nome "Standing Wave")
+        \item Meno potenza raggiunge effettivamente l'antenna
+    \end{itemize}
+    \item \textbf{Conseguenze Negative:} 
+    \begin{itemize}
+        \item Danneggiamento del trasmettitore (l'energia riflessa può surriscaldarlo)
+        \item Instabilità del segnale
+        \item Perdita di potenza effettiva trasmessa
+        \item Distorsione del segnale
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Come si Misura}
+\begin{itemize}
+    \item Il VSWR è un rapporto tra impedenze, espresso come X:1
+    \item VSWR = 1:1 è il caso ideale (nessuna riflessione)
+    \item VSWR = 2:1 significa che circa l'11\% della potenza viene riflessa
+    \item VSWR = 3:1 significa che circa il 25\% della potenza viene riflessa
+\end{itemize}
+
+\subsubsection{Soluzioni}
+\begin{itemize}
+    \item \textbf{Soluzione Principale:} Usare componenti con la \textbf{stessa impedenza}
+    \begin{itemize}
+        \item Nelle WLAN moderne si usa tipicamente un'impedenza di \SI{50}{\ohm}
+        \item Tutti i componenti (Tx, cavi, antenna) devono essere \SI{50}{\ohm}
+    \end{itemize}
+    \item \textbf{Alternative:}
+    \begin{itemize}
+        \item Usare "adattatori di impedenza" tra componenti diversi
+        \item Scegliere cavi di alta qualità con impedenza controllata
+        \item Minimizzare le giunzioni e i connettori non necessari
+    \end{itemize}
+\end{itemize}
+
+\begin{center}
+    \begin{tikzpicture}[scale=1.2, every node/.style={transform shape}]
+        % Trasmettitore
+        \node (tx) [draw, rectangle, fill=blue!30, minimum height=1.2cm, minimum width=2.5cm, 
+                    text width=2cm, align=center, text=black] at (0,0) {Trasmettitore\\$Z_{out} = \SI{75}{\ohm}$};
+        
+        % Primo cavo
+        \node (cable1) [draw, rectangle, fill=green!30, minimum height=0.8cm, minimum width=2.5cm,
+                        text width=2cm, align=center, text=black] at (4,0) {Cavo\\$Z_c = \SI{75}{\ohm}$};
+        
+        % Secondo cavo
+        \node (cable2) [draw, rectangle, fill=red!30, minimum height=0.8cm, minimum width=2.5cm,
+                        text width=2cm, align=center, text=black] at (8,0) {Cavo\\$Z_c = \SI{50}{\ohm}$};
+        
+        % Antenna
+        \node (ant) [trapezium, draw, fill=yellow!30, minimum height=1.2cm, minimum width=2cm,
+                     shape border rotate=270, text width=1.8cm, align=center, text=black] at (11.5,0) {Antenna\\$Z_L = \SI{50}{\ohm}$};
+    
+        % Connessioni
+        \draw[->, thick] (tx.east) -- (cable1.west);
+        \draw[->, thick] (cable1.east) -- (cable2.west);
+        \draw[->, thick] (cable2.east) -- (ant.west);
+        
+        % Etichette VSWR
+        \node[above, font=\small\bfseries] at (2, 0.8) {VSWR 1:1};
+        \node[above, font=\small\bfseries] at (6, 0.8) {VSWR 1.5:1};
+        \node[above, font=\small\bfseries] at (9.75, 0.8) {VSWR 1:1};
+        
+        % Freccia di riflessione
+        \draw[dashed, red, thick, <-] (6, -0.8) to [out=180, in=-30] (5, -1.2);
+        \node[below, red, font=\small\bfseries] at (4.5, -1.4) {Riflessione};
+        
+        % Linee di separazione per chiarezza
+        \draw[dotted, gray] (2.75, -1.5) -- (2.75, 1.5);
+        \draw[dotted, gray] (6.75, -1.5) -- (6.75, 1.5);
+        \draw[dotted, gray] (10.25, -1.5) -- (10.25, 1.5);
+        
+    \end{tikzpicture}
 \end{center}
 
 \section{Potenza e Misurazioni}
 
 \subsection{Radiatore Intenzionale (IR) e EIRP}
+
+\subsubsection{Radiatore Intenzionale (IR)}
 \begin{itemize}
-    \item \textbf{Radiatore Intenzionale (IR):} Dispositivo Tx RF + cavi + connettori (\textbf{esclusa} antenna).
-    \item \textbf{Potenza di Uscita dell'IR:} Potenza all'uscita dell'ultimo connettore, prima dell'antenna.
-    \item \textbf{Equivalent Isotropically Radiated Power (EIRP):} Potenza totale che irradierebbe un'antenna isotropica per produrre la stessa intensità di segnale nella direzione di massima emissione dell'antenna reale.
-    \[ \text{EIRP} = \text{Potenza IR (all'antenna)} + \text{Guadagno Passivo Antenna} \]
-    (Calcoli accurati si fanno in dB/dBm/dBi).
+    \item È l'insieme di tutti i componenti del sistema di trasmissione \textbf{prima} dell'antenna:
+    \begin{itemize}
+        \item Trasmettitore RF
+        \item Cavi di collegamento
+        \item Connettori
+    \end{itemize}
+    \item La potenza di uscita dell'IR è misurata all'ultimo connettore, immediatamente prima dell'antenna
 \end{itemize}
+
+\subsubsection{EIRP (Equivalent Isotropically Radiated Power)}
+\begin{itemize}
+    \item È una misura teorica che rappresenta la potenza totale del sistema
+    \item Definizione: potenza che dovrebbe emettere un'antenna isotropica ideale per produrre la stessa intensità di segnale dell'antenna reale nella direzione di massima emissione
+    \item Si calcola come:
+    \[ \text{EIRP} (W) = \text{Potenza IR} (W) \times \text{Guadagno Antenna} (\text{rapporto}) \]
+    \item In unità logaritmiche (più comunemente usate):
+    \[ \text{EIRP} (dBm) = \text{Potenza IR} (dBm) + \text{Guadagno Antenna} (dBi) \]
+\end{itemize}
+
+\textbf{Esempi:}
+\begin{enumerate}
+    \item \textbf{Calcolo in unità lineari:}
+    \begin{itemize}
+        \item Potenza IR = \SI{0.1}{\watt} = \SI{100}{\milli\watt}
+        \item Guadagno antenna = 4 (equivalente a \SI{6}{dBi})
+        \item EIRP = \SI{100}{\milli\watt} × 4 = \SI{400}{\milli\watt} = \SI{0.4}{\watt}
+    \end{itemize}
+
+    \item \textbf{Calcolo in dB:}
+    \begin{itemize}
+        \item Potenza IR = \SI{20}{dBm} (\SI{100}{\milli\watt})
+        \item Guadagno antenna = \SI{6}{dBi}
+        \item EIRP = \SI{20}{dBm} + \SI{6}{dBi} = \SI{26}{dBm} (\SI{400}{\milli\watt})
+    \end{itemize}
+
+    \item \textbf{Sistema con perdite:}
+    \begin{itemize}
+        \item Potenza IR = \SI{30}{dBm} (\SI{1}{\watt})
+        \item Perdite nei cavi = \SI{-2}{dB}
+        \item Guadagno antenna = \SI{8}{dBi}
+        \item EIRP = \SI{30}{dBm} + (\SI{-2}{dB}) + \SI{8}{dBi} = \SI{36}{dBm} (\SI{4}{\watt})
+    \end{itemize}
+\end{enumerate}
 
 \subsection{Misurazione della Potenza}
 \subsubsection{Watt (W) e milliwatt (mW)}
@@ -321,13 +707,13 @@ Unità logaritmica per misurare la potenza \textbf{assoluta}, con riferimento fi
 \end{itemize}
 \begin{table}[H]
 \centering
-\caption{Tabella di Conversione mW -- dBm (approssimata)}
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
-\hline
-\textbf{dBm} & -30 & -20 & -10 & 0 & +3 & +10 & +20 & +30 & +40 \\ \hline
-\textbf{Potenza} & \SI{1}{\micro\watt} & \SI{10}{\micro\watt} & \SI{0.1}{\milli\watt} & \SI{1}{\milli\watt} & \SI{2}{\milli\watt} & \SI{10}{\milli\watt} & \SI{100}{\milli\watt} & \SI{1}{\watt} & \SI{10}{\watt} \\ \hline
+    \hline
+    \textbf{dBm} & -30 & -20 & -10 & 0 & +3 & +10 & +20 & +30 & +40 \\ \hline
+    \textbf{Potenza} & \SI{1}{\micro\watt} & \SI{10}{\micro\watt} & \SI{0.1}{\milli\watt} & \SI{1}{\milli\watt} & \SI{2}{\milli\watt} & \SI{10}{\milli\watt} & \SI{100}{\milli\watt} & \SI{1}{\watt} & \SI{10}{\watt} \\ \hline
 \end{tabular}
 \label{tab:dbm_conversion}
+\caption{Tabella di Conversione mW -- dBm (approssimata)}
 \end{table}
 
 \subsubsection{dBi (Decibel-isotropic)}
@@ -404,10 +790,10 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
 \begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
     \node (tx_ant) at (-3,0) [cylinder, draw, shape border rotate=90, aspect=0.3, minimum height=1cm, minimum width=0.5cm, fill=blue!30] {}; % Antenna TX
     \node (rx_ant) at (3,0) [cylinder, draw, shape border rotate=90, aspect=0.3, minimum height=1cm, minimum width=0.5cm, fill=blue!30] {}; % Antenna RX
-    \draw[dashed, red] (tx_ant.east) -- (rx_ant.west) node [midway, above, font=\tiny] {LOS};
+    \draw[dashed, red] (tx_ant.east) -- (rx_ant.west) node [midway, above, font=\small] {LOS};
     % Fresnel Zone (1st)
     \draw[orange, fill=orange!30, opacity=0.5] (0,0) ellipse (3.2cm and 0.6cm);
-    \node at (0,0) [font=\tiny, orange] {1a Zona Fresnel};
+    \node at (0,0) [font=\small, orange] {1a Zona Fresnel};
     % Obstacle
     \node (tree) at (0.5, -0.2) [circle, draw, minimum width=0.5cm, fill=green!50] {};
 \end{tikzpicture}
@@ -436,7 +822,7 @@ Uso di più antenne per combattere il multipath fading.
 Attenuazione del segnale con distanza e frequenza.
 \begin{itemize}
     \item Formula Free Space Path Loss (FSPL) (esempio):
-    \[ \text{FSPL (dB)} = 32.4 + 20 \log_{10}(f_{\text{MHz}}) + 20 \log_{10}(d_{\text{km}}) \]
+    \[ \text{FSPL (dB)} = 32.4 + 20 \log_{10}(f_{MHz}) + 20 \log_{10}(d_{km}) \]
     \item \textbf{Regola dei 6 dB:} Ogni $\SI{+6}{dB}$ in EIRP (potenza x4) circa raddoppia la portata Tx (assumendo attenuazione $d^2$).
 \end{itemize}
 \begin{table}[H]
