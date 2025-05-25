@@ -23,22 +23,31 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
 \end{itemize}
 \begin{center}
 \begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
-    % Voltaggio
-    \draw[->] (0,0) -- (3,0) node[right] {$t$};
-    \draw[->] (0,-1) -- (0,1) node[above] {$V$};
-    \draw[red, thick] (0,0) sin (0.785,0.8) cos (1.57,-0.8) sin (2.355,0.8) cos (3.14,-0.8);
-    \node at (1.5,-1.5) {Voltaggio (AC)};
-
-    % Antenna
-    \draw[thick, themeblue] (4,0.5) -- (4,-0.5); % Dipolo verticale
-    \draw[thick, themeblue] (3.8,0) -- (4.2,0);   % Collegamento
-    \node at (4,-1.5) {Antenna};
-
-    % Onde RF
-    \foreach \i in {1,2,3,4} {
-        \draw[yellow, opacity=0.8/\i] (4.5+\i*0.2,0) circle (\i*0.5);
-    }
-    \node at (6.5,-1.5) {Onde RF};
+        % Voltaggio
+        \begin{scope}[shift={(-2,0)}]
+            \draw[->] (0,0) -- (3,0) node[right] {$t$};
+            \draw[->] (0,-1) -- (0,1) node[above] {$V$};
+            \draw[red, thick] (0,0) sin (0.785,0.8) cos (1.57,-0.8) sin (2.355,0.8) cos (3.14,-0.8);
+            \node at (1.5,-1.5) {Voltaggio (AC)};
+        \end{scope}
+    
+        % Antenna (spostata più a destra e migliorata)
+        \begin{scope}[shift={(4,0)}]
+            % Dipolo verticale (due bracci)
+            \draw[thick, themeblue] (4,0.8) -- (4,0.1);  % Braccio superiore
+            \draw[thick, themeblue] (4,-0.1) -- (4,-0.8);  % Braccio inferiore
+            % Punto di alimentazione (gap e linea di alimentazione)
+            \draw[thick, themeblue] (3.7,0) -- (4,0);   % Linea di alimentazione
+            \draw[fill=white] (4,0) circle (0.1);  % Punto di alimentazione evidenziato
+            \node[right] at (4.3,0) {\small punto di alimentazione};  % Etichetta esplicativa
+            \node at (4,-1.5) {Antenna Dipolo};  % Nome più specifico
+        
+            % Onde RF (migliorate)
+            \foreach \i in {1,2,3,4,5} {
+                \draw[yellow, opacity=0.9/\i] (4.5+\i*0.25,0) circle (\i*0.5);
+            }
+            \node at (7,-1.5) {Onde RF};
+        \end{scope}
 \end{tikzpicture}
 \end{center}
 
@@ -185,13 +194,13 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
     \draw[->, themeblue, thick] (-0.6,-0.6) -- (-1.2,-1.2);
     
     % Etichette per le zone (più in alto e a destra)
-    \node[themeblue, font=\small] at (0.85,0.55) {\textbf{Alta}};
-    \node[themeblue, font=\small] at (1.5,0.75) {\textbf{Media}};
-    \node[themeblue, font=\small] at (2.07,0.95) {\textbf{Bassa}};
-    \node[themeblue, font=\small] at (2.9,1.15) {\textbf{Molto bassa}};
+    \node[themeblue, font=\tiny] at (0.85,0.55) {\textbf{Alta}};
+    \node[themeblue, font=\tiny] at (1.5,0.75) {\textbf{Media}};
+    \node[themeblue, font=\tiny] at (2.07,0.95) {\textbf{Bassa}};
+    \node[themeblue, font=\tiny] at (2.9,1.15) {\textbf{Molto bassa}};
     
     % Grafico attenuazione con miglioramenti
-    \begin{scope}[xshift=5.5cm, yshift=-0.5cm]
+    \begin{scope}[xshift=5.5cm, yshift=-3cm]
         \draw[->] (0,0) -- (4.5,0) node[right] {\textbf{Distanza (d)}};
         \draw[->] (0,0) -- (0,6) node[above] {\textbf{Potenza Ricevuta}};
         
@@ -721,9 +730,9 @@ Guadagno passivo di un'antenna rispetto a un'antenna \textbf{isotropica} (ideale
 
 \subsubsection{dBd (Decibel-dipole)}
 Guadagno passivo di un'antenna rispetto a un'antenna \textbf{dipolo a mezz'onda}.
-Un dipolo a mezz'onda ha circa $\SI{2.14}{dBi}$.
-\[ \SI{0}{dBd} = \SI{2.14}{dBi} \]
-\[ \text{Guadagno (dBi)} = \text{Guadagno (dBd)} + 2.14 \]
+Un dipolo a mezz'onda ha circa $\SI{2.15}{dBi}$.
+\[ \SI{0}{dBd} = \SI{2.15}{dBi} \]
+\[ \text{Guadagno (dBi)} = \text{Guadagno (dBd)} + 2.15 \]
 
 \subsection{Monitoraggio della Potenza (es. IEEE 802.11)}
 \begin{itemize}
@@ -751,18 +760,83 @@ Irradia potenza equamente attorno all'asse verticale (pattern a ``ciambella'').
     \item \textbf{Tilt dell'Antenna (Inclinazione):} Inclinare un'antenna ad alto guadagno verso il basso (``downtilt'') migliora la copertura nell'area sottostante.
 \end{itemize}
 \begin{center}
-\begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
-    % Low Gain Dipole
-    \node at (0,2.5) {Dipolo Basso Guadagno};
-    \draw[thick, themeblue] (0,0) -- (0,2); % antenna
-    \draw[red, fill=red!30, opacity=0.5] (0,1) ellipse (1.5cm and 1cm); % pattern
-    \node at (0,1) [themeblue] {$P_{max}$};
+\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+    % Vista Laterale (Side View)
+    \node[font=\bfseries] at (-4,4) {Vista Laterale};
+    
+    % Low Gain Dipole - Side View
+    \begin{scope}[shift={(-6,0)}]
+        \node[font=\bfseries] at (0,3) {Dipolo Basso Guadagno};
+        % Antenna
+        \draw[thick, themeblue] (0,-0.5) -- (0,2);
+        % Pattern di radiazione
+        \fill[red!20, opacity=0.3] (0,0.75) ellipse (2cm and 1.5cm);
+        \draw[red, thick] (0,0.75) ellipse (2cm and 1.5cm);
+        % Linee di campo
+        \foreach \angle in {0,30,...,330} {
+            \draw[->, red!70, thin] (0,0.75) -- ++ (\angle:1cm);
+        }
+        % Label
+        \node[text width=2cm, align=center, font=\small] at (0,-1.8) {2 dBi\\Copertura verticale migliore};
+    \end{scope}
+    
+    % High Gain Dipole - Side View
+    \begin{scope}[shift={(0,0)}]
+        \node[font=\bfseries] at (0,3) {Dipolo Alto Guadagno};
+        % Antenna
+        \draw[thick, themeblue] (0,-0.5) -- (0,2);
+        % Pattern di radiazione
+        \fill[themeblue!20, opacity=0.3] (0,0.75) ellipse (3cm and 0.8cm);
+        \draw[themeblue, thick] (0,0.75) ellipse (3cm and 0.8cm);
+        % Linee di campo
+        \foreach \angle in {0,30,...,330} {
+            \draw[->, themeblue!70, thin] (0,0.75) -- ++ (\angle:1.5cm);
+        }
+        % Label
+        \node[text width=2cm, align=center, font=\small] at (0,-1.8) {8-10 dBi\\Copertura orizzontale migliore};
+    \end{scope}
 
-    % High Gain Dipole
-    \node at (5,2.5) {Dipolo Alto Guadagno};
-    \draw[thick, themeblue] (5,0) -- (5,2); % antenna
-    \draw[red, fill=red!30, opacity=0.5] (5,1) ellipse (2.5cm and 0.5cm); % pattern
-    \node at (5,1) [themeblue] {$P_{max}$};
+    % Vista dall'Alto (Top View)
+    \node[font=\bfseries] at (-4,-3.5) {Vista dall'Alto};
+    
+    % Low Gain Dipole - Top View
+    \begin{scope}[shift={(-6,-6)}]
+        % Antenna (punto centrale)
+        \fill[themeblue] (0,0) circle (0.1);
+        % Pattern di radiazione circolare
+        \fill[red!20, opacity=0.3] (0,0) circle (2cm);
+        \draw[red, thick] (0,0) circle (2cm);
+        % Linee di campo radiali
+        \foreach \angle in {0,45,...,315} {
+            \draw[->, red!70, thin] (0,0) -- ++ (\angle:1.5cm);
+        }
+        % Label
+        \node[font=\small] at (0,-2.5) {Pattern circolare uniforme};
+    \end{scope}
+    
+    % High Gain Dipole - Top View
+    \begin{scope}[shift={(0,-6)}]
+        % Antenna (punto centrale)
+        \fill[themeblue] (0,0) circle (0.1);
+        % Pattern di radiazione circolare ma più ampio
+        \fill[themeblue!20, opacity=0.3] (0,0) circle (3cm);
+        \draw[themeblue, thick] (0,0) circle (3cm);
+        % Linee di campo radiali più lunghe
+        \foreach \angle in {0,45,...,315} {
+            \draw[->, themeblue!70, thin] (0,0) -- ++ (\angle:2.5cm);
+        }
+        % Label
+        \node[font=\small] at (0,-3.5) {Copertura più estesa};
+    \end{scope}
+
+    % Legenda
+    \begin{scope}[shift={(4,-3)}]
+        \node[draw, align=left, font=\small] {
+            \textcolor{red}{— Basso guadagno (2 dBi)}\\
+            \textcolor{themeblue}{— Alto guadagno (8-10 dBi)}\\
+            \textcolor{themeblue}{• Antenna}
+        };
+    \end{scope}
 \end{tikzpicture}
 \end{center}
 
@@ -787,15 +861,67 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
     \end{itemize}
 \end{itemize}
 \begin{center}
-\begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
-    \node (tx_ant) at (-3,0) [cylinder, draw, shape border rotate=90, aspect=0.3, minimum height=1cm, minimum width=0.5cm, fill=blue!30] {}; % Antenna TX
-    \node (rx_ant) at (3,0) [cylinder, draw, shape border rotate=90, aspect=0.3, minimum height=1cm, minimum width=0.5cm, fill=blue!30] {}; % Antenna RX
-    \draw[dashed, red] (tx_ant.east) -- (rx_ant.west) node [midway, above, font=\small] {LOS};
-    % Fresnel Zone (1st)
-    \draw[orange, fill=orange!30, opacity=0.5] (0,0) ellipse (3.2cm and 0.6cm);
-    \node at (0,0) [font=\small, orange] {1a Zona Fresnel};
-    % Obstacle
-    \node (tree) at (0.5, -0.2) [circle, draw, minimum width=0.5cm, fill=green!50] {};
+\begin{tikzpicture}[scale=1.2, every node/.style={transform shape}]
+    % Definizione stile per le antenne
+    \tikzset{
+        antenna/.style={
+            cylinder, 
+            draw=themeblue, 
+            thick,
+            shape border rotate=90, 
+            aspect=0.4, 
+            minimum height=1.5cm, 
+            minimum width=0.7cm, 
+            fill=themeblue!20
+        }
+    }
+
+    % Antenne con base
+    \begin{scope}[shift={(0,0)}]
+        % Base TX
+        \fill[gray!30] (-5,-1) rectangle (-4,0);
+        \node (tx_ant) at (-4.5,1) [antenna] {};
+        \node[below, font=\small] at (-4.5,-1.2) {Antenna TX};
+
+        % Base RX
+        \fill[gray!30] (4,-1) rectangle (5,0);
+        \node (rx_ant) at (4.5,1) [antenna] {};
+        \node[below, font=\small] at (4.5,-1.2) {Antenna RX};
+    \end{scope}
+
+    % Line of Sight (LOS)
+    \draw[dashed, red, thick] (tx_ant.east) -- (rx_ant.west) 
+        node [midway, above=0.3cm, font=\small] {Line of Sight (LOS)};
+
+    % Fresnel Zone (1st) - più grande e trasparente
+    \draw[orange, thick] (0,1) ellipse (4.5cm and 1.2cm);
+    \fill[orange!20, opacity=0.3] (0,1) ellipse (4.5cm and 1.2cm);
+    \node at (0,1) [font=\small, text=orange!80!black] {Prima Zona di Fresnel};
+
+    % Ostacoli con etichette
+    \begin{scope}[shift={(0,0)}]
+        % Albero 1
+        \draw[green!60!black, thick] (-1.5,0) -- (-1.5,-0.5)
+            node[below, font=\footnotesize] {Ostacolo};
+        \draw[fill=green!40] (-2,0) circle (0.5cm);
+
+        % Albero 2 (più piccolo, in background)
+        \draw[green!40!black, thick] (1,0.2) -- (1,-0.3);
+        \draw[fill=green!30] (0.7,0.2) circle (0.3cm);
+    \end{scope}
+
+    % Linee guida per mostrare il raggio di Fresnel
+    \draw[<->, gray, thin] (0,1.2) -- (0,-0.2) 
+        node[midway, right, font=\footnotesize] {Raggio\\Fresnel};
+
+    % Legenda
+    \node[draw, fill=white, text=black, opacity=0.9, align=left, font=\footnotesize] at (6,2.5) {
+        \textcolor{red}{---} Line of Sight\\
+        \textcolor{orange}{---} Zona di Fresnel\\
+        \textcolor{green!60!black}{$\bullet$} Ostacoli\\
+        \textcolor{themeblue}{$\blacksquare$} Antenne
+    };
+
 \end{tikzpicture}
 \end{center}
 
