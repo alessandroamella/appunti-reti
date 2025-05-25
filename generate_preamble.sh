@@ -58,58 +58,63 @@ COLOR_CMD="\\color{black}"
 MINTED_STYLE="default"
 MINTED_BGCOLOR="gray!10"
 
-# Controlla l'argomento per il tema DARK
-if [[ "$1" == "--dark" ]]; then
-  THEME_NAME="Stile Scuro"
-  ACTOR_TEXT_COLOR="white"
-  BLOCK_TEXT_COLOR="white"
-  INTRUDER_TEXT_COLOR="white"
-  PROCESS_TEXT_COLOR="white"
+# Parsing degli argomenti in qualsiasi ordine
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --dark)
+    THEME_NAME="Stile Scuro"
+    ACTOR_TEXT_COLOR="white"
+    BLOCK_TEXT_COLOR="white"
+    INTRUDER_TEXT_COLOR="white"
+    PROCESS_TEXT_COLOR="white"
 
-  NODO_BASE_DRAW="white"
-  NODO_BASE_FILL="gray!60!black"
-  NODO_BASE_TEXT="white"
-  NODO_TESTO_TEXT="white"
-  LINEA_DRAW="white"
-  BLOCCO_TEMPO_DRAW="white"
-  BLOCCO_TEMPO_FILL="blue!70!black"
-  BLOCCO_TEMPO_VERDE_FILL="green!70!black"
-  BLOCCO_TEMPO_ROSSO_FILL="red!70!black"
-  BLOCCO_TEMPO_TEXT="white"
-  BLOCCO_TEMPO_HATCH_PATTERN_COLOR="gray" # Diverso da gray!50
-  NODE_STYLE_TEXT="white"
+    NODO_BASE_DRAW="white"
+    NODO_BASE_FILL="gray!60!black"
+    NODO_BASE_TEXT="white"
+    NODO_TESTO_TEXT="white"
+    LINEA_DRAW="white"
+    BLOCCO_TEMPO_DRAW="white"
+    BLOCCO_TEMPO_FILL="blue!70!black"
+    BLOCCO_TEMPO_VERDE_FILL="green!70!black"
+    BLOCCO_TEMPO_ROSSO_FILL="red!70!black"
+    BLOCCO_TEMPO_TEXT="white"
+    BLOCCO_TEMPO_HATCH_PATTERN_COLOR="gray"
+    NODE_STYLE_TEXT="white"
 
-  # Versione scura del colore di sfondo personalizzato
-  BG_CUSTOM_FILL="gray!80!black"
-  BG_CUSTOM_TEXT="white"
-  BG_CUSTOM_RGB="0.2,0.2,0.2"    # RGB equivalente a gray!80!black (per \rowcolor)
-  PRIMARY_TEXT_RGB="255,255,255" # Colore primario del testo (per dark theme)
-  THEME_BLUE_RGB="102,178,255"   # Blu chiaro per tema scuro
+    BG_CUSTOM_FILL="gray!80!black"
+    BG_CUSTOM_TEXT="white"
+    BG_CUSTOM_RGB="0.2,0.2,0.2"
+    PRIMARY_TEXT_RGB="255,255,255"
+    THEME_BLUE_RGB="102,178,255"
 
-  COLOR_DEF_LIGHTTEXT="\\definecolor{lighttext}{rgb}{0.98,0.98,0.98}" # Uguale
-  COLOR_DEF_DARKTEXT="\\definecolor{darktext}{rgb}{0.9,0.9,0.9}"      # Invertito per dark
-  COLOR_DEF_BGCOLOR="\\definecolor{bgcolor}{RGB}{20,20,20}"
-  COLOR_DEF_MAINTEXT="\\definecolor{maintext}{RGB}{230,230,230}"
-  COLOR_DEF_ACCENTCOLOR="\\definecolor{accentcolor}{RGB}{70,170,255}"
-  COLOR_DEF_NODECOLOR="\\definecolor{nodecolor}{RGB}{60,100,160}"
-  COLOR_DEF_LINKCOLOR="\\definecolor{linkcolor}{RGB}{150,150,150}"
-  COLOR_DEF_HIGHLIGHTCOLOR="\\definecolor{highlightcolor}{RGB}{255,220,100}"
-  COLOR_DEF_PRIMARYTEXT="\\definecolor{primarytext}{RGB}{${PRIMARY_TEXT_RGB}}"
-  HYPERSETUP_LINKCOLOR="white"
-  HYPERSETUP_URLCOLOR="cyan"
+    COLOR_DEF_LIGHTTEXT="\\definecolor{lighttext}{rgb}{0.98,0.98,0.98}"
+    COLOR_DEF_DARKTEXT="\\definecolor{darktext}{rgb}{0.9,0.9,0.9}"
+    COLOR_DEF_BGCOLOR="\\definecolor{bgcolor}{RGB}{20,20,20}"
+    COLOR_DEF_MAINTEXT="\\definecolor{maintext}{RGB}{230,230,230}"
+    COLOR_DEF_ACCENTCOLOR="\\definecolor{accentcolor}{RGB}{70,170,255}"
+    COLOR_DEF_NODECOLOR="\\definecolor{nodecolor}{RGB}{60,100,160}"
+    COLOR_DEF_LINKCOLOR="\\definecolor{linkcolor}{RGB}{150,150,150}"
+    COLOR_DEF_HIGHLIGHTCOLOR="\\definecolor{highlightcolor}{RGB}{255,220,100}"
+    COLOR_DEF_PRIMARYTEXT="\\definecolor{primarytext}{RGB}{${PRIMARY_TEXT_RGB}}"
+    HYPERSETUP_LINKCOLOR="white"
+    HYPERSETUP_URLCOLOR="cyan"
 
-  PAGECOLOR_CMD="\\pagecolor{black}"
-  COLOR_CMD="\\color{white}"
+    PAGECOLOR_CMD="\\pagecolor{black}"
+    COLOR_CMD="\\color{white}"
 
-  MINTED_STYLE="monokai"
-  MINTED_BGCOLOR="black!80"
-fi
-
-# Controlla se passato l'argomento --no-document-class
-for arg in "$@"; do
-  if [[ "$arg" == "--no-document-class" ]]; then
+    MINTED_STYLE="monokai"
+    MINTED_BGCOLOR="black!80"
+    ;;
+  --no-document-class)
     INCLUDE_DOCUMENT_CLASS=false
-  fi
+    ;;
+  *)
+    echo "Argomento non riconosciuto: $1"
+    echo "Uso: $0 [--dark] [--no-document-class]"
+    exit 1
+    ;;
+  esac
+  shift
 done
 
 # Inizia a scrivere il file
