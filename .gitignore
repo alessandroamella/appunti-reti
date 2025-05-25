@@ -15,7 +15,6 @@ node_modules/
 *.pdf
 appunti_completi.tex
 *-content.tex
-preambolo_comune_modificato.tex
 *.acn
 *.acr
 *.alg
