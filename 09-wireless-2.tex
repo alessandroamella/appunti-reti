@@ -26,7 +26,60 @@
     \end{itemize}
     \item \textbf{Fixed Spectrum Assignment:} Esiste una mappa globale (anche se con variazioni regionali) che assegna specifiche porzioni di spettro a specifici servizi (es. mobile, broadcasting, aeronautico, ecc.). Questo è fondamentale per l'organizzazione delle comunicazioni.
 \end{itemize}
-\textit{[Figura di riferimento: Slide 2 - Wireless networks' spectrum, Slide 3 - Fixed spectrum assignment]}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8, transform shape]
+    % Asse delle frequenze
+    \draw[->] (0,0) -- (12,0) node[right] {Frequenza (Hz)};
+    
+    % Labels delle frequenze
+    \foreach \x/\label in {1/10^3, 3/10^6, 5/10^9, 7/10^{12}, 9/10^{15}, 11/10^{18}} {
+        \draw (\x,-0.2) -- (\x,0.2);
+        \node[below] at (\x,-0.2) {\small \label};
+    }
+    
+    % Bande colorate
+    \fill[red!20] (0,0.5) rectangle (2,2);    % Audio
+    \fill[orange!20] (2,0.5) rectangle (4,2);  % Radio AM/FM
+    \fill[yellow!20] (4,0.5) rectangle (5,2);  % Microonde
+    \fill[green!20] (5,0.5) rectangle (7,2);   % IR
+    \fill[blue!20] (7,0.5) rectangle (9,2);    % Visibile
+    \fill[violet!20] (9,0.5) rectangle (11,2); % UV/X/Gamma
+    
+    % Etichette delle bande
+    \node[above] at (1,2) {\small Audio};
+    \node[above] at (3,2) {\small Radio};
+    \node[above] at (4.5,2) {\small Microonde};
+    \node[above] at (6,2) {\small IR};
+    \node[above] at (8,2) {\small Visibile};
+    \node[above] at (10,2) {\small UV/X/Gamma};
+    
+    % Punti per le tecnologie wireless
+    \fill[red] (3.5,1) circle (2pt);    % GSM
+    \fill[themeblue] (4.2,1) circle (2pt);   % WiFi 2.4
+    \fill[themeblue] (4.4,1) circle (2pt);   % WiFi 5
+    \fill[green] (4.6,1) circle (2pt);  % LMDS
+    \fill[orange] (5.5,1) circle (2pt); % IR
+    
+    % Legenda in alto a destra
+    \begin{scope}[shift={(11,2)}]
+        \node[draw, rounded corners] at (2.5,0) {
+            \begin{tabular}{ll}
+                \textcolor{red}{$\bullet$} & GSM (900/1800 MHz) \\
+                \textcolor{themeblue}{$\bullet$} & Wi-Fi 2.4 GHz \\
+                \textcolor{themeblue}{$\bullet$} & Wi-Fi 5 GHz \\
+                \textcolor{green}{$\bullet$} & LMDS (28 GHz) \\
+                \textcolor{orange}{$\bullet$} & IR
+            \end{tabular}
+        };
+    \end{scope}
+    
+    % Titolo
+    \node[above] at (6,2.5) {Spettro Elettromagnetico e Allocazioni Wireless};
+\end{tikzpicture}
+\caption{Rappresentazione dello spettro elettromagnetico con le principali allocazioni wireless.}
+\label{fig:em_spectrum}
+\end{figure}
 
 \section{Larghezza di Banda (Bandwidth) e Spettro nelle Reti Wireless}
 
@@ -43,33 +96,33 @@
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.8, transform shape]
-    % Channel A
-    \node[anchor=east] at (-0.5, 2) {freq.};
-    \draw[->] (0,1.5) -- (0,2.5);
-    \node[anchor=north] at (2.5, 0) {time};
-    \draw[->] (0,0.5) -- (5,0.5);
-    \node[anchor=east] at (-0.2, 1) {channel A};
+\begin{tikzpicture}[scale=1.0, transform shape]
+    % Channel A - Higher data rate channel
+    \node[anchor=east] at (-0.5, 4) {freq.};
+    \draw[->] (0,3.5) -- (0,4.5);
+    \draw[->] (0,2.5) -- (5,2.5) node[right] {tempo};
+    \node[anchor=east] at (-0.2, 3) {\textbf{Canale A}};
     \foreach \i in {0,1,...,4} {
-        \fill[yellow!80!black] (\i*0.8, 0.8) rectangle (\i*0.8+0.4, 1.2);
-        \draw (\i*0.8, 0.8) rectangle (\i*0.8+0.4, 1.2);
+        \fill[yellow!80!black] (\i*0.8, 2.8) rectangle (\i*0.8+0.4, 3.2);
+        \draw (\i*0.8, 2.8) rectangle (\i*0.8+0.4, 3.2);
     }
-    \node[anchor=west] at (4.2, 1) {$10 \text{ bit/s}$};
+    \node[anchor=west] at (4.2, 3) {$10 \text{ bit/s}$ (più lento)};
 
-    % Channel B
-    \node[anchor=east] at (-0.2, -0.5) {channel B};
-     \foreach \i in {0,1,...,9} {
-        \fill[yellow!80!black] (\i*0.4, -0.7) rectangle (\i*0.4+0.2, -0.3);
-        \draw (\i*0.4, -0.7) rectangle (\i*0.4+0.2, -0.3);
+    % Channel B - Lower data rate channel
+    \node[anchor=east] at (-0.2, 0.5) {\textbf{Canale B}};
+    \foreach \i in {0,1,...,9} {
+        \fill[yellow!80!black] (\i*0.4, 0.3) rectangle (\i*0.4+0.2, 0.7);
+        \draw (\i*0.4, 0.3) rectangle (\i*0.4+0.2, 0.7);
     }
-    \node[anchor=west] at (4.2, -0.5) {$20 \text{ bit/s}$};
-    \draw (2, 0.4) -- (2, 0.6);
-    \node[anchor=north] at (2,0.4) {1 second};
+    \node[anchor=west] at (4.2, 0.5) {$20 \text{ bit/s}$ (più veloce)};
+    
+    % Time marker
+    \draw[thick] (2, 2.4) -- (2, 2.6);
+    \node[anchor=north] at (2,2.3) {1 secondo};
 \end{tikzpicture}
-\caption{Confronto larghezza di banda Canale A vs Canale B.}
+\caption{Confronto larghezza di banda: il Canale B trasmette il doppio dei bit al secondo rispetto al Canale A.}
 \label{fig:bandwidth_comparison}
 \end{figure}
-\textit{Nell'immagine, il Canale B trasmette il doppio dei bit del Canale A nello stesso secondo.}
 
 \section{Copertura della Trasmissione Radio}
 La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilità del ricevitore.
@@ -78,38 +131,38 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
 \centering
 \begin{tikzpicture}[scale=0.7, transform shape]
     % Host Isolati
-    \node (A1) [circle, draw, fill=green!20, minimum size=1.5cm, label=center:A] at (0,0) {};
-    \node (PC_A1) [scale=0.5] at (A1.center) {\includegraphics[width=0.8cm]{example-image-a}}; % Placeholder for laptop icon
-    \shade[ball color=green!30, opacity=0.3] (A1.center) circle (0.75cm);
+    \node (A1) [circle, draw, fill=green!20, minimum size=2cm, label=center:A] at (0,0) {};
+    \node (PC_A1) [scale=0.7] at (A1.center) {\includegraphics[width=1.2cm]{example-image-a}}; % Increased size
+    \shade[ball color=green!30, opacity=0.3] (A1.center) circle (1cm);
 
-    \node (B1) [circle, draw, fill=yellow!20, minimum size=2.5cm, label=center:B] at (4,0) {};
-    \node (PC_B1) [scale=0.5] at (B1.center) {\includegraphics[width=0.8cm]{example-image-b}}; % Placeholder for laptop icon
-    \shade[ball color=yellow!30, opacity=0.3] (B1.center) circle (1.25cm);
-    \node at (2,-1.5) {(a) Host Isolati};
+    \node (B1) [circle, draw, fill=yellow!20, minimum size=3cm, label=center:B] at (4,0) {};
+    \node (PC_B1) [scale=0.7] at (B1.center) {\includegraphics[width=1.2cm]{example-image-b}}; % Increased size
+    \shade[ball color=yellow!30, opacity=0.3] (B1.center) circle (1.5cm);
+    \node at (2,-2) {(a) Host Isolati};
 
     % Link Unidirezionale
-    \node (A2) [circle, draw, fill=green!20, minimum size=1.5cm, label=center:A] at (0,-4) {};
-    \node (PC_A2) [scale=0.5] at (A2.center) {\includegraphics[width=0.8cm]{example-image-a}};
-    \shade[ball color=green!30, opacity=0.3] (A2.center) circle (0.75cm);
+    \node (A2) [circle, draw, fill=green!20, minimum size=2cm, label=center:A] at (0,-4) {};
+    \node (PC_A2) [scale=0.7] at (A2.center) {\includegraphics[width=1.2cm]{example-image-a}}; % Increased size
+    \shade[ball color=green!30, opacity=0.3] (A2.center) circle (1cm);
 
-    \node (B2) [circle, draw, fill=yellow!20, minimum size=2.5cm, label=center:B] at (3,-4) {};
-    \node (PC_B2) [scale=0.5] at (B2.center) {\includegraphics[width=0.8cm]{example-image-b}};
-    \shade[ball color=yellow!30, opacity=0.3] (B2.center) circle (1.25cm);
+    \node (B2) [circle, draw, fill=yellow!20, minimum size=3cm, label=center:B] at (3,-4) {};
+    \node (PC_B2) [scale=0.7] at (B2.center) {\includegraphics[width=1.2cm]{example-image-b}}; % Increased size
+    \shade[ball color=yellow!30, opacity=0.3] (B2.center) circle (1.5cm);
     \draw[-latex, thick] (B2) -- (A2);
-    \node at (1.5,-5.5) {(b) Link Unidirezionale (B$\rightarrow$A)};
+    \node at (1.5,-6) {(b) Link Unidirezionale (B$\rightarrow$A)};
 
     % Link Bidirezionale
-    \node (A3) [circle, draw, fill=green!20, minimum size=2cm, label=center:A] at (0,-8) {};
-    \node (PC_A3) [scale=0.5] at (A3.center) {\includegraphics[width=0.8cm]{example-image-a}};
-    \shade[ball color=green!30, opacity=0.3] (A3.center) circle (1cm);
+    \node (A3) [circle, draw, fill=green!20, minimum size=2.5cm, label=center:A] at (0,-8) {};
+    \node (PC_A3) [scale=0.7] at (A3.center) {\includegraphics[width=1.2cm]{example-image-a}}; % Increased size
+    \shade[ball color=green!30, opacity=0.3] (A3.center) circle (1.25cm);
 
-    \node (B3) [circle, draw, fill=yellow!20, minimum size=2cm, label=center:B] at (3,-8) {};
-    \node (PC_B3) [scale=0.5] at (B3.center) {\includegraphics[width=0.8cm]{example-image-b}};
-    \shade[ball color=yellow!30, opacity=0.3] (B3.center) circle (1cm);
+    \node (B3) [circle, draw, fill=yellow!20, minimum size=2.5cm, label=center:B] at (3,-8) {};
+    \node (PC_B3) [scale=0.7] at (B3.center) {\includegraphics[width=1.2cm]{example-image-b}}; % Increased size
+    \shade[ball color=yellow!30, opacity=0.3] (B3.center) circle (1.25cm);
     \draw[latex-latex, thick, red] (A3) -- (B3);
-    \node at (1.5,-9.   5) {(c) Link Bidirezionale};
+    \node at (1.5,-10) {(c) Link Bidirezionale};
 \end{tikzpicture}
-\caption{Scenari di copertura radio. (Le icone PC sono placeholder)}
+\caption{Scenari di copertura radio.}
 \label{fig:coverage_scenarios}
 \end{figure}
 
@@ -150,7 +203,7 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
                 \draw (-0.1, \y/40) node[left] {\tiny \y} -- (0.1, \y/40);
             }
             \draw[thick, red] (0,10/40) -- (1,10/40) -- (1,60/40) -- (2,60/40) -- (2,20/40) -- (3,20/40) -- (3,70/40) -- (4,70/40) -- (4,40/40) -- (5,40/40);
-            \draw[thick, blue, dashed] (0,30/40) -- (0.5,30/40) -- (0.5,70/40) -- (1.5,70/40) -- (1.5,40/40) -- (2.5,40/40) -- (2.5,80/40) -- (3.5,80/40) -- (3.5,50/40) -- (4.5,50/40);
+            \draw[thick, themeblue, dashed] (0,30/40) -- (0.5,30/40) -- (0.5,70/40) -- (1.5,70/40) -- (1.5,40/40) -- (2.5,40/40) -- (2.5,80/40) -- (3.5,80/40) -- (3.5,50/40) -- (4.5,50/40);
         \end{tikzpicture}
         \caption{Esempio di Frequency Hopping Spread Spectrum (FHSS).}
         \label{fig:fhss}
@@ -200,7 +253,6 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
     \item \textbf{WPAN (Wireless Personal Area Network):} Copertura personale, ridotta (es. una stanza - Bluetooth).
     \item \textbf{Wireless Indoor Area Network:} Copertura a cortissimo raggio, tipicamente una stanza.
 \end{itemize}
-\textit{[Figura di riferimento: Slide 14 - Wireless network positioning]}
 
 \section{Strutture delle Reti Wireless}
 \subsection{WWAN e WMAN}
@@ -210,11 +262,8 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
         \item \textbf{LEO (Low Earth Orbit):} Orbita bassa.
         \item \textbf{GEO (Geostationary Orbit):} Orbita geostazionaria.
     \end{itemize}
-    \textit{[Figura di riferimento: Slide 15 - Satelliti LEO e GEO]}
     \item \textbf{Reti Cellulari:} Evoluzione da 1G a 5G.
-    \textit{[Figura di riferimento: Slide 16 - Wireless networks' structure (taxonomy)]}
-    \item \textbf{Struttura Cellulare / Multi-Infrastructure WLAN:} Griglia di Access Points (AP) connessi a una Backbone.
-    \textit{[Figura di riferimento: Slide 17 - Struttura multi-AP]}
+    \item \textbf{Struttura Cellulare / Multi-Infrastructure WLAN:} Griglia di Access Points connessi a una Backbone.
 \end{itemize}
 \subsection{WLAN}
 \begin{itemize}
@@ -231,9 +280,8 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
         \item \textit{Esempio:} Tipica rete Wi-Fi domestica con router.
     \end{itemize}
 \end{itemize}
-\textit{[Figura di riferimento: Slide 18 - WLAN Ad Hoc vs Infrastructure]}
 
-\section{Integrazione tra Mondo Wireless e Wired (Cablato)}
+\section{Integrazione tra Mondo Wireless e Cablato}
 \begin{itemize}
     \item \textbf{Sfide:} Progettazione di protocolli wireless, integrazione, ottimizzazione (layering, bridging, Mobile IP, QoS).
     \item \textbf{Obiettivo:} Supportare applicazioni "wired-like" su dispositivi wireless.
@@ -245,7 +293,6 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
         \item Comportamento adattivo dei protocolli (lato wireless).
     \end{itemize}
 \end{itemize}
-\textit{[Figura di riferimento: Slide 19 - Wireless/Wired extension protocol stack]}
 
 \section{Svantaggi (Drawbacks) del Wireless}
 \begin{itemize}
@@ -269,35 +316,83 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.7, transform shape]
-    % Axes for s1
-    \node at (-2.5,1.5) {$s_1$};
-    \draw[->] (0,0) -- (2,0) node[right] {f};
-    \draw[->] (0,0) -- (0,2) node[above] {c};
-    \draw[->] (0,0) -- (-1.4,-1.4*0.707) node[left] {t}; % approx 45 deg projection
-    \shade[ball color=blue!30, opacity=0.5] (0,0) circle (1.5cm);
-
-    % Axes for s2 (shifted)
-    \node at (2.5,1.5+3) {$s_2$};
-    \draw[->] (5,0+3) -- (7,0+3) node[right] {f};
-    \draw[->] (5,0+3) -- (5,2+3) node[above] {c};
-    \draw[->] (5,0+3) -- (5-1.4,-1.4*0.707+3) node[left] {t};
-    \shade[ball color=green!30, opacity=0.5] (5,3) circle (1.5cm);
-
-    % Axes for s3 (shifted)
-    \node at (-2.5,1.5-3) {$s_3$};
-    \draw[->] (0,0-3) -- (2,0-3) node[right] {f};
-    \draw[->] (0,0-3) -- (0,2-3) node[above] {c};
-    \draw[->] (0,0-3) -- (-1.4,-1.4*0.707-3) node[left] {t};
-    \shade[ball color=red!30, opacity=0.5] (0,-3) circle (1.5cm);
-
-    % Channels k_i
-    \node at (3, 5) {channels $k_i$};
-    \foreach \i/\col in {1/blue,2/green,3/red,4/yellow,5/purple,6/orange}{
-        \node[draw, fill=\col!50, minimum width=0.5cm, minimum height=0.5cm, label=below:$k_{\i}$] at (1+\i*0.7, 4) {};
+\begin{tikzpicture}[transform shape]
+    % Main 3D coordinate system
+    \draw[->] (0,0) -- (6,0) node[right] {\textbf{Frequenza (f)}};
+    \draw[->] (0,0) -- (0,5) node[above] {\textbf{Codice (c)}};
+    \draw[->] (0,0) -- (-3,-2) node[left] {\textbf{Tempo (t)}};
+    
+    % Grid lines to show 3D space
+    \draw[gray!30] (1,0) -- (1,5);
+    \draw[gray!30] (2,0) -- (2,5);
+    \draw[gray!30] (3,0) -- (3,5);
+    \draw[gray!30] (4,0) -- (4,5);
+    \draw[gray!30] (5,0) -- (5,5);
+    
+    \draw[gray!30] (0,1) -- (6,1);
+    \draw[gray!30] (0,2) -- (6,2);
+    \draw[gray!30] (0,3) -- (6,3);
+    \draw[gray!30] (0,4) -- (6,4);
+    
+    % Time dimension grid (3D effect)
+    \draw[gray!30] (-0.5,-0.33) -- (5.5,-0.33);
+    \draw[gray!30] (-1,-0.67) -- (5,-0.67);
+    \draw[gray!30] (-1.5,-1) -- (4.5,-1);
+    \draw[gray!30] (-2,-1.33) -- (4,-1.33);
+    
+    % Different channels represented as colored rectangles in different dimensions
+    
+    % FDMA - Frequency Division (different frequency bands)
+    \fill[blue!40, opacity=0.7] (0.5,0.5) rectangle (1.5,1.5);
+    \fill[red!40, opacity=0.7] (2,0.5) rectangle (3,1.5);
+    \fill[green!40, opacity=0.7] (3.5,0.5) rectangle (4.5,1.5);
+    \node at (0.7,2.2) {\small FDMA};
+    \node[blue] at (1,0.2) {\small $f_1$};
+    \node[red] at (2.5,0.2) {\small $f_2$};
+    \node[green] at (4,0.2) {\small $f_3$};
+    
+    % CDMA - Code Division (different code sequences)
+    \fill[purple!40, opacity=0.7] (1,2.5) rectangle (2,3);
+    \fill[orange!40, opacity=0.7] (2.5,2.5) rectangle (3.5,3);
+    \fill[cyan!40, opacity=0.7] (4,2.5) rectangle (5,3);
+    \node at (2.5,3.7) {\small CDMA};
+    \node[purple] at (0.5,2.75) {\small $c_1$};
+    \node[orange] at (2,2.75) {\small $c_2$};
+    \node[cyan] at (3.5,2.75) {\small $c_3$};
+    
+    % TDMA - Time Division (3D perspective showing time slots)
+    \fill[yellow!40, opacity=0.7] (2,-0.33) rectangle (3,0.17);
+    \fill[magenta!40, opacity=0.7] (1.5,-0.67) rectangle (2.5,-0.17);
+    \fill[brown!40, opacity=0.7] (1,-1) rectangle (2,-0.5);
+    \node at (3.5,-0.5) {\small TDMA};
+    \node[yellow] at (3.2,-0.1) {\small $t_1$};
+    \node[magenta] at (2.7,-0.4) {\small $t_2$};
+    \node[brown] at (2.2,-0.7) {\small $t_3$};
+    
+    % Guard spaces illustration
+    \draw[dashed, thick] (1.5,0.5) -- (1.5,1.5);
+    \draw[dashed, thick] (3,0.5) -- (3,1.5);
+    \node at (6.5,1) {\small Guard};
+    \node at (6.5,0.7) {\small Spaces};
+    \draw[->] (6.2,0.85) -- (1.7,1);
+    
+    % Spatial dimension indication
+    \node at (7,4) {\textbf{Spazio ($s_i$)}};
+    \draw[->] (6.5,3.7) -- (5.5,3.2);
+    \draw[->] (6.5,3.7) -- (4.5,2.8);
+    \draw[->] (6.5,3.7) -- (3.5,2.3);
+    \node at (7,3.5) {\small Diverse};
+    \node at (7,3.2) {\small antenne/};
+    \node at (7,2.9) {\small celle};
+    
+    % Legend
+    \node at (8.63,1) {\small Canali logici:};
+    \foreach \i/\col in {1/blue,2/red,3/green,4/purple,5/orange,6/cyan}{
+        \fill[\col!50] (7.5+\i*0.3, 0.5) rectangle (7.7+\i*0.3, 0.7);
+        \node at (7.6+\i*0.3, 0.3) {\small $k_{\i}$};
     }
 \end{tikzpicture}
-\caption{Dimensioni del multiplexing (Spazio $s_i$, Tempo $t$, Frequenza $f$, Codice $c$).}
+\caption{Dimensioni del multiplexing: separazione dei canali mediante Frequenza (FDMA), Tempo (TDMA), Codice (CDMA) e Spazio (SDMA). Gli spazi di guardia prevengono le interferenze tra canali adiacenti.}
 \label{fig:multiplex_dimensions}
 \end{figure}
 
@@ -309,20 +404,26 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \item \textit{Esempio:} Stazioni radio FM.
 \end{itemize}
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.8, transform shape,
-    mychannel/.style={draw, minimum height=0.5cm, minimum width=3cm, opacity=0.7, transform shape}]
-    \draw[->] (0,0) -- (0,2) node[left]{c};
-    \draw[->] (0,0) -- (4,0) node[below]{f};
-    \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
-    \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-      \fill[\col!50, mychannel,yshift=\i*0.5*0.3cm, xshift=\i*0.5*0.5cm] (0.2+\i*0.6,0.2) rectangle (0.2+\i*0.6+0.5, 0.2+1.5);
-       \node at (0.45+\i*0.6, 1.8) {$k_{\i+1}$};
-    }
-\end{tikzpicture}
-\caption{Frequency Division Multiplexing (FDM).}
-\label{fig:fdm}
+    \centering
+    \begin{tikzpicture}[scale=0.8, transform shape]
+        \draw[->] (0,0) -- (0,2) node[left]{c};
+        \draw[->] (0,0) -- (4,0) node[below]{f};
+        \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
+
+        \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
+          \pgfmathsetmacro{\xshift}{\i*0.6}
+          \pgfmathsetmacro{\yshift}{\i*0.5*0.3}
+          \filldraw[\col!50, opacity=0.7]
+            ([xshift=\xshift cm, yshift=\yshift cm]0.2,0.2)
+            rectangle ++(0.5, 1.5);
+          % Label aligned slightly above the top of each rectangle
+          \node at (0.45+\xshift, 1.9+\yshift) {$k_{\the\numexpr\i+1\relax}$};
+        }
+    \end{tikzpicture}
+    \caption{Frequency Division Multiplexing (FDM).}
+    \label{fig:fdm}
 \end{figure}
+
 
 \subsection{Time Multiplex (TDM)}
 \begin{itemize}
@@ -332,20 +433,36 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \item \textit{Esempio:} Slot di tempo in GSM.
 \end{itemize}
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.8, transform shape,
-    mychannel/.style={draw, minimum height=0.5cm, minimum width=0.5cm, opacity=0.7, transform shape}]
-    \draw[->] (0,0) -- (0,2) node[left]{c};
-    \draw[->] (0,0) -- (4,0) node[below]{f};
-    \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
-     \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-      \fill[\col!50, mychannel, yshift=\i*0.05cm, xshift=-\i*0.25cm] (0.2, 0.2+\i*0.25) rectangle (0.2+3, 0.2+\i*0.25+0.2);
-       \node at (3.5, 0.3+\i*0.25) {$k_{\i+1}$};
-    }
-\end{tikzpicture}
-\caption{Time Division Multiplexing (TDM).}
-\label{fig:tdm}
+    \centering
+    \begin{tikzpicture}[scale=0.8, transform shape]
+        % Assi
+        \draw[->] (0,0) -- (0,2.5) node[left]{c};
+        \draw[->] (0,0) -- (4.5,0) node[below]{f};
+        \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
+        
+        % Slot colorati + label
+        \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
+            % Calcolo coordinata y
+            \pgfmathsetmacro{\y}{0.4 + \i*0.3}
+            % Rettangolo
+            \filldraw[\col!50, opacity=0.7] 
+                ([xshift=-\i*0.25cm, yshift=\i*0.05cm]0.5, \y) 
+                rectangle 
+                ([xshift=-\i*0.25cm, yshift=\i*0.05cm]3.5, \y + 0.25);
+            % Label allineata verticalmente al centro del rettangolo
+            \node[right] at ([xshift=3.6cm - \i*0.25cm, yshift=\i*0.05cm]0.5, \y + 0.125) {$k_{\i+1}$};
+        }
+    \end{tikzpicture}
+    \caption{Time Division Multiplexing (TDM).}
+    \label{fig:tdm}
 \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/tdm_multiplexing.png}
+    \caption{Vista del TDM in 3D.}
+    \label{fig:tdm_3d}
+\end{figure}
+
 
 \subsection{Time and Frequency Multiplex}
 \begin{itemize}
@@ -355,23 +472,29 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \item \textbf{Svantaggi:} Precisa coordinazione.
 \end{itemize}
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.7, transform shape,
-    mychannel/.style={draw, minimum height=0.4cm, minimum width=0.5cm, opacity=0.7, transform shape}]
-    \draw[->] (0,0) -- (0,2.5) node[left]{c};
-    \draw[->] (0,0) -- (4,0) node[below]{f};
-    \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
-     \foreach \row in {0,...,3}{
-        \foreach \colidx/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-           \fill[\col!50, mychannel, yshift=\row*0.5*0.3cm + \colidx*0.5*0.1cm, xshift=-0.25*\row cm + \colidx*0.5*0.5cm]
-            (0.2+\colidx*0.6, 0.2+\row*0.5) rectangle (0.2+\colidx*0.6+0.5, 0.2+\row*0.5+0.4);
-        }
-     }
-     \node at (4,2.5) {$k_i$};
-\end{tikzpicture}
-\caption{Time and Frequency Multiplex.}
-\label{fig:tdm_fdm}
+    \centering
+    \begin{tikzpicture}[scale=0.7, transform shape]
+        \draw[->] (0,0) -- (0,2.5) node[left]{c};
+        \draw[->] (0,0) -- (4,0) node[below]{f};
+        \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
+         \foreach \row in {0,...,3}{
+            \foreach \colidx/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
+               \filldraw[\col!50, opacity=0.7] % Use filldraw
+                ([xshift=-0.25*\row cm + \colidx*0.5*0.5cm, yshift=\row*0.5*0.3cm + \colidx*0.5*0.1cm]0.2+\colidx*0.6, 0.2+\row*0.5) rectangle ([xshift=-0.25*\row cm + \colidx*0.5*0.5cm, yshift=\row*0.5*0.3cm + \colidx*0.5*0.1cm]0.2+\colidx*0.6+0.5, 0.2+\row*0.5+0.4);
+            }
+         }
+         \node at (4,2.5) {$k_i$};
+    \end{tikzpicture}
+    \caption{Time and Frequency Multiplex.}
+    \label{fig:tdm_fdm}
 \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/tfdm_multiplexing.png}
+    \caption{Vista del Time and Frequency Multiplex in 3D.}
+    \label{fig:tfdm_3d}
+\end{figure}
+
 
 \subsection{Code Multiplex (CDM / CDMA)}
 \begin{itemize}
@@ -381,19 +504,19 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \item Implementato con spread spectrum. \textit{Esempio:} Reti 3G.
 \end{itemize}
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.8, transform shape,
-    mychannel/.style={draw, minimum height=0.2cm, opacity=0.7, transform shape}]
-    \draw[->] (0,0) -- (0,2) node[left]{c};
-    \draw[->] (0,0) -- (4,0) node[below]{f};
-    \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
-     \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-      \fill[\col!50, mychannel, yshift=\i*0.1cm, xshift=-\i*0.15cm] (0.2, 0.2+\i*0.25) rectangle (0.2+3.5, 0.2+\i*0.25+0.2);
-      \node at (4, 0.3+\i*0.25) {$k_{\i+1}$};
-    }
-\end{tikzpicture}
-\caption{Code Division Multiplexing (CDM).}
-\label{fig:cdm}
+    \centering
+    \begin{tikzpicture}[scale=0.8, transform shape]
+        \draw[->] (0,0) -- (0,2) node[left]{c};
+        \draw[->] (0,0) -- (4,0) node[below]{f};
+        \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
+         \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
+          \filldraw[\col!50, opacity=0.7] % Use filldraw
+            ([xshift=-\i*0.15cm, yshift=\i*0.1cm]0.2, 0.2+\i*0.25) rectangle ([xshift=-\i*0.15cm, yshift=\i*0.1cm]0.2+3.5, 0.2+\i*0.25+0.2);
+          \node at (4, 0.3+\i*0.25) {$k_{\i+1}$};
+        }
+    \end{tikzpicture}
+    \caption{Code Division Multiplexing (CDM).}
+    \label{fig:cdm}
 \end{figure}
 
 \section{Pianificazione delle Frequenze}
