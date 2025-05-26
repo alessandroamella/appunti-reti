@@ -919,7 +919,7 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
     
         % Legend positioned to avoid overlap
         \node[draw, fill=white, text=black, align=left, font=\footnotesize, 
-              drop shadow, rounded corners=2pt] at (6.5,1.5) {
+              rounded corners=2pt] at (6.5,1.5) {
             \textcolor{red}{\rule{0.8cm}{0.8pt}} Line of Sight\\[2pt]
             \textcolor{orange}{\rule{0.8cm}{0.8pt}} Zona di Fresnel\\[2pt]
             \textcolor{green!60!black}{$\bullet$} Ostacoli\\[2pt]
@@ -1070,24 +1070,24 @@ Il Link Budget è come un "bilancio energetico" del sistema wireless:
     }
     
     % Trasmettitore
-    \node[block, text=black] (tx) at (0,0) {$P_{TX}$\\15 dBm};
+    \node[block, text=black, align=center] (tx) at (0,0) {$P_{TX}$ \\ \vspace{1mm} 15 dBm};
     
     % Guadagni antenne
-    \node[gain, text=black] (gtx) at (2.5,0) {$G_{TX}$\\24 dBi};
-    \node[gain, text=black] (grx) at (7.5,0) {$G_{RX}$\\24 dBi};
+    \node[gain, text=black, align=center] (gtx) at (2.5,0) {$G_{TX}$ \\ \vspace{1mm} 24 dBi};
+    \node[gain, text=black, align=center] (grx) at (7.5,0) {$G_{RX}$ \\ \vspace{1mm} 24 dBi};
     
     % Perdite
-    \node[loss, text=black] (lcavi) at (5,2) {$L_{cavi}$\\10.8 dB};
-    \node[loss, text=black] (lpath) at (5,-2) {Path Loss\\120 dB};
+    \node[loss, text=black, align=center] (lcavi) at (5,2) {$L_{cavi}$ \\ \vspace{1mm} 10.8 dB};
+    \node[loss, text=black, align=center] (lpath) at (5,-2) {Path Loss \\ \vspace{1mm} 120 dB};
     
     % Ricevitore
-    \node[block, text=black] (rx) at (10,0) {$P_{RX}$\\-67.8 dBm};
+    \node[block, text=black, align=center] (rx) at (10,0) {$P_{RX}$ \\ \vspace{1mm} -67.8 dBm};
     
     % Sensibilità
-    \node[block, text=black] (rs) at (10,-3) {RS\\-82 dBm};
+    \node[block, text=black, align=center] (rs) at (10,-3) {RS \\ \vspace{1mm} -82 dBm};
     
     % Link Budget
-    \node[gain, text=black] (lb) at (12,-1.5) {Link Budget\\14.2 dB};
+    \node[gain, text=black, align=center] (lb) at (12,-1.5) {Link Budget \\ \vspace{1mm} 14.2 dB};
     
     % Connessioni
     \draw[->, thick] (tx) -- (gtx);
