@@ -949,260 +949,361 @@ Uso di più antenne per combattere il multipath fading.
 \section{Path Loss e Link Budget}
 
 \subsection{Path Loss (Perdita di Percorso)}
-Attenuazione del segnale con distanza e frequenza.
+Il Path Loss, o perdita di percorso, descrive come la potenza di un segnale wireless si attenua (diminuisce) mentre si propaga attraverso lo spazio. È un concetto fondamentale per capire fino a che distanza un segnale può viaggiare e rimanere utilizzabile.
+
+\subsubsection{Fattori che Influenzano il Path Loss}
+Diversi fattori contribuiscono all'attenuazione del segnale:
 \begin{itemize}
-    \item Formula Free Space Path Loss (FSPL) (esempio):
-    \[ \text{FSPL (dB)} = 32.4 + 20 \log_{10}(f_{MHz}) + 20 \log_{10}(d_{km}) \]
-    \item \textbf{Regola dei 6 dB:} Ogni $\SI{+6}{dB}$ in EIRP (potenza x4) circa raddoppia la portata Tx (assumendo attenuazione $d^2$).
+    \item \textbf{Distanza:} Questo è il fattore più intuitivo. Più il segnale viaggia lontano dalla sorgente, più diventa debole. L'energia del segnale si disperde su un'area più vasta.
+    \item \textbf{Frequenza del Segnale:} Segnali a frequenze più alte tendono ad attenuarsi più rapidamente rispetto a segnali a frequenze più basse, specialmente quando attraversano ostacoli.
+    \item \textbf{Ambiente di Propagazione:} Gli ostacoli fisici (muri, edifici, alberi, colline) assorbono, riflettono, diffrangono o disperdono il segnale, causandone un'ulteriore perdita di potenza. Lo spazio aperto (``free space'') presenta la minore attenuazione, mentre ambienti urbani densi o interni con molti muri causano perdite maggiori.
 \end{itemize}
-\begin{table}[H]
-\centering
-\caption{Esempio Path Loss 2.4 GHz vs Distanza (valori indicativi)}
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{Distanza} & \textbf{Path Loss (dB)} & \textbf{Variazione approx.} \\ \hline
-\SI{100}{\meter} & \SI{-80.2}{dB} & - \\ \hline
-\SI{200}{\meter} & \SI{-86.2}{dB} & $\approx \SI{-6}{dB}$ \\ \hline
-\SI{500}{\meter} & \SI{-94.2}{dB} & $\approx \SI{-8}{dB}$ \\ \hline
-\SI{1000}{\meter} & \SI{-100.2}{dB} & $\approx \SI{-6}{dB}$ \\ \hline
-\end{tabular}
-\label{tab:path_loss}
-\end{table}
 
-\subsection{Calcolo del Link Budget (System Operating Margin)}
-Eccesso di segnale rispetto al minimo necessario.
+\subsubsection{Calcolo del Path Loss (Free Space Path Loss - FSPL)}
+In condizioni ideali, senza ostacoli (spazio libero), il Path Loss può essere stimato con formule specifiche. Una formula comune è:
+\[ \text{FSPL (dB)} = 32.44 + 20 \log_{10}(f_{\text{MHz}}) + 20 \log_{10}(d_{\text{km}}) \]
+Dove:
 \begin{itemize}
-    \item \textbf{Sensibilità del Ricevitore (RS):} Potenza minima (dBm) per decodifica affidabile. Più basso è, meglio è. Dipende dal bitrate.
-    \item \textbf{Calcolo Potenza Ricevuta ($P_{RX}$):}
-    \[ P_{RX} (\text{dBm}) = P_{TX} (\text{dBm}) + G_{TX} (\text{dBi}) + G_{RX} (\text{dBi}) - L_{\text{cavi}} (\text{dB}) - \text{PathLoss} (\text{dB}) \]
-    \item \textbf{Link Budget (dB):}
-    \[ \text{Link Budget} = P_{RX} (\text{dBm}) - RS (\text{dBm}) \]
-    \item \textbf{Fade Margin (Margine di Fading):} Margine extra (tipico $\SIrange{+10}{+20}{dB}$) per fluttuazioni.
-    \[ P_{RX} (\text{dBm}) > RS (\text{dBm}) + \text{Fade Margin (dB)} \]
+    \item $\text{FSPL (dB)}$ è la perdita di percorso in decibel (dB). I decibel sono un'unità logaritmica comoda per esprimere rapporti di potenza. Un valore negativo o maggiore in dB indica una perdita più alta.
+    \item $f_{\text{MHz}}$ è la frequenza del segnale in MegaHertz (MHz).
+    \item $d_{\text{km}}$ è la distanza tra trasmettitore e ricevitore in chilometri (km).
 \end{itemize}
-\textbf{Esempio Link Budget (dalla slide 58, valori semplificati concettualmente):}
+Questa formula mostra che il Path Loss aumenta con l'aumentare della frequenza e della distanza.
+
+\subsubsection{Regola Pratica dei 6 dB}
+Una regola empirica utile, derivata dalle formule di Path Loss (in particolare dall'attenuazione proporzionale a $d^2$ in spazio libero), è la ``regola dei 6 dB'':
 \begin{itemize}
-    \item $P_{TX} = \SI{+15}{dBm}$
-    \item $G_{TX} = \SI{+24}{dBi}$, $G_{RX} = \SI{+24}{dBi}$
-    \item $L_{\text{cavi totali}} = \SI{10.8}{dB}$
-    \item Path Loss (\SI{10}{km}) = $\SI{120}{dB}$
-    \item $RS = \SI{-82}{dBm}$
-    \item $P_{RX} = \SI{15}{dBm} + \SI{24}{dBi} + \SI{24}{dBi} - \SI{10.8}{dB} - \SI{120}{dB} = \SI{-67.8}{dBm}$
-    \item Link Budget = $\SI{-67.8}{dBm} - (\SI{-82}{dBm}) = \SI{+14.2}{dB}$
+    \item Ogni raddoppio della distanza comporta una perdita aggiuntiva di circa $\SI{6}{dB}$ (cioè, la potenza del segnale si riduce a un quarto).
+    \item Al contrario, per raddoppiare la portata di trasmissione, è necessario aumentare la potenza trasmessa (EIRP) di $\SI{+6}{dB}$ (cioè, quadruplicare la potenza).
 \end{itemize}
-Questo margine di $\SI{14.2}{dB}$ è disponibile per il fading. Se il fade margin richiesto è, ad esempio, $\SI{10}{dB}$, il link è considerato affidabile.
-
-\section{Approfondimento: Path Loss e Link Budget nella Pratica}
-
-\subsection{Path Loss in Dettaglio}
-Il Path Loss è fondamentale per capire come si attenua il segnale wireless. Vediamo alcuni esempi pratici:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.8]
-    % Asse X (distanza)
-    \draw[->] (0,0) -- (10,0) node[right] {Distanza (m)};
-    \draw[->] (0,-6) -- (0,2) node[above] {Potenza (dBm)};
-    
-    % Griglia di riferimento
-    \foreach \y in {-6,-4,-2,0,2} {
-        \draw[gray!30] (0,\y) -- (10,\y);
-        \node[left, font=\tiny] at (0,\y) {\y0};
-    }
-    \foreach \x in {2,4,6,8} {
-        \draw[gray!30] (\x,-6) -- (\x,2);
-        \node[below, font=\tiny] at (\x,0) {\x0};
-    }
-    
-    % Curve di attenuazione
-    \draw[red, thick] plot[domain=0.5:10] (\x,{2-3*ln(\x)}) 
-        node[right] {Spazio libero};
-    \draw[blue, thick] plot[domain=0.5:10] (\x,{2-4*ln(\x)}) 
-        node[right] {Ambiente urbano};
-    \draw[green, thick] plot[domain=0.5:10] (\x,{2-5*ln(\x)}) 
-        node[right] {Indoor};
-    
-    % Punti di riferimento
-    \node[red, font=\small] at (2,0) {•};
-    \node[red, font=\tiny] at (2,0.5) {-20dBm};
-    \node[red, font=\small] at (6,-3) {•};
-    \node[red, font=\tiny] at (6,-2.5) {-40dBm};
-    
-    \node[font=\small] at (5,-7) {Attenuazione del Segnale vs Distanza};
-\end{tikzpicture}
-\end{center}
+Questa regola fornisce una stima rapida dell'impatto della distanza sulla potenza del segnale.
 
 \subsubsection{Esempi Pratici di Path Loss}
+Vediamo come il Path Loss si manifesta in scenari reali:
 \begin{itemize}
     \item \textbf{Scenario Indoor (Ufficio):}
     \begin{itemize}
-        \item Access Point WiFi: \SI{20}{dBm} (\SI{100}{mW})
-        \item Distanza client: \SI{10}{m}
-        \item Ostacoli: 2 pareti (\SI{-4}{dB} ciascuna)
-        \item Path Loss calcolato: \SI{-40}{dB} + (\SI{-8}{dB}) = \SI{-48}{dB}
-        \item Potenza ricevuta: \SI{20}{dBm} - \SI{48}{dB} = \SI{-28}{dBm}
+        \item Frequenza: WiFi a \SI{2.4}{\giga\hertz}
+        \item Distanza tra Access Point e laptop: \SI{10}{\meter}
+        \item Ostacoli: 2 muri interni in cartongesso. Ogni muro potrebbe introdurre una perdita aggiuntiva, ad esempio \SI{3-5}{dB}.
+        \item Oltre al Path Loss dovuto alla distanza, si sommano le perdite dovute ai muri.
     \end{itemize}
     
-    \item \textbf{Scenario Outdoor (Parco):}
+    \item \textbf{Scenario Outdoor (Parco Cittadino):}
     \begin{itemize}
-        \item Access Point: \SI{30}{dBm} (\SI{1}{W})
-        \item Distanza client: \SI{100}{m}
-        \item Path Loss calcolato: \SI{-80}{dB}
-        \item Potenza ricevuta: \SI{30}{dBm} - \SI{80}{dB} = \SI{-50}{dBm}
+        \item Frequenza: Hotspot pubblico a \SI{5}{\giga\hertz}
+        \item Distanza utente dall'antenna: \SI{100}{\meter}
+        \item Ostacoli: Pochi alberi sparsi, che introducono perdite variabili. In generale, un ambiente outdoor aperto ha meno attenuazione rispetto a uno indoor denso.
+    \end{itemize}
+    
+    \item \textbf{Collegamento Rurale Lunga Distanza (Fixed Wireless Access):}
+    \begin{itemize}
+        \item Frequenza: \SI{3.5}{\giga\hertz}
+        \item Distanza tra antenna su torre e antenna utente: \SI{5}{\kilo\meter}
+        \item Ostacoli: Si cerca di avere una Line of Sight (LOS - linea di vista libera), ma potrebbero esserci lievi ostruzioni dalla vegetazione o dal terreno.
     \end{itemize}
 \end{itemize}
+In questi esempi, la stima precisa del Path Loss richiederebbe modelli di propagazione più complessi che tengano conto dell'ambiente specifico.
 
-\subsection{Link Budget Visualizzato}
-Il Link Budget è come un "bilancio energetico" del sistema wireless:
+\subsubsection{Visualizzazione dell'Attenuazione del Segnale}
+Il seguente grafico illustra come la potenza del segnale diminuisce con la distanza in diversi ambienti. Si noti come la pendenza della curva (cioè la rapidità dell'attenuazione) sia diversa per lo spazio libero, un ambiente urbano e un ambiente indoor.
 
 \begin{center}
-\begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+\begin{tikzpicture}[scale=0.8]
+    % Asse X (distanza) - increased to 12
+    \draw[->] (0,0) -- (12,0) node[right] {Distanza (m)};
+    % Asse Y (potenza) - increased range from -6,2 to -8,4
+    \draw[->] (0,-8) -- (0,4) node[above] {Potenza Relativa Ricevuta (dB)}; % Modificato etichetta Y
+    
+    % Griglia di riferimento - adjusted for new ranges
+    \foreach \y in {-8,-6,-4,-2,0,2,4} {
+        \draw[gray!30] (0,\y) -- (12,\y);
+        \node[left, font=\tiny] at (0,\y) {\y}; % Modificato per mostrare solo il valore
+    }
+    \foreach \xpos in {2,4,6,8,10} { % Rinominato \x per evitare conflitto
+        \draw[gray!30] (\xpos,-8) -- (\xpos,4);
+        \node[below, font=\tiny] at (\xpos,0) {\xpos}; % Modificato per mostrare solo il valore
+    }
+    
+    % Potenza iniziale normalizzata a 0 dB per confronto
+    \node[left, font=\tiny] at (0,0) {0}; 
+
+    % Curve di attenuazione con domini limitati (ipotetiche, per illustrazione)
+    % Le formule originali usavano ln, che è logaritmo naturale.
+    % Per dB, si usa log10. Tipicamente Path Loss aumenta con log(distanza).
+    % FSPL (dB) = K + 20*log10(d). Quindi -PathLoss = -K - 20*log10(d).
+    % Se assumiamo una potenza trasmessa normalizzata, la potenza ricevuta sarà come -20*log10(d) per spazio libero.
+    % Per semplicità illustrativa, usiamo pendenze diverse.
+    
+    \draw[red, thick] plot[domain=0.5:12, samples=50] (\x,{-2 - 2*10*log10(\x/0.5)}) node[right, font=\tiny, black] {Spazio libero};
+    \draw[blue, thick] plot[domain=0.5:10, samples=50] (\x,{-2 - 3.5*10*log10(\x/0.5)}) node[right, font=\tiny, black] {Ambiente urbano};
+    \draw[green, thick] plot[domain=0.5:7, samples=50] (\x,{-2 - 5*10*log10(\x/0.5)}) node[right, font=\tiny, black] {Indoor (con ostacoli)};
+    
+    % Legenda esplicativa
+    \node[draw, align=left, font=\small] at (9,3) {
+        \textcolor{red}{— Spazio libero}: minor attenuazione\\
+        \textcolor{blue}{— Ambiente urbano}: attenuazione media\\
+        \textcolor{green}{— Indoor}: massima attenuazione
+    };
+    
+    \node[font=\small] at (6,-9.5) {Attenuazione del Segnale vs Distanza (Illustrativa)};
+\end{tikzpicture}
+\end{center}
+
+\begin{table}[H]
+\centering
+\caption{Esempio Path Loss a \SI{2.4}{\giga\hertz} vs Distanza (FSPL, valori indicativi)}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Distanza} & \textbf{Path Loss (dB)} & \textbf{Variazione approx. dalla precedente} \\ \hline
+\SI{100}{\meter} (\SI{0.1}{\kilo\meter}) & \SI{-80.4}{dB} & - \\ \hline % 32.44 + 20*log10(2400) + 20*log10(0.1) = 32.44 + 67.6 - 20 = 80.04
+\SI{200}{\meter} (\SI{0.2}{\kilo\meter}) & \SI{-86.4}{dB} & $\approx \SI{-6}{dB}$ \\ \hline % 32.44 + 67.6 + 20*log10(0.2) = 100.04 - 13.98 = 86.06
+\SI{500}{\meter} (\SI{0.5}{\kilo\meter}) & \SI{-94.0}{dB} & $\approx \SI{-7.6}{dB}$ \\ \hline % 100.04 + 20*log10(0.5) = 100.04 - 6.02 = 94.02
+\SI{1000}{\meter} (\SI{1}{\kilo\meter}) & \SI{-100.0}{dB} & $\approx \SI{-6}{dB}$ \\ \hline % 100.04 + 0 = 100.04
+\end{tabular}
+\label{tab:path_loss_example} % Modificato label per evitare duplicati
+\end{table}
+\textit{Nota: I valori nella tabella sono calcolati usando la formula FSPL per \SI{2.4}{\giga\hertz} e mostrano come raddoppiare la distanza aumenti il path loss di circa \SI{6}{dB}.}
+
+
+\subsection{Calcolo del Link Budget (System Operating Margin)}
+Il Link Budget (o bilancio di collegamento) è un calcolo completo che tiene conto di tutti i guadagni e le perdite di potenza che un segnale RF subisce dal trasmettitore fino al ricevitore. L'obiettivo è determinare se il segnale ricevuto sarà sufficientemente forte per una comunicazione affidabile.
+
+È come fare un bilancio finanziario: si sommano tutte le ``entrate'' (potenza trasmessa, guadagni delle antenne) e si sottraggono tutte le ``uscite'' (perdite nei cavi, Path Loss, altre perdite).
+
+\subsubsection{Componenti Chiave del Link Budget}
+\begin{itemize}
+    \item \textbf{Potenza di Trasmissione ($P_{TX}$):} La potenza iniziale del segnale generata dal trasmettitore, solitamente misurata in dBm.
+    \item \textbf{Guadagno dell'Antenna Trasmittente ($G_{TX}$):} Le antenne non creano energia, ma possono concentrarla in una direzione specifica. Questo guadagno direzionale è misurato in dBi (rispetto a un'antenna isotropica ideale).
+    \item \textbf{Perdite nei Cavi e Connettori ($L_{\text{cavi}}$):} I cavi coassiali e i connettori che collegano il trasmettitore all'antenna introducono delle perdite di segnale, misurate in dB.
+    \item \textbf{Path Loss ($L_P$):} La perdita di segnale dovuta alla propagazione nello spazio, come discusso nella sezione precedente (include distanza, frequenza, ambiente). Misurata in dB.
+    \item \textbf{Guadagno dell'Antenna Ricevente ($G_{RX}$):} Simile al guadagno dell'antenna trasmittente, ma per l'antenna che riceve il segnale. Misurato in dBi.
+    \item \textbf{Sensibilità del Ricevitore (RS):} Questa è la minima potenza del segnale (in dBm) che il ricevitore deve ``sentire'' per poter decodificare correttamente l'informazione con un tasso di errore accettabile. Un valore di sensibilità più basso (più negativo) indica un ricevitore migliore, capace di operare con segnali più deboli. La sensibilità dipende spesso dal bitrate (velocità di trasmissione dati): bitrate più alti richiedono segnali più forti (cioè una sensibilità meno negativa).
+\end{itemize}
+
+\subsubsection{Calcolo della Potenza Ricevuta ($P_{RX}$)}
+La potenza del segnale che effettivamente raggiunge il ricevitore si calcola sommando algebricamente tutti i guadagni e le perdite:
+\[ P_{RX} (\text{dBm}) = P_{TX} (\text{dBm}) + G_{TX} (\text{dBi}) - L_{\text{caviTX}} (\text{dB}) - L_P (\text{dB}) + G_{RX} (\text{dBi}) - L_{\text{caviRX}} (\text{dB}) \]
+Spesso le perdite dei cavi del trasmettitore e del ricevitore sono raggruppate in un unico valore $L_{\text{cavi}}$.
+
+\subsubsection{Calcolo del Link Budget (System Operating Margin - SOM)}
+Il Link Budget, noto anche come System Operating Margin (SOM) o Margine Operativo del Sistema, è la differenza tra la potenza ricevuta e la sensibilità del ricevitore:
+\[ \text{Link Budget (dB)} = P_{RX} (\text{dBm}) - RS (\text{dBm}) \]
+\begin{itemize}
+    \item Un Link Budget \textbf{positivo} significa che il segnale ricevuto è più forte del minimo richiesto dal ricevitore. Maggiore è questo valore, più robusto e affidabile sarà il collegamento.
+    \item Un Link Budget \textbf{negativo} o pari a zero indica che il segnale è troppo debole per una comunicazione affidabile.
+\end{itemize}
+
+\subsubsection{Fade Margin (Margine di Fading)}
+Nella pratica, non basta che $P_{RX}$ sia appena sopra $RS$. I segnali wireless sono soggetti a fluttuazioni dovute al fading (multipath, ostacoli temporanei, ecc.). Per garantire che il collegamento rimanga stabile anche in presenza di queste fluttuazioni, si introduce un \textbf{Fade Margin (Margine di Fading)}.
+Questo è un margine di sicurezza aggiuntivo, tipicamente tra i $\SI{10}{dB}$ e i $\SI{20}{dB}$ (o più, per collegamenti critici o in ambienti difficili).
+Quindi, per un link affidabile, si richiede:
+\[ P_{RX} (\text{dBm}) \ge RS (\text{dBm}) + \text{Fade Margin (dB)} \]
+Equivalentemente, il Link Budget calcolato dovrebbe essere maggiore o uguale al Fade Margin desiderato.
+
+\subsubsection{Esempio di Calcolo del Link Budget}
+Riprendiamo l'esempio concettuale (originariamente dalla slide 58 del corso, con valori semplificati) per un collegamento punto-punto a lunga distanza:
+\begin{itemize}
+    \item Potenza di Trasmissione ($P_{TX}$): $\SI{+15}{dBm}$
+    \item Guadagno Antenna Trasmittente ($G_{TX}$): $\SI{+24}{dBi}$ (antenna direttiva ad alto guadagno)
+    \item Perdite totali nei cavi e connettori ($L_{\text{cavi}}$): $\SI{10.8}{dB}$ (somma delle perdite su entrambi i lati TX e RX)
+    \item Path Loss per una distanza di \SI{10}{km} ($L_P$): $\SI{120}{dB}$ (valore ipotetico per questa distanza e frequenza)
+    \item Guadagno Antenna Ricevente ($G_{RX}$): $\SI{+24}{dBi}$ (antenna identica a quella trasmittente)
+    \item Sensibilità del Ricevitore ($RS$): $\SI{-82}{dBm}$ (per un certo bitrate)
+\end{itemize}
+
+Calcolo della Potenza Ricevuta ($P_{RX}$):
+\[ P_{RX} = \SI{15}{dBm} + \SI{24}{dBi} - \SI{10.8}{dB} - \SI{120}{dB} + \SI{24}{dBi} = \SI{-67.8}{dBm} \]
+
+Calcolo del Link Budget:
+\[ \text{Link Budget} = P_{RX} - RS = \SI{-67.8}{dBm} - (\SI{-82}{dBm}) = \SI{-67.8}{dBm} + \SI{82}{dBm} = \SI{+14.2}{dB} \]
+
+Questo margine di $\SI{14.2}{dB}$ è il System Operating Margin. Se per questo collegamento si desidera un Fade Margin di, ad esempio, $\SI{10}{dB}$ per tenere conto delle fluttuazioni del segnale, il collegamento è considerato affidabile perché $\SI{14.2}{dB} > \SI{10}{dB}$. Se il Fade Margin richiesto fosse stato di $\SI{15}{dB}$, il collegamento sarebbe stato considerato a rischio.
+
+\subsubsection{Visualizzazione del Link Budget}
+Il diagramma seguente illustra i componenti di un Link Budget, mostrando come la potenza del segnale evolve dal trasmettitore al ricevitore, includendo guadagni e perdite.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
     % Definizione stili
     \tikzset{
         block/.style={rectangle, draw, fill=blue!20, 
-                     minimum height=1cm, minimum width=2cm,
-                     text centered, rounded corners},
+                     minimum height=1.2cm, minimum width=2.2cm, % Aumentato minimum height
+                     text centered, rounded corners, text width=2cm, align=center, text=black},
         loss/.style={rectangle, draw, fill=red!20,
-                    minimum height=1cm, minimum width=2cm,
-                    text centered, rounded corners},
+                    minimum height=1.2cm, minimum width=2.2cm, % Aumentato minimum height
+                    text centered, rounded corners, text width=2cm, align=center, text=black},
         gain/.style={rectangle, draw, fill=green!20,
-                    minimum height=1cm, minimum width=2cm,
-                    text centered, rounded corners}
+                    minimum height=1.2cm, minimum width=2.2cm, % Aumentato minimum height
+                    text centered, rounded corners, text width=2cm, align=center, text=black}
     }
     
-    % Trasmettitore
-    \node[block, text=black, align=center] (tx) at (0,0) {$P_{TX}$ \\ \vspace{1mm} 15 dBm};
+    % Elementi del Link Budget
+    \node[block] (ptx) at (0,0) {$P_{TX}$ \\
+    \SI{15}{dBm}};
+    \node[gain] (gtx) at (2.5,0) {$G_{TX}$ \\
+    \SI{24}{dBi}};
+    \node[loss] (lcavi) at (5,1.5) {$L_{\text{cavi}}$ \\
+    \SI{10.8}{dB}};
+    \node[loss] (lpath) at (5,-1.5) {Path Loss \\
+    \SI{120}{dB}};
+    \node[gain] (grx) at (7.5,0) {$G_{RX}$ \\
+    \SI{24}{dBi}};
+    \node[block] (prx) at (10,0) {$P_{RX}$ \\
+    \SI{-67.8}{dBm}};
     
-    % Guadagni antenne
-    \node[gain, text=black, align=center] (gtx) at (2.5,0) {$G_{TX}$ \\ \vspace{1mm} 24 dBi};
-    \node[gain, text=black, align=center] (grx) at (7.5,0) {$G_{RX}$ \\ \vspace{1mm} 24 dBi};
+    \node[block, fill=orange!30] (rs) at (12.5, -1.5) {Sensibilità $RS$ \\
+    \SI{-82}{dBm}};
+    \node[gain, fill=yellow!40] (som) at (12.5, 1.5) {Link Budget (SOM) \\
+    \SI{+14.2}{dB}};
+
+    % Frecce di flusso del segnale e calcolo
+    \draw[->, thick] (ptx.east) -- (gtx.west);
+    \draw[->, thick] (gtx.east) -- node[above, midway, font=\small, black] {EIRP$_{TX}$} (5,0); % Punto intermedio per perdite
+    \draw[->, thick, red] (5,0) -- (lcavi.west) ;
+    \draw[->, thick, red] (5,0) -- (lpath.west);
+    \draw[->, thick] (5,0) -- node[above, midway, font=\small, black] {} (grx.west);
+    \draw[->, thick] (grx.east) -- (prx.west);
     
-    % Perdite
-    \node[loss, text=black, align=center] (lcavi) at (5,2) {$L_{cavi}$ \\ \vspace{1mm} 10.8 dB};
-    \node[loss, text=black, align=center] (lpath) at (5,-2) {Path Loss \\ \vspace{1mm} 120 dB};
+    % Frecce per calcolo SOM
+    \draw[->, thick, blue!60!black] (prx.east) -| (som.west);
+    \draw[->, thick, orange!80!black] (rs.north) -- (som.south) node[midway, right, font=\small, black] {$P_{RX} - RS$};
     
-    % Ricevitore
-    \node[block, text=black, align=center] (rx) at (10,0) {$P_{RX}$ \\ \vspace{1mm} -67.8 dBm};
-    
-    % Sensibilità
-    \node[block, text=black, align=center] (rs) at (10,-3) {RS \\ \vspace{1mm} -82 dBm};
-    
-    % Link Budget
-    \node[gain, text=black, align=center] (lb) at (12,-1.5) {Link Budget \\ \vspace{1mm} 14.2 dB};
-    
-    % Connessioni
-    \draw[->, thick] (tx) -- (gtx);
-    \draw[->, thick] (gtx) -- (grx);
-    \draw[->, thick] (grx) -- (rx);
-    \draw[->, thick, red] (5,0) -- (lcavi);
-    \draw[->, thick, red] (5,0) -- (lpath);
-    \draw[->, thick] (rx) -- (lb);
-    \draw[->, thick] (rs) -- (lb);
-    
-    % Spiegazioni
-    \node[text width=3cm, align=left, font=\small] at (0,-3) 
-        {Potenza\\Trasmessa};
-    \node[text width=3cm, align=left, font=\small] at (2.5,-3) 
-        {Guadagno\\Antenna TX};
-    \node[text width=3cm, align=left, font=\small] at (7.5,-3) 
-        {Guadagno\\Antenna RX};
-    \node[text width=3cm, align=left, font=\small] at (10,-4.5) 
-        {Sensibilità\\Ricevitore};
+    % Etichette descrittive sotto i blocchi (opzionale, se c'è spazio)
+    \node[text width=2.5cm, align=center, font=\scriptsize] at (0,-1.5) {Potenza Trasmettitore};
+    \node[text width=2.5cm, align=center, font=\scriptsize] at (2.5,-1.5) {Guadagno Antenna TX};
+    \node[text width=2.5cm, align=center, font=\scriptsize] at (7.5,-1.5) {Guadagno Antenna RX};
+    \node[text width=2.5cm, align=center, font=\scriptsize] at (10,-1.5) {Potenza Ricevuta};
+
 \end{tikzpicture}
 \end{center}
 
-\subsection{Scenari di Link Budget}
+\subsubsection{Comparazione di Scenari di Link Budget}
+La tabella seguente mostra come i parametri del Link Budget cambiano in diversi scenari tipici:
+
 \begin{table}[H]
 \centering
-\caption{Comparazione Scenari Link Budget}
+\caption{Comparazione Scenari Link Budget (Valori Esempio)}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Parametro} & \textbf{Indoor} & \textbf{Outdoor} & \textbf{Long Range} \\
+\textbf{Parametro} & \textbf{Indoor WiFi} & \textbf{Outdoor Urbano} & \textbf{Long Range PtP} \\
 \hline
-$P_{TX}$ & \SI{15}{dBm} & \SI{20}{dBm} & \SI{30}{dBm} \\
-$G_{TX}$ & \SI{3}{dBi} & \SI{6}{dBi} & \SI{24}{dBi} \\
-$G_{RX}$ & \SI{2}{dBi} & \SI{6}{dBi} & \SI{24}{dBi} \\
-$L_{cavi}$ & \SI{2}{dB} & \SI{4}{dB} & \SI{10}{dB} \\
-Path Loss & \SI{60}{dB} & \SI{90}{dB} & \SI{120}{dB} \\
-$P_{RX}$ & \SI{-42}{dBm} & \SI{-62}{dBm} & \SI{-52}{dBm} \\
-RS & \SI{-70}{dBm} & \SI{-75}{dBm} & \SI{-82}{dBm} \\
+$P_{TX}$ (Potenza Trasmissione) & \SI{15}{dBm} & \SI{20}{dBm} & \SI{25}{dBm} \\
+$G_{TX}$ (Guadagno Antenna TX) & \SI{3}{dBi} & \SI{8}{dBi} & \SI{24}{dBi} \\
+$L_{\text{cavi}}$ (Perdite Cavi Totali) & \SI{2}{dB} & \SI{4}{dB} & \SI{8}{dB} \\
+Path Loss ($L_P$) & \SI{60}{dB} (es. \SI{15}{m}, ostacoli) & \SI{90}{dB} (es. \SI{150}{m}, urbano) & \SI{120}{dB} (es. \SI{5}{km}, LOS) \\
+$G_{RX}$ (Guadagno Antenna RX) & \SI{2}{dBi} & \SI{8}{dBi} & \SI{24}{dBi} \\
 \hline
-Link Budget & \SI{28}{dB} & \SI{13}{dB} & \SI{30}{dB} \\
+$P_{RX}$ (Potenza Ricevuta Calcolata) & \SI{-42}{dBm} & \SI{-62}{dBm} & \SI{-55}{dBm} \\
+\hline
+RS (Sensibilità Ricevitore) & \SI{-75}{dBm} & \SI{-80}{dBm} & \SI{-85}{dBm} \\
+Fade Margin Desiderato & \SI{10}{dB} & \SI{15}{dB} & \SI{20}{dB} \\
+\hline
+\textbf{Link Budget (SOM)} & \textbf{\SI{33}{dB}} & \textbf{\SI{18}{dB}} & \textbf{\SI{30}{dB}} \\
+\textbf{Affidabile?} (SOM $\ge$ Fade Margin) & \textbf{Sì} (33 > 10) & \textbf{Sì} (18 > 15) & \textbf{Sì} (30 > 20) \\
 \hline
 \end{tabular}
+\label{tab:link_budget_scenarios} % Label univoco
 \end{table}
 
-\textbf{Esempi di Applicazione:}
+\textbf{Descrizione degli Scenari:}
 \begin{itemize}
-    \item \textbf{Indoor:} WiFi domestico, copertura appartamento
+    \item \textbf{Indoor WiFi (es. Domestico/Ufficio):}
     \begin{itemize}
-        \item Distanze brevi (\SI{5}-\SI{20}{m})
-        \item Antenne omnidirezionali a basso guadagno
-        \item Ostacoli: muri, mobili
+        \item Distanze relativamente brevi (es. \SIrange{5}{20}{\meter}).
+        \item Antenne omnidirezionali o a basso guadagno integrate nei dispositivi.
+        \item Ostacoli significativi: muri, mobili, persone, che contribuiscono al Path Loss.
+        \item Sensibilità del ricevitore moderata, Fade Margin per coprire variazioni interne.
     \end{itemize}
     
-    \item \textbf{Outdoor:} WiFi pubblico, parchi
+    \item \textbf{Outdoor Urbano (es. Hotspot Pubblico, Copertura Campus):}
     \begin{itemize}
-        \item Distanze medie (\SI{50}-\SI{200}{m})
-        \item Antenne settoriali
-        \item Pochi ostacoli
-    \end{itemize}
+        \item Distanze medie (es. \SIrange{50}{300}{\meter}).
+        \item Antenne settoriali o omnidirezionali esterne con guadagno moderato montate su pali o edifici.
+        \item Ostacoli: edifici, vegetazione, traffico. Il Path Loss è più elevato rispetto allo spazio libero.
+        \item Fade Margin più elevato per far fronte a un ambiente più dinamico e variabile.
+    \enditemize}
     
-    \item \textbf{Long Range:} Ponte radio punto-punto
+    \item \textbf{Long Range Point-to-Point (PtP) (es. Ponte Radio tra Edifici/Torri):}
     \begin{itemize}
-        \item Lunghe distanze (\SI{1}-\SI{10}{km})
-        \item Antenne direttive ad alto guadagno
-        \item Line of Sight necessaria
+        \item Lunghe distanze (es. \SIrange{1}{20}{\kilo\meter} o più).
+        \item Antenne altamente direttive (paraboliche, grid) con alto guadagno, richiedono allineamento preciso.
+        \item Si punta ad avere una Line of Sight (LOS) chiara, minimizzando le ostruzioni (inclusa la Zona di Fresnel).
+        \item I ricevitori possono avere sensibilità migliori (più negative). È necessario un Fade Margin consistente per garantire affidabilità su lunghe distanze e contro fenomeni atmosferici.
     \end{itemize}
 \end{itemize}
 
+\subsubsection{Visualizzazione degli Scenari di Applicazione}
+
 \begin{center}
-\begin{tikzpicture}[scale=0.7]
-    % Definizione degli scenari
-    \begin{scope}[shift={(-6,-0.6)}]  % Added -1 to y-shift
-        \node[font=\bfseries] at (0,3.5) {Indoor};
-        % Casa
-        \draw[thick] (-2,0) rectangle (2,2);
-        \draw (-2,2) -- (0,3) -- (2,2); % tetto
-        % AP e client
-        \fill[red] (-1,1) circle (0.1) node[below] {AP};
-        \fill[themeblue] (1,1) circle (0.1) node[below] {Client};
-        % Segnale
-        \draw[red,thick,decorate,decoration={snake,amplitude=0.3mm}] 
-            (-1,1) -- (1,1);
+\begin{tikzpicture}[scale=0.65, every node/.style={transform shape}]
+    % Scenario Indoor
+    \begin{scope}[shift={(-7,0)}]
+        \node[font=\bfseries, text width=2cm, align=center] at (0,3.5) {Indoor WiFi (Casa/Ufficio)};
+        % Contesto casa/ufficio
+        \draw[thick, fill=gray!10] (-2.5,-1) rectangle (2.5,2.5);
+        \draw (-2.5,2.5) -- (0,3.5) -- (2.5,2.5); % Tetto semplice
+        \draw[thick] (-0.5, -1) -- (-0.5, 2.5); % Muro interno
+        % AP (router WiFi)
+        \node[draw, fill=red!30, circle, minimum size=5mm, label={[font=\tiny, black]below:AP}] (ap_indoor) at (-1.5,0.5) {};
+        % Client (laptop)
+        \node[draw, fill=themeblue!40, rectangle, rounded corners=1mm, minimum width=6mm, minimum height=4mm, label={[font=\tiny, black]below:Client}] (client_indoor) at (1.5,1) {};
+        % Segnale con onde che indicano ostacoli
+        \draw[red!70, thick, decorate, decoration={snake, segment length=3mm, amplitude=0.5mm}] (ap_indoor) -- (client_indoor);
+        \node[font=\tiny, text width=2cm, align=center] at (0, -2) {D: \SIrange{5}{20}{m}\\
+        Ant: Basso Guadagno\\
+        Ostacoli: Muri, Mobili};
     \end{scope}
     
+    % Scenario Outdoor Urbano
     \begin{scope}[shift={(0,0)}]
-        \node[font=\bfseries] at (0,3) {Outdoor};
-        % Area
-        \draw[thick] (-2.5,-0.5) rectangle (2.5,2);
-        % AP e clients
-        \fill[red] (0,2) circle (0.1) node[above] {AP};
-        \fill[themeblue] (-2,0) circle (0.1) node[below] {C1};
-        \fill[themeblue] (0,0) circle (0.1) node[below] {C2};
-        \fill[themeblue] (2,0) circle (0.1) node[below] {C3};
+        \node[font=\bfseries, text width=2.5cm, align=center] at (0,3.5) {Outdoor Urbano (Hotspot)};
+        % Contesto urbano stilizzato
+        \fill[gray!30] (-3,-1) rectangle (-1,1.5); % Edificio 1
+        \fill[gray!40] (1,-1) rectangle (3,2);   % Edificio 2
+        \draw[thick] (-3,-1) -- (3,-1); % Strada/Piazza
+        % AP (antenna su palo)
+        \draw[thick] (0,1.5) -- (0,2.5); % Palo
+        \node[draw, fill=red!30, regular polygon, regular polygon sides=3, minimum size=7mm, label={[font=\tiny, black]above:AP Settoriale}] (ap_outdoor) at (0,2.5) {};
+        % Clienti (smartphone)
+        \node[draw, fill=themeblue!40, rounded corners=1mm, minimum width=3mm, minimum height=6mm, label={[font=\tiny, black]below:C1}] (c1_outdoor) at (-2,0) {};
+        \node[draw, fill=themeblue!40, rounded corners=1mm, minimum width=3mm, minimum height=6mm, label={[font=\tiny, black]below:C2}] (c2_outdoor) at (0.5,-0.5) {};
+        \node[draw, fill=themeblue!40, rounded corners=1mm, minimum width=3mm, minimum height=6mm, label={[font=\tiny, black]below:C3}] (c3_outdoor) at (2,0.5) {};
         % Segnali
-        \foreach \x in {-2,0,2} {
-            \draw[red,thick,decorate,decoration={snake,amplitude=0.3mm}] 
-                (0,2) -- (\x,0);
-        }
+        \draw[red!70, thick, decorate, decoration={snake, segment length=4mm, amplitude=0.4mm}] (ap_outdoor) -- (c1_outdoor);
+        \draw[red!70, thick, decorate, decoration={snake, segment length=4mm, amplitude=0.4mm}] (ap_outdoor) -- (c2_outdoor);
+        \draw[red!70, thick, decorate, decoration={snake, segment length=4mm, amplitude=0.4mm}] (ap_outdoor) -- (c3_outdoor);
+        \node[font=\tiny, text width=2cm, align=center] at (0,-2) {D: \SIrange{50}{300}{m}\\
+        Ant: Guadagno Medio\\
+        Ostacoli: Edifici};
     \end{scope}
     
-    \begin{scope}[shift={(6,0)}]
-        \node[font=\bfseries] at (0,3) {Long Range};
-        % Torri
-        \draw[thick] (-2,0) rectangle (-1.5,2);
-        \draw[thick] (1.5,0) rectangle (2,2);
-        % Antenne
-        \draw[thick] (-1.5,1.8) -- (-1,1.8) -- (-1,1.2) -- (-1.5,1.2);
-        \draw[thick] (1.5,1.8) -- (2,1.8) -- (2,1.2) -- (1.5,1.2);
-        % Segnale direttivo
-        \draw[red,thick,decorate,decoration={snake,amplitude=0.4mm}] 
-            (-1,1.5) -- (1.5,1.5);
-        % Distanza
-        \draw[<->] (-2,-0.5) -- (2,-0.5) 
-            node[midway,below] {\SI{1}-\SI{10}{km}};
+    % Scenario Long Range PtP
+    \begin{scope}[shift={(7,0)}]
+        \node[font=\bfseries, text width=2.5cm, align=center] at (0,3.5) {Long Range (Ponte Radio)};
+        % Torri stilizzate
+        \draw[thick, fill=gray!50] (-2.2,-1) -- (-1.8,-1) -- (-1.8,2) -- (-2.2,2) -- cycle; % Torre TX
+        \draw[thick, fill=gray!50] (1.8,-1) -- (2.2,-1) -- (2.2,2) -- (1.8,2) -- cycle;   % Torre RX
+        % Antenne paraboliche (semplificate)
+        \draw[thick, fill=blue!30] (-1.8,1.5) ellipse (0.3cm and 0.5cm);
+        \node (ant_tx_lr) at (-1.5,1.5) {};
+        \draw[thick, fill=blue!30] (1.8,1.5) ellipse (0.3cm and 0.5cm);
+        \node (ant_rx_lr) at (1.5,1.5) {};
+        % Segnale direttivo (LOS)
+        \draw[red!80, ultra thick, ->] (ant_tx_lr) -- (ant_rx_lr);
+        \node[font=\tiny, red!80!black] at (0,1.8) {LOS}; 
+        % Indicazione distanza
+        \draw[<->, thin] (-1.8,-1.2) -- (1.8,-1.2) node[midway, below, font=\tiny] {D: \SIrange{1}{20+}{km}};
+        \node[font=\tiny, text width=2cm, align=center] at (0,-2) {Ant: Alto Guadagno\\
+        LOS Critica};
     \end{scope}
 \end{tikzpicture}
 \end{center}
+
+% Rimuovo la sezione Approfondimento e il suo contenuto è stato integrato sopra.
+% Vecchia \section{Approfondimento: Path Loss e Link Budget nella Pratica} ... rimossa
+% Vecchio contenuto di Path Loss in dettaglio ... rimosso e integrato
+% Vecchio contenuto di Link Budget Visualizzato ... rimosso e integrato
+% Vecchio contenuto di Scenari di Link Budget ... rimosso e integrato
 
 \end{document}
