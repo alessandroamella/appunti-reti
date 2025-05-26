@@ -200,7 +200,7 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
             \draw[->] (0,0) -- (6,0) node[right] {time};
             \draw[->] (0,0) -- (0,2.5) node[above] {Frequency hops};
             \foreach \y in {10,20,...,80} {
-                \draw (-0.1, \y/40) node[left] {\tiny \y} -- (0.1, \y/40);
+                \draw (-0.1, \y/40) node[left] {\small \y} -- (0.1, \y/40);
             }
             \draw[thick, red] (0,10/40) -- (1,10/40) -- (1,60/40) -- (2,60/40) -- (2,20/40) -- (3,20/40) -- (3,70/40) -- (4,70/40) -- (4,40/40) -- (5,40/40);
             \draw[thick, themeblue, dashed] (0,30/40) -- (0.5,30/40) -- (0.5,70/40) -- (1.5,70/40) -- (1.5,40/40) -- (2.5,40/40) -- (2.5,80/40) -- (3.5,80/40) -- (3.5,50/40) -- (4.5,50/40);
@@ -503,21 +503,6 @@ Il \textbf{multiplexing} permette a più utenti/segnali di condividere lo stesso
     \item \textbf{Svantaggi:} Data rate utente più bassi, rigenerazione complessa.
     \item Implementato con spread spectrum. \textit{Esempio:} Reti 3G.
 \end{itemize}
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=0.8, transform shape]
-        \draw[->] (0,0) -- (0,2) node[left]{c};
-        \draw[->] (0,0) -- (4,0) node[below]{f};
-        \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
-         \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
-          \filldraw[\col!50, opacity=0.7] % Use filldraw
-            ([xshift=-\i*0.15cm, yshift=\i*0.1cm]0.2, 0.2+\i*0.25) rectangle ([xshift=-\i*0.15cm, yshift=\i*0.1cm]0.2+3.5, 0.2+\i*0.25+0.2);
-          \node at (4, 0.3+\i*0.25) {$k_{\i+1}$};
-        }
-    \end{tikzpicture}
-    \caption{Code Division Multiplexing (CDM).}
-    \label{fig:cdm}
-\end{figure}
 
 \section{Pianificazione delle Frequenze}
 \begin{itemize}
@@ -555,11 +540,12 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \item \textbf{Schemi Base (per portante RF):} AM, FM, PM.
 \end{itemize}
 
+
 \subsection{Processo di Trasmissione di Bit con Onde Radio}
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[node distance=1.5cm, auto,
-    block/.style={rectangle, draw, fill=blue!20, text width=7em, text centered, rounded corners, minimum height=2em},
+    block/.style={rectangle, draw, fill=blue!20, text=black, text width=7em, text centered, rounded corners, minimum height=2em},
     line/.style={draw, -latex},
     wave/.style={draw, -latex, decorate, decoration={snake}}]
 
@@ -571,8 +557,8 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \node [coordinate, below=0.5cm of ana_mod] (carrier_mid) {};
 
     \draw [line] (info_in) -- (dig_mod);
-    \draw [line, dashed] (dig_mod.east) -- node[midway,above,yshift=0.1cm] {\tiny Analog (baseband)} (ana_mod.west);
-    \draw [line, dashed] (ana_mod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\tiny Carrier} (carrier_mid);
+    \draw [line, dashed] (dig_mod.east) -- node[midway,above,yshift=0.1cm] {\small Analog (baseband)} (ana_mod.west);
+    \draw [line, dashed] (ana_mod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\small Carrier} (carrier_mid);
     \draw [line, dashed] (ana_mod.east) -- (radio_out.west);
 
     % Ricezione
@@ -584,18 +570,17 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \node [coordinate, below=0.5cm of dig_demod] (baseband_mid_rx) {};
 
     \draw [line] (radio_in.west) -- (ana_demod.east);
-    \draw [line, dashed] (ana_demod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\tiny Carrier} (carrier_mid_rx);
-    \draw [line, dashed] (ana_demod.west) -- node[midway,above,yshift=0.1cm] {\tiny Analog (baseband)} (dig_demod.east);
+    \draw [line, dashed] (ana_demod.south) ++(0,-0.1) -- node[midway,right,xshift=0.1cm] {\small Carrier} (carrier_mid_rx);
+    \draw [line, dashed] (ana_demod.west) -- node[midway,above,yshift=0.1cm] {\small Analog (baseband)} (dig_demod.east);
     \draw [line] (dig_demod.west) -- (info_out.east);
 
     % Canale con problemi
-    \path (radio_out.south) edge[line, bend right=20, dashed, red] node[midway, below, yshift=-0.2cm, text width=5em] {Canale (Rumore, Interferenze)} (radio_in.north);
+    \path (radio_out.south) edge[line, bend right=20, dashed, red] node[midway, below, yshift=0.5cm, text width=9em] {Canale (Rumore, Interferenze)} (radio_in.north);
 
 \end{tikzpicture}
 \caption{Processo di modulazione e demodulazione.}
 \label{fig:mod_demod_process}
 \end{figure}
-\textit{L'analogia del test di Ishihara (Slide 34-35) illustra l'effetto del rumore: un segnale chiaro è facile da interpretare, uno rumoroso no.}
 
 \section{Tecniche di Modulazione Digitale (Shift Keying)}
 \begin{figure}[H]
@@ -606,10 +591,10 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     % ASK
     \node at (-1, 2.5) {ASK};
     \draw[dashed] (0,2) -- (1,2) (1,2.8) -- (2,2.8) -- (2,1.2) -- (3,1.2) (3,2.8) -- (4,2.8) -- (4,1.2) -- (5,1.2); % Bits 0 1 0 1
-    \draw[blue, domain=1:2, samples=20, variable=\x] plot (\x, {0.8*sin(5*(\x-1) r) + 2}); % 1
-    \draw[blue] (0,2) -- (1,2); % 0
-    \draw[blue, domain=3:4, samples=20, variable=\x] plot (\x, {0.8*sin(5*(\x-3) r) + 2}); % 1
-    \draw[blue] (2,2) -- (3,2); % 0
+    \draw[themeblue, domain=1:2, samples=20, variable=\x] plot (\x, {0.8*sin(5*(\x-1) r) + 2}); % 1
+    \draw[themeblue] (0,2) -- (1,2); % 0
+    \draw[themeblue, domain=3:4, samples=20, variable=\x] plot (\x, {0.8*sin(5*(\x-3) r) + 2}); % 1
+    \draw[themeblue] (2,2) -- (3,2); % 0
     \node at (0.5,3) {0}; \node at (1.5,3) {1}; \node at (2.5,3) {0}; \node at (3.5,3) {1};
 
     % FSK
@@ -639,6 +624,13 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \item \textbf{PSK:} Più complessa, più robusta, varia la fase della portante.
 \end{itemize}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{images/modulation_comparison.png}
+\caption{Confronto tra tecniche di modulazione: ASK, FSK, PSK.}
+\label{fig:modulation_comparison}
+\end{figure}
+
 \section{Rappresentazione del Segnale}
 \begin{itemize}
     \item \textbf{Dominio dell'Ampiezza:} Amiezza (V) vs Tempo (s).
@@ -653,7 +645,7 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \draw[->] (0,-1.5) -- (0,1.5) node[above] {Q ($M \sin \phi$)};
     \coordinate (O) at (0,0);
     \coordinate (P) at (45:1); % Esempio: M=1, phi=45 deg
-    \draw[thick, blue, ->] (O) -- (P) node[midway, above right, black] {simbolo};
+    \draw[thick, themeblue, ->] (O) -- (P) node[midway, above right, black] {simbolo};
     \draw (O) -- (0.3,0) arc (0:45:0.3);
     \node at (22.5:0.5) {$\phi$};
     \fill (P) circle (2pt);
@@ -672,7 +664,9 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \begin{tikzpicture}[scale=0.7]
     \draw[->] (-1.5,0) -- (1.5,0) node[right] {I}; \draw[->] (0,-0.5) -- (0,0.5) node[above] {Q};
     \fill (1,0) circle (2pt) node[below] {0 (0°)}; \fill (-1,0) circle (2pt) node[below] {1 (180°)};
-\end{tikzpicture} \caption{BPSK IQ Diagram.} \end{figure}
+\end{tikzpicture}
+\caption{BPSK IQ Diagram.}
+\end{figure}
 
 \subsection{QPSK (Quadrature Phase Shift Keying)}
 \begin{itemize}
@@ -717,7 +711,7 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
     \fill (-0.707,0.707) circle (2pt) node[above left] {01};
     \fill (-0.707,-0.707) circle (2pt) node[below left] {11}; % Gray coded
     \fill (0.707,-0.707) circle (2pt) node[below right] {10}; % Gray coded
-    \draw[blue, thick, dashed, ->] (0.707,0.707) -- (0.707,-0.707) node[midway, fill=white, text=blue] {Errore 1 bit};
+    \draw[themeblue, thick, dashed, ->] (0.707,0.707) -- (0.707,-0.707) node[midway, fill=white, text=themeblue] {Errore 1 bit};
     \end{scope}
 \end{tikzpicture} \caption{Confronto Gray Coding (NB: etichette simboli semplificate).} \end{figure}
 
@@ -741,9 +735,9 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
             \fill (\x,\y) circle (2pt);
         }
     }
-    \node at (0.5,0.5) [above right, font=\tiny, red] {0000}; % Esempio
-    \node at (1.5,0.5) [above right, font=\tiny, red] {0001}; % Esempio
-    \node at (0.5,1.5) [above right, font=\tiny, red] {0010}; % Esempio
+    \node at (0.5,0.5) [above right, font=\small, red] {0000}; % Esempio
+    \node at (1.5,0.5) [above right, font=\small, red] {0001}; % Esempio
+    \node at (0.5,1.5) [above right, font=\small, red] {0010}; % Esempio
 \end{tikzpicture} \caption{16-QAM IQ Diagram (16 simboli).} \end{figure}
 
 \subsection{Modulazione Gerarchica}
@@ -758,18 +752,15 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
         \item \textbf{Alto Rumore:} Errori video, ma voce preservata (cloud corretta identificata).
     \end{itemize}
 \end{itemize}
-\textit{[Figura di riferimento: Slide 61-77 - Hierarchical Modulation]}
 
 \section{Tecniche Avanzate di Trasmissione e Accesso Multiplo}
 \subsection{Spreading e Fading Selettivo in Frequenza}
-\textit{[Figura di riferimento: Slide 79 - Spreading and frequency selective fading]}
 \begin{itemize}
     \item Il \textit{fading} è un'attenuazione del segnale dipendente dalla frequenza.
     \item Lo \textit{spread spectrum} distribuisce l'energia su una banda più ampia, rendendo il segnale più robusto.
 \end{itemize}
 
 \subsection{DSSS (Direct Sequence Spread Spectrum) - Dettagli}
-\textit{[Figure di riferimento: Slide 80-83 - DSSS I, II]}
 \begin{itemize}
     \item XOR del segnale dati con una \textit{chipping sequence}.
     \item Molti "chip" per bit $\rightarrow$ maggiore larghezza di banda.
@@ -778,12 +769,12 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[yscale=0.6,xscale=0.5]
-    \draw[->] (0,0) -- (15,0) node[below] {Frequency (GHz)};
+    \draw[->] (0,0) -- (15,0) node[below right] {Frequency (GHz)};
     \draw[->] (0,0) -- (0,3) node[left] {Power};
-    \node[below, font=\tiny] at (2.5,0) {2.412 (Ch1)};
-    \node[below, font=\tiny] at (7.5,0) {2.437 (Ch6)};
-    \node[below, font=\tiny] at (12.5,0) {2.462 (Ch11)};
-    \foreach \center/\col in {2.5/red, 7.5/green, 12.5/blue}{
+    \node[below, font=\small] at (2.5,0) {2.412 (Ch1)};
+    \node[below, font=\small] at (7.5,0) {2.437 (Ch6)};
+    \node[below, font=\small] at (12.5,0) {2.462 (Ch11)};
+    \foreach \center/\col in {2.5/red, 7.5/green, 12.5/themeblue}{
         \fill[\col!30] (\center-2,0) rectangle (\center+2,1); % Sidelobes
         \fill[\col!70] (\center-1,0) rectangle (\center+1,2.5); % Mainlobe
         \draw (\center-2,0) -- (\center-2,1) -- (\center-1,1) -- (\center-1,2.5) -- (\center+1,2.5) -- (\center+1,1) -- (\center+2,1) -- (\center+2,0);
@@ -795,22 +786,41 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \end{figure}
 
 \subsection{CDMA (Code Division Multiple Access) - Dettagli}
-\textit{[Figure di riferimento: Slide 86-91 - CDMA]}
 \begin{itemize}
     \item Usa DSSS. Ogni utente ha un codice univoco.
     \item Tutti trasmettono sulla stessa frequenza contemporaneamente.
     \item Il ricevitore usa il codice per estrarre il segnale desiderato.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=0.8, transform shape]
+        \draw[->] (0,0) -- (0,2) node[left]{c};
+        \draw[->] (0,0) -- (4,0) node[below]{f};
+        \draw[->] (0,0) -- (-1.5,-0.75) node[below left]{t};
+         \foreach \i/\col in {0/blue,1/green,2/red,3/yellow,4/purple,5/orange}{
+          \filldraw[\col!50, opacity=0.7] % Use filldraw
+            ([xshift=-\i*0.15cm, yshift=\i*0.1cm]0.2, 0.2+\i*0.25) rectangle ([xshift=-\i*0.15cm, yshift=\i*0.1cm]0.2+3.5, 0.2+\i*0.25+0.2);
+          \node at (4, 0.3+\i*0.25) {$k_{\i+1}$};
+        }
+    \end{tikzpicture}
+    \caption{Code Division Multiplexing (CDM).}
+    \label{fig:cdm}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/cdma_multiplexing.png}
+    \caption{Vista del Code Division Multiplex in 3D.}
+    \label{fig:cdm_3d}
+\end{figure}
+
 \subsection{FHSS (Frequency Hopping Spread Spectrum) - Dettagli}
-\textit{[Figure di riferimento: Slide 92-94 - FHSS I, II, III]}
 \begin{itemize}
     \item Cambiamenti discreti della frequenza portante.
     \item \textbf{Fast Hopping:} Diverse frequenze/bit. \textbf{Slow Hopping:} Diversi bit/frequenza.
 \end{itemize}
 
 \subsection{OFDM (Orthogonal Frequency Division Multiplexing)}
-\textit{[Figure di riferimento: Slide 95-100 - OFDM]}
 \begin{itemize}
     \item Trasmette dati su molte \textbf{sottoportanti (subcarriers)} parallele ortogonali.
     \item \textbf{Vantaggi:} Alta efficienza spettrale, robustezza al multipath fading.
@@ -819,7 +829,6 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \end{itemize}
 \begin{table}[H]
 \centering
-\caption{Esempio Riassuntivo OFDM (IEEE 802.11a/g - valori indicativi)}
 \label{tab:ofdm_summary}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
@@ -838,6 +847,7 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \multicolumn{6}{l}{\footnotesize Basato su 48 data subcarriers, simbolo OFDM di $4\mu s$. Bit Dati = Subcarriers * Bit/simbolo.} \\
 \multicolumn{6}{l}{\footnotesize Bit Utili = Bit Dati * Coding Rate.} \\
 \end{tabular}
+\caption{Esempio Riassuntivo OFDM (IEEE 802.11a/g - valori indicativi)}
 \end{table}
 
 
