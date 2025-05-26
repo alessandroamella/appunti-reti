@@ -861,68 +861,72 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
     \end{itemize}
 \end{itemize}
 \begin{center}
-\begin{tikzpicture}[scale=1.2, every node/.style={transform shape}]
-    % Definizione stile per le antenne
-    \tikzset{
-        antenna/.style={
-            cylinder, 
-            draw=themeblue, 
-            thick,
-            shape border rotate=90, 
-            aspect=0.4, 
-            minimum height=1.5cm, 
-            minimum width=0.7cm, 
-            fill=themeblue!20
+    \begin{tikzpicture}[scale=1.2, every node/.style={transform shape}]
+        % Define antenna style
+        \tikzset{
+            antenna/.style={
+                cylinder, 
+                draw=blue!80!black, 
+                thick,
+                shape border rotate=90, 
+                aspect=0.4, 
+                minimum height=1.5cm, 
+                minimum width=0.7cm, 
+                fill=blue!20
+            }
         }
-    }
-
-    % Antenne con base
-    \begin{scope}[shift={(0,0)}]
-        % Base TX
-        \fill[gray!30] (-5,-1) rectangle (-4,0);
-        \node (tx_ant) at (-4.5,1) [antenna] {};
-        \node[below, font=\small] at (-4.5,-1.2) {Antenna TX};
-
-        % Base RX
-        \fill[gray!30] (4,-1) rectangle (5,0);
-        \node (rx_ant) at (4.5,1) [antenna] {};
-        \node[below, font=\small] at (4.5,-1.2) {Antenna RX};
-    \end{scope}
-
-    % Line of Sight (LOS)
-    \draw[dashed, red, thick] (tx_ant.east) -- (rx_ant.west) 
-        node [midway, above=0.3cm, font=\small] {Line of Sight (LOS)};
-
-    % Fresnel Zone (1st) - più grande e trasparente
-    \draw[orange, thick] (0,1) ellipse (4.5cm and 1.2cm);
-    \fill[orange!20, opacity=0.3] (0,1) ellipse (4.5cm and 1.2cm);
-    \node at (0,1) [font=\small, text=orange!80!black] {Prima Zona di Fresnel};
-
-    % Ostacoli con etichette
-    \begin{scope}[shift={(0,0)}]
-        % Albero 1
-        \draw[green!60!black, thick] (-1.5,0) -- (-1.5,-0.5)
-            node[below, font=\footnotesize] {Ostacolo};
-        \draw[fill=green!40] (-2,0) circle (0.5cm);
-
-        % Albero 2 (più piccolo, in background)
-        \draw[green!40!black, thick] (1,0.2) -- (1,-0.3);
-        \draw[fill=green!30] (0.7,0.2) circle (0.3cm);
-    \end{scope}
-
-    % Linee guida per mostrare il raggio di Fresnel
-    \draw[<->, gray, thin] (0,1.2) -- (0,-0.2) 
-        node[midway, right, font=\footnotesize] {Raggio\\Fresnel};
-
-    % Legenda
-    \node[draw, fill=white, text=black, opacity=0.9, align=left, font=\footnotesize] at (6,2.5) {
-        \textcolor{red}{---} Line of Sight\\
-        \textcolor{orange}{---} Zona di Fresnel\\
-        \textcolor{green!60!black}{$\bullet$} Ostacoli\\
-        \textcolor{themeblue}{$\blacksquare$} Antenne
-    };
-
-\end{tikzpicture}
+    
+        % Antenna positions
+        \coordinate (tx_pos) at (-4.5,0.75);
+        \coordinate (rx_pos) at (4.5,0.75);
+    
+        % Antenna bases
+        \fill[gray!40] (-5,-0.5) rectangle (-4,0);
+        \fill[gray!40] (4,-0.5) rectangle (5,0);
+        
+        % Antennas
+        \node (tx_ant) at (tx_pos) [antenna] {};
+        \node (rx_ant) at (rx_pos) [antenna] {};
+        
+        % Antenna labels
+        \node[below, font=\small] at (-4.5,-0.7) {Antenna TX};
+        \node[below, font=\small] at (4.5,-0.7) {Antenna RX};
+    
+        % Fresnel Zone ellipse (drawn first, behind other elements)
+        \draw[orange, thick] (0,0.75) ellipse (4.2cm and 1.1cm);
+        \fill[orange!15, opacity=0.4] (0,0.75) ellipse (4.2cm and 1.1cm);
+    
+        % Line of Sight
+        \draw[dashed, red, thick] (tx_ant.east) -- (rx_ant.west);
+        
+        % LOS label positioned above the Fresnel zone
+        \node[above, font=\small, text=red] at (0,2.1) {Line of Sight (LOS)};
+    
+        % Fresnel zone label positioned below the center line
+        \node[font=\small, text=orange!80!black] at (0,-0.1) {Prima Zona di Fresnel};
+    
+        % Obstacles
+        % Large obstacle on the left
+        \fill[green!50] (-2,0.2) circle (0.4cm);
+        \node[below, font=\footnotesize] at (-2,-0.4) {Ostacolo};
+        
+        % Smaller obstacle on the right
+        \fill[green!40] (1.2,0.5) circle (0.25cm);
+    
+        % Fresnel radius indicator
+        \draw[<->, black, thin] (0,0.75) -- (0,1.85) 
+            node[midway, text=black, right, font=\footnotesize] {Raggio Fresnel};
+    
+        % Legend positioned to avoid overlap
+        \node[draw, fill=white, text=black, align=left, font=\footnotesize, 
+              drop shadow, rounded corners=2pt] at (6.5,1.5) {
+            \textcolor{red}{\rule{0.8cm}{0.8pt}} Line of Sight\\[2pt]
+            \textcolor{orange}{\rule{0.8cm}{0.8pt}} Zona di Fresnel\\[2pt]
+            \textcolor{green!60!black}{$\bullet$} Ostacoli\\[2pt]
+            \textcolor{blue!80!black}{$\blacksquare$} Antenne
+        };
+    
+    \end{tikzpicture}
 \end{center}
 
 \subsection{Antenne Settorizzate-Direzionali}
@@ -987,5 +991,218 @@ Eccesso di segnale rispetto al minimo necessario.
     \item Link Budget = $\SI{-67.8}{dBm} - (\SI{-82}{dBm}) = \SI{+14.2}{dB}$
 \end{itemize}
 Questo margine di $\SI{14.2}{dB}$ è disponibile per il fading. Se il fade margin richiesto è, ad esempio, $\SI{10}{dB}$, il link è considerato affidabile.
+
+\section{Approfondimento: Path Loss e Link Budget nella Pratica}
+
+\subsection{Path Loss in Dettaglio}
+Il Path Loss è fondamentale per capire come si attenua il segnale wireless. Vediamo alcuni esempi pratici:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+    % Asse X (distanza)
+    \draw[->] (0,0) -- (10,0) node[right] {Distanza (m)};
+    \draw[->] (0,-6) -- (0,2) node[above] {Potenza (dBm)};
+    
+    % Griglia di riferimento
+    \foreach \y in {-6,-4,-2,0,2} {
+        \draw[gray!30] (0,\y) -- (10,\y);
+        \node[left, font=\tiny] at (0,\y) {\y0};
+    }
+    \foreach \x in {2,4,6,8} {
+        \draw[gray!30] (\x,-6) -- (\x,2);
+        \node[below, font=\tiny] at (\x,0) {\x0};
+    }
+    
+    % Curve di attenuazione
+    \draw[red, thick] plot[domain=0.5:10] (\x,{2-3*ln(\x)}) 
+        node[right] {Spazio libero};
+    \draw[blue, thick] plot[domain=0.5:10] (\x,{2-4*ln(\x)}) 
+        node[right] {Ambiente urbano};
+    \draw[green, thick] plot[domain=0.5:10] (\x,{2-5*ln(\x)}) 
+        node[right] {Indoor};
+    
+    % Punti di riferimento
+    \node[red, font=\small] at (2,0) {•};
+    \node[red, font=\tiny] at (2,0.5) {-20dBm};
+    \node[red, font=\small] at (6,-3) {•};
+    \node[red, font=\tiny] at (6,-2.5) {-40dBm};
+    
+    \node[font=\small] at (5,-7) {Attenuazione del Segnale vs Distanza};
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Esempi Pratici di Path Loss}
+\begin{itemize}
+    \item \textbf{Scenario Indoor (Ufficio):}
+    \begin{itemize}
+        \item Access Point WiFi: \SI{20}{dBm} (\SI{100}{mW})
+        \item Distanza client: \SI{10}{m}
+        \item Ostacoli: 2 pareti (\SI{-4}{dB} ciascuna)
+        \item Path Loss calcolato: \SI{-40}{dB} + (\SI{-8}{dB}) = \SI{-48}{dB}
+        \item Potenza ricevuta: \SI{20}{dBm} - \SI{48}{dB} = \SI{-28}{dBm}
+    \end{itemize}
+    
+    \item \textbf{Scenario Outdoor (Parco):}
+    \begin{itemize}
+        \item Access Point: \SI{30}{dBm} (\SI{1}{W})
+        \item Distanza client: \SI{100}{m}
+        \item Path Loss calcolato: \SI{-80}{dB}
+        \item Potenza ricevuta: \SI{30}{dBm} - \SI{80}{dB} = \SI{-50}{dBm}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Link Budget Visualizzato}
+Il Link Budget è come un "bilancio energetico" del sistema wireless:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+    % Definizione stili
+    \tikzset{
+        block/.style={rectangle, draw, fill=blue!20, 
+                     minimum height=1cm, minimum width=2cm,
+                     text centered, rounded corners},
+        loss/.style={rectangle, draw, fill=red!20,
+                    minimum height=1cm, minimum width=2cm,
+                    text centered, rounded corners},
+        gain/.style={rectangle, draw, fill=green!20,
+                    minimum height=1cm, minimum width=2cm,
+                    text centered, rounded corners}
+    }
+    
+    % Trasmettitore
+    \node[block, text=black] (tx) at (0,0) {$P_{TX}$\\15 dBm};
+    
+    % Guadagni antenne
+    \node[gain, text=black] (gtx) at (2.5,0) {$G_{TX}$\\24 dBi};
+    \node[gain, text=black] (grx) at (7.5,0) {$G_{RX}$\\24 dBi};
+    
+    % Perdite
+    \node[loss, text=black] (lcavi) at (5,2) {$L_{cavi}$\\10.8 dB};
+    \node[loss, text=black] (lpath) at (5,-2) {Path Loss\\120 dB};
+    
+    % Ricevitore
+    \node[block, text=black] (rx) at (10,0) {$P_{RX}$\\-67.8 dBm};
+    
+    % Sensibilità
+    \node[block, text=black] (rs) at (10,-3) {RS\\-82 dBm};
+    
+    % Link Budget
+    \node[gain, text=black] (lb) at (12,-1.5) {Link Budget\\14.2 dB};
+    
+    % Connessioni
+    \draw[->, thick] (tx) -- (gtx);
+    \draw[->, thick] (gtx) -- (grx);
+    \draw[->, thick] (grx) -- (rx);
+    \draw[->, thick, red] (5,0) -- (lcavi);
+    \draw[->, thick, red] (5,0) -- (lpath);
+    \draw[->, thick] (rx) -- (lb);
+    \draw[->, thick] (rs) -- (lb);
+    
+    % Spiegazioni
+    \node[text width=3cm, align=left, font=\small] at (0,-3) 
+        {Potenza\\Trasmessa};
+    \node[text width=3cm, align=left, font=\small] at (2.5,-3) 
+        {Guadagno\\Antenna TX};
+    \node[text width=3cm, align=left, font=\small] at (7.5,-3) 
+        {Guadagno\\Antenna RX};
+    \node[text width=3cm, align=left, font=\small] at (10,-4.5) 
+        {Sensibilità\\Ricevitore};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Scenari di Link Budget}
+\begin{table}[H]
+\centering
+\caption{Comparazione Scenari Link Budget}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Parametro} & \textbf{Indoor} & \textbf{Outdoor} & \textbf{Long Range} \\
+\hline
+$P_{TX}$ & \SI{15}{dBm} & \SI{20}{dBm} & \SI{30}{dBm} \\
+$G_{TX}$ & \SI{3}{dBi} & \SI{6}{dBi} & \SI{24}{dBi} \\
+$G_{RX}$ & \SI{2}{dBi} & \SI{6}{dBi} & \SI{24}{dBi} \\
+$L_{cavi}$ & \SI{2}{dB} & \SI{4}{dB} & \SI{10}{dB} \\
+Path Loss & \SI{60}{dB} & \SI{90}{dB} & \SI{120}{dB} \\
+$P_{RX}$ & \SI{-42}{dBm} & \SI{-62}{dBm} & \SI{-52}{dBm} \\
+RS & \SI{-70}{dBm} & \SI{-75}{dBm} & \SI{-82}{dBm} \\
+\hline
+Link Budget & \SI{28}{dB} & \SI{13}{dB} & \SI{30}{dB} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Esempi di Applicazione:}
+\begin{itemize}
+    \item \textbf{Indoor:} WiFi domestico, copertura appartamento
+    \begin{itemize}
+        \item Distanze brevi (\SI{5}-\SI{20}{m})
+        \item Antenne omnidirezionali a basso guadagno
+        \item Ostacoli: muri, mobili
+    \end{itemize}
+    
+    \item \textbf{Outdoor:} WiFi pubblico, parchi
+    \begin{itemize}
+        \item Distanze medie (\SI{50}-\SI{200}{m})
+        \item Antenne settoriali
+        \item Pochi ostacoli
+    \end{itemize}
+    
+    \item \textbf{Long Range:} Ponte radio punto-punto
+    \begin{itemize}
+        \item Lunghe distanze (\SI{1}-\SI{10}{km})
+        \item Antenne direttive ad alto guadagno
+        \item Line of Sight necessaria
+    \end{itemize}
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+    % Definizione degli scenari
+    \begin{scope}[shift={(-6,-0.6)}]  % Added -1 to y-shift
+        \node[font=\bfseries] at (0,3.5) {Indoor};
+        % Casa
+        \draw[thick] (-2,0) rectangle (2,2);
+        \draw (-2,2) -- (0,3) -- (2,2); % tetto
+        % AP e client
+        \fill[red] (-1,1) circle (0.1) node[below] {AP};
+        \fill[themeblue] (1,1) circle (0.1) node[below] {Client};
+        % Segnale
+        \draw[red,thick,decorate,decoration={snake,amplitude=0.3mm}] 
+            (-1,1) -- (1,1);
+    \end{scope}
+    
+    \begin{scope}[shift={(0,0)}]
+        \node[font=\bfseries] at (0,3) {Outdoor};
+        % Area
+        \draw[thick] (-2.5,-0.5) rectangle (2.5,2);
+        % AP e clients
+        \fill[red] (0,2) circle (0.1) node[above] {AP};
+        \fill[themeblue] (-2,0) circle (0.1) node[below] {C1};
+        \fill[themeblue] (0,0) circle (0.1) node[below] {C2};
+        \fill[themeblue] (2,0) circle (0.1) node[below] {C3};
+        % Segnali
+        \foreach \x in {-2,0,2} {
+            \draw[red,thick,decorate,decoration={snake,amplitude=0.3mm}] 
+                (0,2) -- (\x,0);
+        }
+    \end{scope}
+    
+    \begin{scope}[shift={(6,0)}]
+        \node[font=\bfseries] at (0,3) {Long Range};
+        % Torri
+        \draw[thick] (-2,0) rectangle (-1.5,2);
+        \draw[thick] (1.5,0) rectangle (2,2);
+        % Antenne
+        \draw[thick] (-1.5,1.8) -- (-1,1.8) -- (-1,1.2) -- (-1.5,1.2);
+        \draw[thick] (1.5,1.8) -- (2,1.8) -- (2,1.2) -- (1.5,1.2);
+        % Segnale direttivo
+        \draw[red,thick,decorate,decoration={snake,amplitude=0.4mm}] 
+            (-1,1.5) -- (1.5,1.5);
+        % Distanza
+        \draw[<->] (-2,-0.5) -- (2,-0.5) 
+            node[midway,below] {\SI{1}-\SI{10}{km}};
+    \end{scope}
+\end{tikzpicture}
+\end{center}
 
 \end{document}
