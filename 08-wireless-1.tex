@@ -985,7 +985,7 @@ Vediamo come il Path Loss si manifesta in scenari reali:
     \begin{itemize}
         \item Frequenza: WiFi a \SI{2.4}{\giga\hertz}
         \item Distanza tra Access Point e laptop: \SI{10}{\meter}
-        \item Ostacoli: 2 muri interni in cartongesso. Ogni muro potrebbe introdurre una perdita aggiuntiva, ad esempio \SI{3-5}{dB}.
+        \item Ostacoli: 2 muri interni in cartongesso. Ogni muro potrebbe introdurre una perdita aggiuntiva, ad esempio \SI{3}{dB}-\SI{5}{dB}.
         \item Oltre al Path Loss dovuto alla distanza, si sommano le perdite dovute ai muri.
     \end{itemize}
     
@@ -1183,28 +1183,38 @@ La tabella seguente mostra come i parametri del Link Budget cambiano in diversi 
 
 \begin{table}[H]
 \centering
-\caption{Comparazione Scenari Link Budget (Valori Esempio)}
 \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Parametro} & \textbf{Indoor} & \textbf{Outdoor} & \textbf{Long Range} \\
 \hline
-\textbf{Parametro} & \textbf{Indoor WiFi} & \textbf{Outdoor Urbano} & \textbf{Long Range PtP} \\
+$P_{TX}$ & \SI{15}{dBm} & \SI{20}{dBm} & \SI{25}{dBm} \\
+$G_{TX}$ & \SI{3}{dBi} & \SI{8}{dBi} & \SI{24}{dBi} \\
+$L_{\text{cavi}}$ & \SI{2}{dB} & \SI{4}{dB} & \SI{8}{dB} \\
+Path Loss & \SI{60}{dB} (\SI{15}{m}) & \SI{90}{dB} (\SI{150}{m}) & \SI{120}{dB} (\SI{5}{km}) \\
+$G_{RX}$ & \SI{2}{dBi} & \SI{8}{dBi} & \SI{24}{dBi} \\
 \hline
-$P_{TX}$ (Potenza Trasmissione) & \SI{15}{dBm} & \SI{20}{dBm} & \SI{25}{dBm} \\
-$G_{TX}$ (Guadagno Antenna TX) & \SI{3}{dBi} & \SI{8}{dBi} & \SI{24}{dBi} \\
-$L_{\text{cavi}}$ (Perdite Cavi Totali) & \SI{2}{dB} & \SI{4}{dB} & \SI{8}{dB} \\
-Path Loss ($L_P$) & \SI{60}{dB} (es. \SI{15}{m}, ostacoli) & \SI{90}{dB} (es. \SI{150}{m}, urbano) & \SI{120}{dB} (es. \SI{5}{km}, LOS) \\
-$G_{RX}$ (Guadagno Antenna RX) & \SI{2}{dBi} & \SI{8}{dBi} & \SI{24}{dBi} \\
+$P_{RX}$ & \SI{-42}{dBm} & \SI{-62}{dBm} & \SI{-55}{dBm} \\
 \hline
-$P_{RX}$ (Potenza Ricevuta Calcolata) & \SI{-42}{dBm} & \SI{-62}{dBm} & \SI{-55}{dBm} \\
+RS & \SI{-75}{dBm} & \SI{-80}{dBm} & \SI{-85}{dBm} \\
+Fade Margin & \SI{10}{dB} & \SI{15}{dB} & \SI{20}{dB} \\
 \hline
-RS (Sensibilità Ricevitore) & \SI{-75}{dBm} & \SI{-80}{dBm} & \SI{-85}{dBm} \\
-Fade Margin Desiderato & \SI{10}{dB} & \SI{15}{dB} & \SI{20}{dB} \\
-\hline
-\textbf{Link Budget (SOM)} & \textbf{\SI{33}{dB}} & \textbf{\SI{18}{dB}} & \textbf{\SI{30}{dB}} \\
-\textbf{Affidabile?} (SOM $\ge$ Fade Margin) & \textbf{Sì} (33 > 10) & \textbf{Sì} (18 > 15) & \textbf{Sì} (30 > 20) \\
+\textbf{SOM} & \textbf{\SI{33}{dB}} & \textbf{\SI{18}{dB}} & \textbf{\SI{30}{dB}} \\
+\textbf{Affidabile?} & \textbf{Sì} (33 > 10) & \textbf{Sì} (18 > 15) & \textbf{Sì} (30 > 20) \\
 \hline
 \end{tabular}
-\label{tab:link_budget_scenarios} % Label univoco
+\label{tab:link_budget_scenarios}
+\caption{Comparazione Scenari Link Budget (Valori Esempio)}
 \end{table}
+
+\begin{itemize}
+    \item $P_{TX}$: Potenza di Trasmissione
+    \item $G_{TX}$: Guadagno Antenna Trasmittente
+    \item $L_{\text{cavi}}$: Perdite nei Cavi Totali
+    \item $G_{RX}$: Guadagno Antenna Ricevente
+    \item $P_{RX}$: Potenza Ricevuta Calcolata
+    \item RS: Sensibilità del Ricevitore
+    \item SOM: System Operating Margin (Link Budget)
+\end{itemize}
 
 \textbf{Descrizione degli Scenari:}
 \begin{itemize}
@@ -1222,7 +1232,7 @@ Fade Margin Desiderato & \SI{10}{dB} & \SI{15}{dB} & \SI{20}{dB} \\
         \item Antenne settoriali o omnidirezionali esterne con guadagno moderato montate su pali o edifici.
         \item Ostacoli: edifici, vegetazione, traffico. Il Path Loss è più elevato rispetto allo spazio libero.
         \item Fade Margin più elevato per far fronte a un ambiente più dinamico e variabile.
-    \enditemize}
+    \end{itemize}
     
     \item \textbf{Long Range Point-to-Point (PtP) (es. Ponte Radio tra Edifici/Torri):}
     \begin{itemize}
@@ -1293,17 +1303,11 @@ Fade Margin Desiderato & \SI{10}{dB} & \SI{15}{dB} & \SI{20}{dB} \\
         \draw[red!80, ultra thick, ->] (ant_tx_lr) -- (ant_rx_lr);
         \node[font=\tiny, red!80!black] at (0,1.8) {LOS}; 
         % Indicazione distanza
-        \draw[<->, thin] (-1.8,-1.2) -- (1.8,-1.2) node[midway, below, font=\tiny] {D: \SIrange{1}{20+}{km}};
+        \draw[<->, thin] (-1.8,-1.2) -- (1.8,-1.2) node[midway, below, font=\tiny] {D: \SIrange{1}{20}{\kilo\meter}};
         \node[font=\tiny, text width=2cm, align=center] at (0,-2) {Ant: Alto Guadagno\\
         LOS Critica};
     \end{scope}
 \end{tikzpicture}
 \end{center}
-
-% Rimuovo la sezione Approfondimento e il suo contenuto è stato integrato sopra.
-% Vecchia \section{Approfondimento: Path Loss e Link Budget nella Pratica} ... rimossa
-% Vecchio contenuto di Path Loss in dettaglio ... rimosso e integrato
-% Vecchio contenuto di Link Budget Visualizzato ... rimosso e integrato
-% Vecchio contenuto di Scenari di Link Budget ... rimosso e integrato
 
 \end{document}

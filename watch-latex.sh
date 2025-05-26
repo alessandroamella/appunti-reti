@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Initialize variables
 DARK_MODE=false
 VERBOSE=false
@@ -62,16 +63,7 @@ if [ "$VERBOSE" = true ]; then
   echo "Watching $TEX_FILE for changes..."
   nodemon --ext tex --watch "$TEX_FILE" --exec "$PREAMBLE_CMD && pdflatex -shell-escape \"$TEX_FILE\""
 else
-  # Create a wrapper script that properly handles exit codes
+  # Only show errors by redirecting stdout to /dev/null
   echo "Watching $TEX_FILE for changes (only showing errors)..."
-  nodemon --ext tex --watch "$TEX_FILE" --exec "
-    $PREAMBLE_CMD > /dev/null || exit 1
-    OUTPUT=\$(pdflatex -shell-escape -interaction=nonstopmode \"$TEX_FILE\" 2>&1)
-    EXIT_CODE=\$?
-    ERRORS=\$(echo \"\$OUTPUT\" | grep -i 'error\|fatal')
-    if [ \$EXIT_CODE -ne 0 ] || [ -n \"\$ERRORS\" ]; then
-      echo \"\$ERRORS\"
-      exit 1
-    fi
-  "
+  nodemon --ext tex --watch "$TEX_FILE" --exec "$PREAMBLE_CMD > /dev/null && pdflatex -shell-escape -interaction=nonstopmode \"$TEX_FILE\" 2>&1 | grep -i 'error\|fatal'"
 fi
