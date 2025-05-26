@@ -66,16 +66,16 @@ Il diagramma seguente illustra come due domini di trasmissione possono sovrappor
 \centering
 \begin{tikzpicture}[scale=0.8, every node/.style={text=white}]
     % Primo trasmettitore e suo raggio
-    \node (t1) at (-1.5,0) {\textbf{Tx1}};
-    \node[nodo_testo, color=red, font=\Huge] at (-0.5,0.3) {\textbf{!}};
+    \node[text=primarytext] (t1) at (-3,0) {\textbf{Tx1}};
+    \node[nodo_testo, color=red, font=\Huge] at (-0.3,-0.6) {\textbf{!}};
     \draw[red, thick] (t1) circle (1.5cm);
-    \draw[linea, red, thick] (-1.5,0) -- (0,0) node[midway, above, nodo_testo, color=red] {Segnale 1};
+    \draw[linea, red, thick] (-1.5,0) -- (-0.3,0) node[pos=0.7, above, nodo_testo, color=red] {Segnale 1};
 
     % Secondo trasmettitore e suo raggio
-    \node (t2) at (1.5,0) {\textbf{Tx2}};
-    \node[nodo_testo, color=blue, font=\Huge] at (0.5,0.3) {\textbf{!}};
-    \draw[blue, thick] (t2) circle (1.5cm);
-    \draw[linea, blue, thick] (1.5,0) -- (0,0) node[midway, above, nodo_testo, color=blue] {Segnale 2};
+    \node[text=primarytext] (t2) at (3,0) {\textbf{Tx2}};
+    \node[nodo_testo, color=themeblue, font=\Huge] at (0.3,0.6) {\textbf{!}};
+    \draw[themeblue, thick] (t2) circle (1.5cm);
+    \draw[linea, themeblue, thick] (1.5,0) -- (0.3,0) node[pos=0.7, below, nodo_testo, color=themeblue] {Segnale 2};
 
     % Area di sovrapposizione
     \begin{scope}
@@ -92,7 +92,7 @@ Il diagramma seguente illustra come due domini di trasmissione possono sovrappor
 I protocolli MAC possono essere classificati in base a come gestiscono l'accesso:
 
 \begin{itemize}
-    \item \textbf{Protocolli Basati su Contesa (Distributed Contention Based):} I nodi "competono" per accedere al canale.
+    \item \textbf{Distributed Contention Based:} I nodi "competono" per accedere al canale.
     \begin{itemize}
         \item \textit{Deterministici:} L'accesso è determinato da un mapping di ID o un ordine fisso.
         \begin{itemize}
@@ -104,7 +104,7 @@ I protocolli MAC possono essere classificati in base a come gestiscono l'accesso
             \item \textit{Esempio Pratico:} Pensa a una stanza affollata dove tutti vogliono parlare. Ognuno prova a parlare, e se due parlano insieme, si fermano, aspettano un tempo casuale e riprovano.
         \end{itemize}
     \end{itemize}
-    \item \textbf{Protocolli Senza Contesa (Contention Free):} L'accesso al canale è regolato per evitare collisioni.
+    \item \textbf{Contention Free:} L'accesso al canale è regolato per evitare collisioni.
     \begin{itemize}
         \item \textit{Dinamici Distribuiti:}
         \begin{itemize}
@@ -123,6 +123,27 @@ I protocolli MAC possono essere classificati in base a come gestiscono l'accesso
     \item \textbf{Cluster-based MAC}: Protocolli ibridi che possono formare gruppi (cluster) con un coordinatore locale.
 \end{itemize}
 
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\rowcolor{bg_custom} \textbf{Caratteristica} & \textbf{Distributed Contention Based} & \textbf{Contention Free} & \textbf{Cluster-based} \\
+\hline
+\textbf{Coordinamento} & Nessun coordinatore centrale & Può essere con/senza coordinatore & Coordinatore locale per cluster \\
+\hline
+\textbf{Allocazione Risorse} & Dinamica (probabilistica) o Statica (deterministica) & Statica (centralizzata) o Dinamica (distribuita) & Ibrida \\
+\hline
+\textbf{Esempi} & ALOHA, CSMA & TDMA, FDMA, Token Ring & LEACH, HEED \\
+\hline
+\textbf{Vantaggi} & Semplice, adattivo & Garantisce QoS, no collisioni & Scalabile, efficiente energeticamente \\
+\hline
+\textbf{Svantaggi} & Possibili collisioni, overhead & Complessità, rigidità & Overhead di clustering \\
+\hline
+\end{tabular}
+\caption{Confronto tra le principali classi di protocolli MAC wireless.}
+\label{tab:mac_comparison}
+\end{table}
+
 \section{Prospettiva Evolutiva del MAC Distribuito (Dominio del Tempo)}
 Si affronta il problema della \textit{vulnerabilità del frame} (rischio di collisione) e della necessità di una risoluzione distribuita.
 
@@ -135,20 +156,24 @@ Un nodo trasmette non appena ha dati. Se non riceve ACK, assume collisione e rit
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[nodo_base, font=\footnotesize, scale=0.8, transform shape]
-    \node (ready) [nodo_base, diamond, aspect=2, fill=green!50!black] {Packet ready?};
-    \node (transmit) [nodo_base, below=0.5cm of ready, fill=blue!50!black] {transmit};
-    \node (wait_ack) [nodo_base, below=0.5cm of transmit] {wait for round-trip time};
-    \node (ack_ok) [nodo_base, diamond, aspect=2, below=0.5cm of wait_ack, fill=green!50!black] {positive ack?};
-    \node (delay_k) [nodo_base, right=2cm of transmit, fill=orange!50!black] {delay packet transmission k times};
-    \node (backoff) [nodo_base, below=0.5cm of delay_k] {compute random backoff integer k};
-    \node (end_yes) [nodo_base, left=2cm of ack_ok, opacity=0] {}; % Dummy for arrow
+    \node (ready) [nodo_base, diamond, aspect=2, fill=green!50!black] {Pacchetto pronto?};
+    \node (transmit) [nodo_base, below=0.5cm of ready, fill=blue!50!black] {Trasmetti};
+    \node (wait_ack) [nodo_base, below=0.5cm of transmit] {Attendi t round-trip};
+    \node (ack_ok) [nodo_base, diamond, aspect=2, below=0.5cm of wait_ack, fill=green!50!black] {ACK positivo?};
+    \node (delay_k) [nodo_base, right=2cm of transmit, fill=orange!50!black] {Ritarda trasmissione k volte};
+    \node (backoff) [nodo_base, below=0.5cm of delay_k] {Calcola k casuale per backoff};
 
-    \draw[linea] (ready) -- node[right, nodo_testo] {yes} (transmit);
-    \draw[linea] (ready.east) -| node[above, nodo_testo] {no} ++(2.5,0) |- (ready.north);
+    % Collegamenti base
+    \draw[linea] (ready) -- node[right, nodo_testo] {sì} (transmit);
+    \draw[linea] (ready.north) -- node[right, nodo_testo] {no} ++(0,0.5) -| (ready.east);
     \draw[linea] (transmit) -- (wait_ack);
     \draw[linea] (wait_ack) -- (ack_ok);
-    \draw[linea] (ack_ok.west) -| node[above, nodo_testo] {yes} (end_yes.east) -| (ready.west);
-    \draw[linea] (ack_ok.east) -| node[above, nodo_testo] {no} (backoff.west);
+    
+    % Percorso ACK positivo - ora più chiaro e diretto
+    \draw[linea] (ack_ok) -- node[left, nodo_testo] {sì} ++(-1.5,0) |- (ready);
+    
+    % Percorso ACK negativo
+    \draw[linea] (ack_ok) -- node[above, nodo_testo] {no} (backoff);
     \draw[linea] (backoff) -- (delay_k);
     \draw[linea] (delay_k.north) |- (ready.north east);
 \end{tikzpicture}
@@ -158,7 +183,7 @@ Un nodo trasmette non appena ha dati. Se non riceve ACK, assume collisione e rit
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.9, every node/.style={text=white, font=\scriptsize}]
+\begin{tikzpicture}[every node/.style={text=white, font=\scriptsize}]
     % Asse tempo
     \draw[linea] (0,2.5) -- (7,2.5) node[right] {time};
     \node at (-0.5,2) {STA i};
@@ -178,13 +203,13 @@ Un nodo trasmette non appena ha dati. Se non riceve ACK, assume collisione e rit
     \node[blocco_tempo_verde, minimum width=2cm] at (1.5,-0.6) {Frame1};
     \node[blocco_tempo, minimum width=1.5cm] at (3.5,-0.6) {late2};
     \fill[red, opacity=0.3] (1.5,-0.6) rectangle (3.5,0); % Collision area
-    \node[color=red] at (2.5, -0.9) {collision};
+    \node[color=red] at (2.5, -1) {collision};
     \node[blocco_tempo_verde, minimum width=1cm] at (5.5,-0.6) {ok1};
 
 
-    \draw[decorate, decoration={brace, amplitude=5pt}] (0.5,-1.2) -- (3.5,-1.2) node[midway, below=2pt] {Frame vulnerability time: twice the frame size};
-    \draw[decorate,decoration={brace,amplitude=3pt}] (0.5,-0.7) -- (1.5,-0.7) node[midway,above=1pt,xshift=-5mm] {New1+frame1 coll.};
-    \draw[decorate,decoration={brace,amplitude=3pt}] (1.5,-0.7) -- (3.5,-0.7) node[midway,above=1pt,xshift=5mm] {Frame1+New2 coll.};
+    \draw[decorate, decoration={brace,mirror,amplitude=5pt}] (0.5,-1.5) -- (3.5,-1.5) node[midway, below=2pt] {Frame vulnerability time: twice the frame size};
+    \draw[decorate,decoration={brace,mirror,amplitude=3pt}] (0.5,-0.7) -- (1.5,-0.7) node[midway,below=1pt,xshift=-5mm] {New1+frame1 coll.};
+    \draw[decorate,decoration={brace,mirror,amplitude=3pt}] (1.5,-0.7) -- (3.5,-0.7) node[midway,below=8pt,xshift=5mm] {Frame1+New2 coll.};
 
 \end{tikzpicture}
 \caption{Vulnerabilità del frame in ALOHA.}
@@ -201,7 +226,7 @@ Il diagramma di flusso è simile ad ALOHA, con l'aggiunta di "Wait for start of 
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.9, every node/.style={text=white, font=\scriptsize}]
+\begin{tikzpicture}[every node/.style={text=white, font=\scriptsize}]
     % Asse tempo con slot
     \foreach \x in {1,2,...,6} {
         \draw[gray!50] (\x,2.8) -- (\x, -1);
@@ -224,12 +249,12 @@ Il diagramma di flusso è simile ad ALOHA, con l'aggiunta di "Wait for start of 
     \node at (-1, -0.4) {Collision domain};
     \node[blocco_tempo_verde, minimum width=1cm] at (1,-0.6) {frame1};
     \fill[red, opacity=0.3] (1,-0.6) rectangle (2,0); % Collision frame2 started in same slot
-    \node[color=red] at (1.5, -0.9) {collision};
+    \node[color=red] at (1.5, -1.3) {collision};
     \node[blocco_tempo_verde, minimum width=1cm] at (2.5,-0.6) {frame1 (ok)}; % this frame1 is ok
     \node[blocco_tempo_hatch, minimum width=1cm] at (3.5,-0.6) {frame2 (ok)};
 
-    \draw[decorate, decoration={brace, amplitude=5pt}] (1,-1.2) -- (2,-1.2) node[midway, below=2pt] {Frame1+frame2 collision};
-    \node at (3.5, -1.5) {Vulnerability time: frame size (slot + propagation)};
+    \draw[decorate, decoration={brace,,mirror, amplitude=5pt}] (1,-1) -- (2,-1) node[midway, below=8pt] {Frame1+frame2 collision};
+    \node at (3.5, -2) {Vulnerability time: frame size (slot + propagation)};
 \end{tikzpicture}
 \caption{Vulnerabilità del frame in Slotted ALOHA.}
 \label{fig:slotted_aloha_vuln}
@@ -245,7 +270,7 @@ Il diagramma di flusso aggiunge un controllo "Channel Busy?" prima di trasmetter
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.9, every node/.style={text=white, font=\scriptsize}]
+\begin{tikzpicture}[every node/.style={text=white, font=\scriptsize}]
     % Asse tempo
     \draw[linea] (0,2.5) -- (7,2.5) node[right] {time};
     \node at (-0.5,2) {STA i};
@@ -258,7 +283,8 @@ Il diagramma di flusso aggiunge un controllo "Channel Busy?" prima di trasmetter
     \draw[<->, orange] (0.5,1.5) -- (1.5,1.5) node[midway, above] {Prop. delay};
     \node[blocco_tempo, minimum width=1cm] at (0.5,0.6) {early2};
     \node[blocco_tempo, minimum width=1cm] at (1.5,0.6) {late2}; % This one collides
-    \node at (3,1.0) {Frame1 detected}; \draw[->, dashed, thick, red] (3,0.9) -- (1.5,1.9); % Point to frame1 start
+    \node at (0,2.9) {Frame1 detected}; \draw[->, dashed, thick, red] (0.3,2.7) -- (1.5,1.9); % Moved Frame1 detected label and arrow
+
     \node[blocco_tempo_hatch, minimum width=1cm] at (4.5,0.6) {late2 (coll)};
 
     \draw[linea] (0,0.1) -- (7,0.1) node[right] {time};
@@ -267,12 +293,12 @@ Il diagramma di flusso aggiunge un controllo "Channel Busy?" prima di trasmetter
     \node[blocco_tempo_verde, minimum width=0.5cm, fill=red!70!black] at (1.5,-0.6) {}; % Part of frame1
     \node[blocco_tempo, minimum width=1cm, fill=red!70!black, xshift=0.5cm] at (1.5,-0.6) {}; % late2 over part of frame1
     \node[blocco_tempo_verde, minimum width=1.5cm, xshift=1cm] at (1.5,-0.6) {}; % Rest of frame1
-    \node[color=red] at (2,-0.9) {collision};
+    \node[color=red] at (2,-0.75) {collision};
     \node[blocco_tempo_verde, pattern=north east lines, pattern color=gray, minimum width=2cm] at (3.5,-0.6) {frame1 (ok)};
 
-    \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (0.5,-1.2) -- (1.5,-1.2) node[midway,below=1pt] {Frame1+early2 vuln.};
-    \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1.5,-1.2) -- (2.5,-1.2) node[midway,below=1pt] {Frame1+late2 vuln.};
-    \node at (3.5, -1.6) {Frame vulnerability time: twice the propagation delay};
+    \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (0.5,-0.9) -- (1.5,-0.9) node[midway,below=1pt,xshift=-6.5mm] {Frame1+early2 vuln.};
+    \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1.5,-0.9) -- (2.5,-0.9) node[midway,below=1pt,xshift=6.5mm] {Frame1+late2 vuln.};
+    \node at (3.5, -2.4) {Frame vulnerability time: twice the propagation delay};
 \end{tikzpicture}
 \caption{Vulnerabilità del frame in CSMA.}
 \label{fig:csma_vuln}
@@ -317,72 +343,81 @@ Affronta problemi come il terminale nascosto e esposto. Soluzione principale: RT
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.7, every node/.style={text=white, font=\scriptsize}]
-    % Scenario Sinistra: Collision on C (Hidden Terminal Problem)
-    \node at (-3, 2.5) {Collision on C (Hidden Terminal)};
-    \node (A1) [circle, draw, minimum size=0.5cm] at (-4,1) {A};
-    \node (C1) [circle, draw, minimum size=0.5cm] at (-2,1) {C};
-    \node (B1) [circle, draw, minimum size=0.5cm] at (-3,0) {B};
-    \node (D1) [circle, draw, minimum size=0.5cm] at (-1,0) {D};
+\begin{tikzpicture}[scale=0.7]
+    % Define styles
+    \tikzstyle{station}=[circle, draw, fill=white, text=black, minimum size=10mm, font=\large, thick]
+    \tikzstyle{linea}=[->]
+    \tikzstyle{rts_arrow}=[thick, blue]
+    \tikzstyle{cts_arrow}=[thick, green]
+    \tikzstyle{interference_range}=[dashed, red, thick, opacity=0.7]
+    \tikzstyle{transmission_range}=[dashed, gray, thick, opacity=0.5]
+    \tikzstyle{nodo_testo}=[font=\small, align=center]
+    \tikzstyle{legend_box}=[draw, fill=bg_custom, opacity=0.9]
 
-    \draw[linea, thick, red] (A1) -- (C1) node[midway, above] {A to C};
-    \draw[linea, dotted, thick, blue] (B1) -- (C1) node[midway, left] {B to C (collides)};
-    \draw[dashed, gray] (A1) ellipse (1.5cm and 1cm); % Range A
-    \draw[dashed, gray] (B1) ellipse (1.5cm and 1cm); % Range B
+    % Main scenario title
+    \node at (0, 5) {\textbf{Asimmetria di Potenza RTS/CTS}};
 
-    % Scenario Destra: RTS/CTS Solution
-    \node at (3, 2.5) {Solution with RTS/CTS};
-    \node (A2) [circle, draw, minimum size=0.5cm] at (1,0.5) {A};
-    \node (C2) [circle, draw, minimum size=0.5cm] at (3,1) {C}; % Receiver
-    \node (B2) [circle, draw, minimum size=0.5cm] at (5,0.5) {B}; % Hidden from A, hears CTS
+    % Stations
+    \node (A) [station, fill=pink!30] at (-3, 2) {A};
+    \node (C) [station, fill=green!30] at (0, 2) {C};
+    \node (B) [station, fill=blue!30] at (3, 2) {B};
+    \node (D) [station, fill=orange!30] at (0, -1) {D};
 
-    \draw[dashed, pink, fill=pink!30!black, opacity=0.7] (A2) circle (1.5cm); % A's range
-    \draw[dashed, green, fill=green!30!black, opacity=0.7] (C2) circle (1.5cm); % C's range (receiver)
-    \draw[dashed, orange, fill=orange!30!black, opacity=0.7] (B2) circle (1.5cm); % B's range
+    % Transmission ranges (smaller circles)
+    \draw[transmission_range] (A) circle (1.8cm);
+    \draw[transmission_range] (C) circle (1.8cm);
+    \draw[transmission_range] (B) circle (1.8cm);
+    \draw[transmission_range] (D) circle (1.8cm);
 
-    \node at (A2) [above right=0.1cm of A2] {A};
-    \node at (C2) [above right=0.1cm of C2] {C};
-    \node at (B2) [above right=0.1cm of B2] {B};
+    % Interference ranges (larger circles)
+    \draw[interference_range] (A) circle (2.5cm);
+    \draw[interference_range] (C) circle (2.5cm);
+    \draw[interference_range] (B) circle (2.5cm);
+    \draw[interference_range] (D) circle (2.5cm);
 
-    \draw[linea, thick, red] (A2) -- (C2) node[midway, above, sloped] {RTS};
-    \draw[linea, thick, blue] (C2) -- (A2) node[midway, below, sloped] {CTS};
-    \draw[linea, thick, blue, dashed] (C2) -- (B2) node[midway, below, sloped] {CTS}; % B hears CTS
+    % RTS/CTS communication
+    \draw[rts_arrow, linea, bend left=15] (A) to (C);
+    \draw[cts_arrow, linea, bend left=15] (C) to (A);
+    
+    % CTS broadcast
+    \draw[cts_arrow, linea, dashed] (C) -- (B);
+    
+    % Problem arrows showing interference
+    \draw[red, thick, linea, dashed] (D) -- (C);
+    \draw[red, thick, linea, dashed] (C) -- (D);
 
-    % Timeline sotto
-    \draw[linea] (1,-1.5) -- (6,-1.5) node[right] {Time};
-    \draw[linea] (0.5,-1) -- (0.5,-3) node[below] {Space};
-    \node[blocco_tempo_rosso, minimum width=0.5cm, minimum height=0.2cm] at (1.5, -1.8) {RTS};
-    \node[blocco_tempo, minimum width=0.5cm, minimum height=0.2cm] at (2.2, -2.1) {CTS};
-    \node[blocco_tempo_verde, minimum width=1.5cm, minimum height=0.2cm] at (3, -1.8) {Data};
-    \node[nodo_testo, anchor=east] at (1.4, -1.8) {A:};
-    \node[nodo_testo, anchor=east] at (1.4, -2.1) {C:};
-    \node[nodo_testo, anchor=east] at (1.4, -2.4) {B: (defers)};
-    \draw[gray, dashed] (2.2,-2.4) -- (4.5,-2.4); % B defers
+    % Comprehensive Legend (moved to right)
+    \node[legend_box, anchor=north west] at (4, -2) {
+        \begin{tabular}{ll}
+            \textbf{Frecce:} & \textbf{Raggi:} \\
+            \textcolor{blue}{$\rightarrow$} RTS & \tikz\draw[transmission_range] (0,0) -- (0.4,0); Trasmissione \\
+            \textcolor{green}{$\rightarrow$} CTS & \tikz\draw[interference_range] (0,0) -- (0.4,0); Interferenza \\
+            \textcolor{red}{$\dashrightarrow$} Interferenza & \\
+            \textcolor{green}{$\dashrightarrow$} Diffusione CTS & \\
+        \end{tabular}
+    };
+
+    % RTS Collision Example (right side)
+    \node at (12, 3.5) {\textbf{Esempio di Collisione RTS}};
+    
+    % Nodes for collision scenario
+    \node (A2) [station, fill=pink!30] at (10, 1.5) {A};
+    \node (B2) [station, fill=blue!30] at (12, 0.5) {B};
+    \node (C2) [station, fill=green!30] at (14, 1.5) {C};
+    
+    % Transmission ranges
+    \draw[transmission_range] (A2) circle (1.5cm);
+    \draw[transmission_range] (C2) circle (1.5cm);
+    
+    % Simultaneous RTS collision
+    \draw[red, thick, linea] (A2) -- (B2);
+    \draw[red, thick, linea] (C2) -- (B2);
+    
+    % Collision indicator
+    \node[red, font=\small] at (12, -0.69) {COLLISIONE};
+
 \end{tikzpicture}
-\caption{Terminale Nascosto e soluzione RTS/CTS.}
-\label{fig:hidden_terminal_rts_cts}
-\end{figure}
-
-\subsection{RTS/CTS - Svantaggi}
-\begin{itemize}
-    \item Non è una soluzione garantita (collisioni di RTS).
-    \item Overhead aggiuntivo.
-    \item Asimmetria di potenza e range (raggio di interferenza > raggio di trasmissione).
-\end{itemize}
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[scale=0.7, every node/.style={text=white}]
-    \node (A) [circle, draw, fill=pink!50!black, minimum size=1cm, label=A] at (0,1.5) {};
-    \node (C) [circle, draw, fill=green!50!black, minimum size=1cm, label=C] at (2,1.5) {};
-    \node (B) [circle, draw, fill=blue!50!black, minimum size=1cm, label=B] at (4,1.5) {};
-    \node (D) [circle, draw, fill=teal!50!black, minimum size=3cm, label=below:D] at (2,0) {};
-
-    \draw[linea, thick] (A) -- (C) node[midway, above] {RTS};
-    \draw[linea, thick] (C) -- (A) node[midway, below] {CTS};
-    \draw[linea, thick, dashed] (C) -- (B) node[midway, above] {CTS};
-    \node[nodo_testo, align=center] at (2,-2) {D potrebbe essere interferito o \\ interferire inutilmente se l'asimmetria di potenza \\ o il range di interferenza sono significativi.};
-\end{tikzpicture}
-\caption{Potenziali svantaggi di RTS/CTS con un nodo D.}
+\caption{Svantaggi di RTS/CTS: asimmetria di potenza e collisioni RTS. Il nodo D si trova nel raggio di interferenza di C ma potrebbe non sentire il CTS, causando interferenze non necessarie e perdita di opportunità di trasmissione. L'asimmetria di potenza tra raggio di trasmissione e interferenza crea questa problematica. A destra, un esempio di collisione RTS quando due nodi inviano simultaneamente RTS allo stesso destinatario.}
 \label{fig:rts_cts_drawbacks}
 \end{figure}
 
@@ -412,28 +447,54 @@ Un protocollo MAC con due funzioni di coordinamento in una struttura di superfra
 \subsection{Architettura del Protocollo MAC IEEE 802.11}
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[nodo_base, scale=0.9, transform shape, font=\scriptsize]
-    \node (phy) [minimum width=8cm, minimum height=1cm, fill=orange!60!black] {Physical Layer (PHY)};
-    \node (dcf) [above=0cm of phy.west, anchor=south west, minimum width=8cm, minimum height=1cm, fill=cyan!60!black] {Distributed Coordination Function (DCF)};
-    \node (pcf) [above=0cm of dcf.north west, anchor=south west, minimum width=4cm, minimum height=1cm, fill=green!60!black] {Point Coordination Function (PCF)};
-
-    \node (mac_sub) [left=0.5cm of dcf.west, anchor=east, rotate=90] {MAC sublayer};
-    \draw[linea_doppia] ($(mac_sub.south)+(0,0.2)$) -- ($(mac_sub.north)-(0,0.2)$);
-
-    \node (cont_free_serv) [ellipse, draw=white, fill=purple!60!black, minimum width=3.5cm, above left=0.2cm and 1cm of pcf.north east] {contention free services};
-    \node (cont_based_serv) [ellipse, draw=white, fill=magenta!60!black, minimum width=3.5cm, above right=0.2cm and 1cm of dcf.north east] {Contention based services};
-
-    \draw[linea, ultra thick, red!80!white] (cont_free_serv.south) -- (pcf.north);
-    \draw[linea, ultra thick, red!80!white] (cont_based_serv.south) -- (dcf.north);
-    % Simulare frecce multiple
-    \foreach \i in {-0.3, -0.1, 0.1, 0.3} {
-        \draw[linea, thick, yellow!80!white] ($(cont_free_serv.south)+(\i,0)$) -- ($(pcf.north)+(\i,0)$);
-        \draw[linea, thick, yellow!80!white] ($(cont_based_serv.south east)+(\i-0.5,0)$) -- ($(dcf.north east)+(\i-0.5,0)$);
-    }
-    \node (fam) [right=1cm of dcf.east, anchor=west] {Fundamental Access Method};
-    \draw[linea] (dcf.east) -- (fam.west);
+\begin{tikzpicture}[
+    layer/.style={rectangle, draw=black, thick, text=white, font=\footnotesize, text centered, minimum height=1cm},
+    service/.style={rectangle, rounded corners=8pt, draw=black, thick, text=black, font=\footnotesize, text centered, minimum height=0.8cm},
+    arrow/.style={->, thick, >=stealth},
+    node distance=0.8cm
+]
+    % Upper layer services (top)
+    \node[service, fill=red!20, minimum width=3.8cm] (contention_serv) {
+        \parbox{3.5cm}{\centering \textbf{Servizi Basati su Contesa} \\ \small Best effort, senza garanzie}
+    };
+    
+    \node[service, fill=blue!20, minimum width=3.8cm, right=0.8cm of contention_serv] (contention_free_serv) {
+        \parbox{3.5cm}{\centering \textbf{Servizi Senza Contesa} \\ \small Vincoli temporali, supporto QoS}
+    };
+    
+    % MAC Layer components
+    \node[layer, fill=cyan!70, minimum width=3.8cm, below=1.2cm of contention_serv] (dcf) {
+        \parbox{3.5cm}{\centering \textbf{Funzione di Coordinamento Distribuito (DCF)} \\ \small CSMA/CA, Accesso Casuale}
+    };
+    
+    \node[layer, fill=green!70, minimum width=3.8cm, below=1.2cm of contention_free_serv] (pcf) {
+        \parbox{3.5cm}{\centering \textbf{Funzione di Coordinamento Centralizzato (PCF)} \\ \small Accesso basato su Polling}
+    };
+    
+    % MAC Sublayer container
+    \draw[thick] ([xshift=-0.3cm, yshift=0.3cm]dcf.north west) rectangle ([xshift=0.3cm, yshift=-0.3cm]pcf.south east);
+    \node[left=1cm of dcf.west, font=\small, rotate=90] {MAC SUBLAYER};
+    
+    % Physical Layer (bottom)
+    \node[layer, fill=orange!70, minimum width=8.7cm, below=1.5cm of dcf] (phy) {
+        \parbox{8cm}{\centering \textbf{Strato Fisico (PHY)} \\ \small Trasmissione radio, modulazione, codifica}
+    };
+    
+    % Connection arrows
+    \draw[arrow, red!70, line width=1.5pt] (contention_serv.south) -- (dcf.north);
+    \draw[arrow, blue!70, line width=1.5pt] (contention_free_serv.south) -- (pcf.north);
+    
+    % Layer separation line
+    \draw[dashed, gray, thick] ([xshift=-4.5cm, yshift=0.4cm]phy.north) -- ([xshift=4.5cm, yshift=0.4cm]phy.north);
+    
+    % Side annotation for access methods
+    \node[align=left, font=\footnotesize, anchor=west] at ([xshift=0.8cm]pcf.east) {
+        \textbf{Metodi di Accesso:}\\
+        • DCF: Accesso casuale\\
+        • PCF: Controllo centralizzato
+    };
 \end{tikzpicture}
-\caption{Architettura del protocollo MAC IEEE 802.11.}
+\caption{Architettura del protocollo MAC IEEE 802.11 - Struttura a livelli e funzioni di coordinamento.}
 \label{fig:mac_architecture}
 \end{figure}
 
@@ -441,7 +502,7 @@ Un protocollo MAC con due funzioni di coordinamento in una struttura di superfra
 Servizio opzionale, senza contesa, gestito dall'AP (Point Coordinator) tramite Beacon e polling durante il CFP (Contention Free Period).
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=0.9, every node/.style={text=white, font=\tiny}]
+\begin{tikzpicture}[every node/.style={text=white, font=\small}]
     % Superframe structure
     \draw (0,1) -- (10,1);
     \draw (0,0) -- (10,0);
@@ -456,8 +517,8 @@ Servizio opzionale, senza contesa, gestito dall'AP (Point Coordinator) tramite B
 
     \draw[<->] (0,1.2) -- (2.5,1.2) node[midway, above] {CFP};
     \draw (2.5,1.2) -- (4.5,1.2) node[midway, above] {CP}; % CFP Repetition Interval
-    \draw[<->] (0,1.5) -- (5,1.5) node[midway, above] {CFP Repetition Interval};
-    \draw[<->] (5,1.5) -- (10,1.5) node[midway, above] {CFP Repetition Interval};
+    \draw[<->] (0,1.8) -- (5,1.8) node[midway, above] {CFP Repetition Interval};
+    \draw[<->] (5,1.8) -- (10,1.8) node[midway, above] {CFP Repetition Interval};
 
 
     % NAV
@@ -473,7 +534,7 @@ Servizio opzionale, senza contesa, gestito dall'AP (Point Coordinator) tramite B
 Priorità di accesso gestita da intervalli: SIFS < PIFS < DIFS.
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[font=\tiny, scale=0.85, transform shape]
+\begin{tikzpicture}[font=\small, scale=0.85, transform shape]
     % Timeline
     \draw[linea] (0,0) -- (14,0);
 
@@ -501,17 +562,16 @@ Priorità di accesso gestita da intervalli: SIFS < PIFS < DIFS.
     \node[blocco_tempo_verde, minimum width=1.5cm] (pcf_t2) at ($(pifs1.south east)+(0.05,0)$) {Poll trans. 2};
     \node[blocco_tempo, minimum width=0.5cm] (sifs_pcf3) at ($(pcf_t2.south east)+(0.05,0)$) {SIFS};
     \node[blocco_tempo_rosso, minimum width=1cm] (ack_pcf2) at ($(sifs_pcf3.south east)+(0.05,0)$) {ack};
-    \node[blocco_tempo, minimum width=1cm, fill=purple!60!black] (difs_after_pcf) at ($(ack_pcf2.south east)+(0.05,0)$) {DIFS};
-    \node[nodo_testo, right=0.1cm of difs_after_pcf] {: restart DCF};
+    \node[blocco_tempo, minimum width=1cm, fill=purple!60!black] (difs_after_pcf) at ($(ack_pcf2.south east)+(0.05,0)$) {DIFS: restart DCF};
     \node[blocco_tempo_verde, minimum width=1cm, fill=yellow!60!black] at ($(difs_after_pcf.south east)+(0.55,0)$) {DCF};
 
     % Legenda
-    \node[rectangle, fill=green!60!black, label={[text=white, font=\tiny]right:DCF/PCF Transmit}, minimum size=0.3cm] at (0,-3.5) {};
-    \node[rectangle, fill=blue!70!black, label={[text=white, font=\tiny]right:SIFS}, minimum size=0.3cm] at (3,-3.5) {};
-    \node[rectangle, fill=red!70!black, label={[text=white, font=\tiny]right:ACK/Poll}, minimum size=0.3cm] at (5,-3.5) {};
-    \node[rectangle, fill=purple!60!black, label={[text=white, font=\tiny]right:DIFS}, minimum size=0.3cm] at (7.5,-3.5) {};
-    \node[rectangle, fill=gray!60!black, label={[text=white, font=\tiny]right:PIFS}, minimum size=0.3cm] at (9.5,-3.5) {};
-    \node[rectangle, pattern=north east lines, pattern color=gray, label={[text=white, font=\tiny]right:Backoff (contention)}, minimum size=0.3cm] at (11.5,-3.5) {};
+    \node[rectangle, fill=green!60!black, label={[text=white, font=\small]right:DCF/PCF Transmit}, minimum size=0.3cm] at (0,-3.5) {};
+    \node[rectangle, fill=blue!70!black, label={[text=white, font=\small]right:SIFS}, minimum size=0.3cm] at (3,-3.5) {};
+    \node[rectangle, fill=red!70!black, label={[text=white, font=\small]right:ACK/Poll}, minimum size=0.3cm] at (5,-3.5) {};
+    \node[rectangle, fill=purple!60!black, label={[text=white, font=\small]right:DIFS}, minimum size=0.3cm] at (7.5,-3.5) {};
+    \node[rectangle, fill=gray!60!black, label={[text=white, font=\small]right:PIFS}, minimum size=0.3cm] at (9.5,-3.5) {};
+    \node[rectangle, pattern=north east lines, pattern color=gray, label={[text=white, font=\small]right:Backoff (contention)}, minimum size=0.3cm] at (11.5,-3.5) {};
 \end{tikzpicture}
 \caption{Controllo DCF e PCF tramite Interframe Spaces (IFS).}
 \label{fig:ifs_control}
@@ -521,7 +581,7 @@ Priorità di accesso gestita da intervalli: SIFS < PIFS < DIFS.
 Modalità CSMA/CA con Backoff Esponenziale Binario (BEB) su tempo idle slottato.
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[font=\tiny, scale=0.9, transform shape]
+\begin{tikzpicture}[font=\small, transform shape]
     % Timeline
     \draw[linea] (0,0) -- (12,0);
     \node[blocco_tempo, minimum width=2cm, fill=orange!60!black] (busy) at (0,-0.3) {Medium Busy};
@@ -536,7 +596,7 @@ Modalità CSMA/CA con Backoff Esponenziale Binario (BEB) su tempo idle slottato.
              \node (backoff_end) at (s\xi.east) {};
         \fi
     }
-    \draw[decorate, decoration={brace,amplitude=4pt,mirror}] (backoff_start) -- (backoff_end) node[midway, below=2pt] {Backoff period};
+    \draw[decorate, decoration={brace,amplitude=8pt,mirror}] ($(backoff_start)+(0,-0.2)$) -- ($(backoff_end)+(0,-0.2)$) node[midway, below=8pt] {Backoff period};
     \node[blocco_tempo_verde, minimum width=3cm] (pkt_tx) at ($(backoff_end)+(0.1,-0.3)$) {Packet Transmitted};
     \node[blocco_tempo, minimum width=0.5cm] (sifs_ack) at ($(pkt_tx.south east)+(0.1,0)$) {SIFS};
     \node[blocco_tempo_rosso, minimum width=1cm] (ack_rx) at ($(sifs_ack.south east)+(0.1,0)$) {ACK};
@@ -575,44 +635,85 @@ Modalità CSMA/CA con Backoff Esponenziale Binario (BEB) su tempo idle slottato.
     \item \textbf{Trasmissione Riuscita:} Sorgente (DIFS, Backoff, DATA) -> Destinazione (SIFS, ACK).
     \item \textbf{Collisione (senza CD):} Pacchetti collidono. Lunghezza collisione = $\max(L_A, L_B, L_C, \dots)$. Mancanza di ACK segnala collisione.
 \end{itemize}
+
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[font=\tiny, scale=0.85, transform shape]
-    % Success
-    \node[nodo_testo, anchor=west] at (-1,1.5) {\textbf{Successful transmission:}};
-    \draw[linea] (0,1) -- (7,1); \node[left] at (0,1) {Source};
-    \node[blocco_tempo, fill=purple!60!black, minimum width=1cm] (d1) at (0.5,0.7) {DIFS};
-    \node[blocco_tempo_verde, minimum width=2cm] (data) at ($(d1.south east)+(0.1,0)$) {DATA};
-    \node[blocco_tempo, minimum width=0.5cm] (s1) at ($(data.south east)+(0.1,0)$) {SIFS};
-    \node[blocco_tempo, fill=purple!60!black, minimum width=1cm] (d2) at ($(s1.south east)+(0.1,0)$) {DIFS};
-
-    \draw[linea] (0,0) -- (7,0); \node[left] at (0,0) {Destination};
-    \node[blocco_tempo_rosso, minimum width=1cm] (ack_s) at ($(s1.south)+(0,-0.3)$) {ACK}; % Aligned with SIFS end
-
-    % Collision
-    \node[nodo_testo, anchor=west] at (-1,-1) {\textbf{Collision: no CD}};
-    \draw[linea] (0,-1.5) -- (7,-1.5); \node[left] at (0,-1.5) {Station A};
-    \node[blocco_tempo, fill=purple!60!black, minimum width=0.8cm] (d_ca) at (0.5,-1.8) {DIFS};
-    \node[blocco_tempo_verde, minimum width=2.5cm] (la) at ($(d_ca.south east)+(0.1,0)$) {$L_A$};
-
-    \draw[linea] (0,-2.5) -- (7,-2.5); \node[left] at (0,-2.5) {Station B};
-    \node[blocco_tempo, fill=purple!60!black, minimum width=0.8cm] (d_cb) at (0.5,-2.8) {DIFS};
-    \node[blocco_tempo, minimum width=1.5cm, fill=blue!60!black] (lb) at ($(d_cb.south east)+(0.3,0)$) {$L_B$}; % Slightly offset
-
-    \draw[linea] (0,-3.5) -- (7,-3.5); \node[left] at (0,-3.5) {Station C};
-    \node[blocco_tempo, fill=purple!60!black, minimum width=0.8cm] (d_cc) at (0.5,-3.8) {DIFS};
-    \node[blocco_tempo, minimum width=1cm, fill=orange!60!black] (lc) at ($(d_cc.south east)+(0.6,0)$) {$L_C$}; % Further offset
-
-    % Collision length indication
-    \coordinate (coll_start) at ($(d_ca.east)+(0.1,0.15)$);
-    \coordinate (coll_end) at (la.east); % End of longest packet LA
-    \draw[decorate, decoration={brace,amplitude=4pt}] (coll_start |- 0,-4.5) -- (coll_end |- 0,-4.5) node[midway, below=2pt] {COLLISION LENGTH = max($L_A,L_B,L_C$)};
-    \node[nodo_testo, color=red, right=1cm of la] at (coll_end) {IEEE 802.11 no CD};
+\begin{tikzpicture}[
+    font=\small, 
+    scale=0.9, 
+    transform shape,
+    % Define styles
+    blocco_tempo/.style={rectangle, draw, thick, minimum height=0.4cm, anchor=south west},
+    blocco_tempo_verde/.style={blocco_tempo, fill=green!40},
+    blocco_tempo_rosso/.style={blocco_tempo, fill=red!40},
+    linea/.style={thick},
+    nodo_testo/.style={font=\small\bfseries}
+]
+    % SUCCESS SCENARIO - Moved up and left
+    \node[nodo_testo, anchor=west] at (0, 3) {\textbf{Successful transmission:}};
+    
+    % Source timeline - Moved down
+    \draw[linea] (0, 2.3) -- (10, 2.3);
+    \node[left] at (0, 2.3) {Source};
+    
+    % Source blocks with proper spacing
+    \node[blocco_tempo, fill=purple!60, minimum width=1.2cm] (difs1) at (0.5, 2.3) {DIFS};
+    \node[blocco_tempo, fill=gray!40, minimum width=1.5cm] (backoff) at ([xshift=0.2cm]difs1.south east) {Backoff};
+    \node[blocco_tempo_verde, minimum width=2.5cm] (data) at ([xshift=0.2cm]backoff.south east) {DATA};
+    
+    % Destination timeline - Increased spacing from Source  
+    \draw[linea] (0, 1.3) -- (10, 1.3);
+    \node[left] at (0, 1.3) {Destination};
+    
+    % Destination blocks aligned properly
+    \coordinate (data_end) at (data.south east);
+    \node[blocco_tempo, fill=yellow!60, minimum width=0.8cm] (sifs) at ([xshift=0.2cm]data_end |- 0,1.3) {SIFS};
+    \node[blocco_tempo_rosso, minimum width=1.2cm] (ack) at ([xshift=0.2cm]sifs.south east) {ACK};
+    
+    % COLLISION SCENARIO - Increased spacing
+    \node[nodo_testo, anchor=west] at (0, 0) {\textbf{Collision: no CD}};
+    
+    % Station A - Increased spacing
+    \draw[linea] (0, -0.7) -- (10, -0.7);
+    \node[left] at (0, -0.7) {Station A};
+    \node[blocco_tempo, fill=purple!60, minimum width=1.2cm] (difs_a) at (0.5, -0.7) {DIFS};
+    \node[blocco_tempo, fill=gray!40, minimum width=1cm] (backoff_a) at ([xshift=0.2cm]difs_a.south east) {BO};
+    \node[blocco_tempo_verde, minimum width=3cm] (la) at ([xshift=0.2cm]backoff_a.south east) {$L_A$};
+    
+    % Station B - Increased spacing  
+    \draw[linea] (0, -1.8) -- (10, -1.8);
+    \node[left] at (0, -1.8) {Station B};
+    \node[blocco_tempo, fill=purple!60, minimum width=1.2cm] (difs_b) at (0.5, -1.8) {DIFS};
+    \node[blocco_tempo, fill=gray!40, minimum width=1.5cm] (backoff_b) at ([xshift=0.2cm]difs_b.south east) {BO};
+    \node[blocco_tempo, fill=blue!60, minimum width=2cm] (lb) at ([xshift=0.2cm]backoff_b.south east) {$L_B$};
+    
+    % Station C - Increased spacing
+    \draw[linea] (0, -2.9) -- (10, -2.9);
+    \node[left] at (0, -2.9) {Station C};
+    \node[blocco_tempo, fill=purple!60, minimum width=1.2cm] (difs_c) at (0.5, -2.9) {DIFS};
+    \node[blocco_tempo, fill=gray!40, minimum width=2cm] (backoff_c) at ([xshift=0.2cm]difs_c.south east) {BO};
+    \node[blocco_tempo, fill=orange!60, minimum width=1.5cm] (lc) at ([xshift=0.2cm]backoff_c.south east) {$L_C$};
+    
+    % Find collision boundaries
+    \coordinate (coll_start) at (backoff_a.south east);
+    \coordinate (coll_end) at (la.south east);
+    
+    % Collision length brace - Moved down significantly
+    \draw[decorate, decoration={brace, amplitude=6pt}] 
+        ([yshift=0.7cm]coll_start) -- ([yshift=0.7cm]coll_end) 
+        node[midway, above=6pt, align=center] {COLLISION LENGTH\\= max($L_A, L_B, L_C$)};
+    
+    % No carrier detection note - Adjusted position
+    \node[nodo_testo, color=red, align=center] at ([xshift=1cm, yshift=-1cm]coll_end) {IEEE 802.11\\no CD};
+    
+    % Add arrows to show transmission direction
+    \draw[->, thick, red] ([yshift=0.1cm]data.north) -- ([yshift=0.1cm]data.north east);
+    \draw[->, thick, blue] ([yshift=0.1cm]ack.north) -- ([yshift=0.1cm]ack.north west);
+    
 \end{tikzpicture}
 \caption{DCF: Trasmissione riuscita e scenario di collisione.}
 \label{fig:dcf_overview}
 \end{figure}
-
 
 \subsection{Controllo della Contesa in IEEE 802.11}
 Alta contesa porta a molte collisioni e basso utilizzo del canale. Il BEB cerca di mitigare ciò.
