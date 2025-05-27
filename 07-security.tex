@@ -326,7 +326,7 @@ Questo dimostra che l'ordine di applicazione di crittografia con una chiave e de
 \label{ssubsec:ap4_0_flow}
 Obiettivo: Alice si autentica con Bob usando una chiave simmetrica condivisa $K_{A-B}$ e un nonce $R$ per prevenire replay.
 \begin{enumerate}
-    \item Alice $\rightarrow$ Bob: ``Sono Alice'' (identificativo di Alice)
+    \item Alice $\rightarrow$ Bob: \textquotedblleft Sono Alice\textquotedblright{} (identificativo di Alice)
     \item Bob $\rightarrow$ Alice: $R$ (Nonce generato da Bob)
     \item Alice $\rightarrow$ Bob: $K_{A-B}(R)$ (Alice crittografa $R$ con la chiave condivisa)
 \end{enumerate}
@@ -336,7 +336,7 @@ Bob decrittografa $K_{A-B}(R)$ usando $K_{A-B}$. Se il risultato è $R$, Alice �
 \label{ssubsec:ap5_0_flow}
 Obiettivo: Alice si autentica con Bob usando la sua coppia di chiavi pubblica/privata ($K_A^+, K_A^-$) e un nonce $R$.
 \begin{enumerate}
-    \item Alice $\rightarrow$ Bob: ``Sono Alice'' (identificativo di Alice)
+    \item Alice $\rightarrow$ Bob: \textquotedblleft Sono Alice\textquotedblright{} (identificativo di Alice)
     \item Bob $\rightarrow$ Alice: $R$ (Nonce generato da Bob)
     \item Alice $\rightarrow$ Bob: $K_A^-(R)$ (Alice "firma" $R$ crittografandolo con la sua chiave privata $K_A^-$)
 \end{enumerate}
@@ -492,7 +492,7 @@ Alice vuole inviare email sicure a Bob (riservatezza, autenticazione, integrità
     \item \textbf{Alice:}
     \begin{enumerate}
         \item Firma $H(m)$ con $K_A^- \rightarrow S_A = K_A^-(H(m))$.
-        \item $M' = m \mathbin{\|} S_A$.
+        \item $M' = m \| S_A$.
         \item Genera $K_S$.
         \item Crittografa $M'$ con $K_S \rightarrow C_1 = K_S(M')$.
         \item Crittografa $K_S$ con $K_B^+ \rightarrow C_2 = K_B^+(K_S)$.
@@ -516,8 +516,8 @@ Chiavi coinvolte:
 \textbf{Operazioni di Alice (Mittente):}
 \begin{enumerate}
     \item \textbf{Firma:} Alice calcola il digest $H(m)$ e lo firma con la sua chiave privata: $S_A = K_A^-(H(m))$.
-    \item \textbf{Preparazione del Payload:} Alice concatena il messaggio originale con la sua firma: $P = m \mathbin{\|} S_A$.
-    \item \textbf{Crittografia Simmetrica:} Alice genera una chiave di sessione simmetrica casuale $K_S$. Crittografa il payload $P$ con $K_S$: $C_P = K_S(P) = K_S(m \mathbin{\|} K_A^-(H(m)))$.
+    \item \textbf{Preparazione del Payload:} Alice concatena il messaggio originale con la sua firma: $P = m \| S_A$.
+    \item \textbf{Crittografia Simmetrica:} Alice genera una chiave di sessione simmetrica casuale $K_S$. Crittografa il payload $P$ con $K_S$: $C_P = K_S(P) = K_S(m \| K_A^-(H(m)))$.
     \item \textbf{Crittografia della Chiave di Sessione:} Alice crittografa la chiave di sessione $K_S$ con la chiave pubblica di Bob: $C_K = K_B^+(K_S)$.
     \item \textbf{Invio:} Alice invia $(C_P, C_K)$ a Bob.
 \end{enumerate}
@@ -525,7 +525,7 @@ Chiavi coinvolte:
 \textbf{Operazioni di Bob (Destinatario):}
 \begin{enumerate}
     \item \textbf{Decrittografia della Chiave di Sessione:} Bob usa la sua chiave privata $K_B^-$ per decrittografare $C_K$ e ottenere $K_S$: $K_S = K_B^-(C_K)$.
-    \item \textbf{Decrittografia Simmetrica:} Bob usa $K_S$ per decrittografare $C_P$ e ottenere il payload $P = m \mathbin{\|} S_A$.
+    \item \textbf{Decrittografia Simmetrica:} Bob usa $K_S$ per decrittografare $C_P$ e ottenere il payload $P = m \| S_A$.
     \item \textbf{Verifica della Firma:}
         \begin{itemize}
             \item Bob estrae $m$ e $S_A$ da $P$.
@@ -549,10 +549,10 @@ Bob verifica la firma usando $K_A^+$. Questo è efficiente perché si firma solo
 
 \textbf{Fase 2: Bob $\rightarrow$ Alice (m2, piccolo, mittente, privacy, no replay)}
 \begin{itemize}
-    \item \textbf{Garanzia Mittente (Bob):} Bob firma $m2$ (o $H(m2)$ se $m2$ non fosse piccolo) con la sua chiave privata $K_B^-$. Per includere il no-replay, si firma $(m2 \mathbin{\|} R)$, dove $R$ è un nonce. Firma: $S_{B2} = K_B^-(H(m2 \mathbin{\|} R))$ (o $K_B^-(m2 \mathbin{\|} R)$ se $m2 \mathbin{\|} R$ è piccolo abbastanza per RSA).
-    \item \textbf{Payload da crittografare:} $P_2 = (m2 \mathbin{\|} R \mathbin{\|} S_{B2})$.
+    \item \textbf{Garanzia Mittente (Bob):} Bob firma $m2$ (o $H(m2)$ se $m2$ non fosse piccolo) con la sua chiave privata $K_B^-$. Per includere il no-replay, si firma $(m2 \| R)$, dove $R$ è un nonce. Firma: $S_{B2} = K_B^-(H(m2 \| R))$ (o $K_B^-(m2 \| R)$ se $m2 \| R$ è piccolo abbastanza per RSA).
+    \item \textbf{Payload da crittografare:} $P_2 = (m2 \| R \| S_{B2})$.
     \item \textbf{Privacy (per Alice):} Bob crittografa $P_2$ con la chiave pubblica di Alice $K_A^+$ (essendo $m2$ piccolo, si può crittografare direttamente tutto il payload firmato con RSA senza usare una $K_S$ intermedia).
-    Ciphertext: $C_2 = K_A^+(P_2) = K_A^+(m2 \mathbin{\|} R \mathbin{\|} S_{B2})$.
+    Ciphertext: $C_2 = K_A^+(P_2) = K_A^+(m2 \| R \| S_{B2})$.
     \item Bob invia a Alice: $C_2$.
     \item \textbf{Nonce R:} Può essere generato da Bob, oppure Alice potrebbe averlo inviato a Bob in un precedente messaggio non specificato qui, o potrebbe essere un contatore/timestamp. Se Bob lo genera, Alice deve poterlo validare (es. se è un contatore atteso).
 \end{itemize}
@@ -613,11 +613,11 @@ Da $MS$ (e altri dati come i nonce scambiati nell'hello), si derivano (usando un
 Esempio: Client invia dati al Server.
 \begin{itemize}
     \item Dati applicativi suddivisi. Per un frammento di dati $D$:
-    \item Calcolo MAC: $MAC_D = \text{MAC}_{M_c}(D \mathbin{\|} \text{seq_num} \mathbin{\|} \text{type})$
-    \item Crittografia: $C_D = E_{K_c}(D \mathbin{\|} MAC_D)$
+    \item Calcolo MAC: $MAC_D = \text{MAC}_{M_c}(D \| \text{seq\_num} \| \text{type})$
+    \item Crittografia: $C_D = E_{K_c}(D \| MAC_D)$
     \item Record SSL: \texttt{[Header (type, version, length)] [Encrypted Data $C_D$]}
 \end{itemize}
-Il campo `type` può indicare dati applicativi, alert (es. chiusura), ecc. `seq_num` è un numero di sequenza per prevenire replay.
+Il campo \c{type} può indicare dati applicativi, alert (es. chiusura), ecc. $\texttt{seq\_num}$ è un numero di sequenza per prevenire replay.
 
 \textbf{4. Chiusura:}
 Messaggio di tipo "closure" (es. \texttt{type 1}) inviato come un record protetto.
@@ -675,12 +675,12 @@ A questo punto l'handshake è completo e il canale sicuro è stabilito.
 \label{ssubsec:ssl_key_derivation}
 Una volta che Client e Server hanno negoziato il Pre-Master Secret (PMS) e scambiato i nonce ($N_C, N_S$), entrambi calcolano il Master Secret (MS) in modo indipendente:
 \begin{itemize}
-    \item $MS = \text{PRF}(PMS, \text{"master secret"}, N_C \mathbin{\|} N_S)$
+    \item $MS = \text{PRF}(PMS, \text{"master secret"}, N_C \| N_S)$
     \item PRF è una Pseudo-Random Function, definita nello standard TLS.
 \end{itemize}
 Dal Master Secret, vengono derivati ulteriori blocchi di chiavi ("key block") usando nuovamente la PRF:
 \begin{itemize}
-    \item $\text{Key\_Block} = \text{PRF}(MS, \text{"key expansion"}, N_S \mathbin{\|} N_C)$
+    \item $\text{Key\_Block} = \text{PRF}(MS, \text{"key expansion"}, N_S \| N_C)$
 \end{itemize}
 Il Key\_Block viene poi suddiviso per ottenere le chiavi di sessione effettive:
 \begin{itemize}
@@ -897,7 +897,7 @@ Protocollo per negoziare e stabilire dinamicamente le SA IPsec.
 Un cifrario a flusso genera un \textit{keystream} ($ks$) pseudo-casuale.
 \begin{itemize}
     \item \textbf{Input al generatore di keystream WEP:} Chiave WEP condivisa (104 bit) + IV (24 bit per pacchetto). Totale 128 bit.
-    \item \textbf{Generazione Keystream:} $ks = \text{RC4}(\text{Chiave WEP} \mathbin{\|} \text{IV})$
+    \item \textbf{Generazione Keystream:} $ks = \text{RC4}(\text{Chiave WEP} \| \text{IV})$
     \item \textbf{Crittografia:} Sia $P$ il plaintext del frame (Dati + ICV). Il ciphertext $C$ è:
     $C(i) = P(i) \oplus ks(i)$ (XOR byte per byte)
     \item \textbf{Decrittografia:} $P(i) = C(i) \oplus ks(i)$
@@ -1289,7 +1289,7 @@ Questa sezione riassume i concetti fondamentali della sicurezza di rete, con ese
             \item Il Client verifica il certificato del Server.
             \item Il Client genera un \textit{Pre-Master Secret} (PMS), lo crittografa con $K_{Server}^+$, e lo invia al Server.
             \item Entrambi derivano indipendentemente il \textit{Master Secret} (MS) e da esso le chiavi di sessione simmetriche (per crittografia e MAC).
-            \item Messaggi `Finished` scambiati per verificare l'integrità dell'handshake.
+            \item Messaggi \texttt{Finished} scambiati per verificare l'integrità dell'handshake.
         \end{itemize}
         \item \textbf{Trasferimento Dati:} I dati applicativi sono frammentati in record. Ogni record include un MAC (calcolato con una chiave di sessione MAC) ed è poi crittografato con una chiave di sessione di crittografia. I numeri di sequenza sono impliciti o espliciti per prevenire replay.
     \end{enumerate}

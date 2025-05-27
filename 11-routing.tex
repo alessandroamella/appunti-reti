@@ -432,8 +432,8 @@ TCP assume perdita = congestione.
 Molti lavori cercano di adattare TCP per MANET.
 
 \subsection{Protocolli di Trasporto Fondamentali e Loro Prestazioni (da sapere per esame!!!)}
-\subsubsection{Prestazioni di Stop & Wait (S&W)}
-Il protocollo Stop & Wait è il più semplice meccanismo di controllo di flusso e errore. Il mittente invia un pacchetto e attende l'Acknowledgement (ACK) prima di inviare il successivo.
+\subsubsection{Prestazioni di Stop \& Wait (S\&W)}
+Il protocollo Stop \& Wait è il più semplice meccanismo di controllo di flusso e errore. Il mittente invia un pacchetto e attende l'Acknowledgement (ACK) prima di inviare il successivo.
 
 \begin{itemize}
     \item \textbf{Tempo di Trasmissione di un pacchetto ($T_{tx}$):} È il tempo necessario per immettere tutti i bit del pacchetto sul canale.
@@ -443,26 +443,26 @@ Il protocollo Stop & Wait è il più semplice meccanismo di controllo di flusso 
 
     \item \textbf{Round Trip Time (RTT):} È il tempo che intercorre tra l'invio di un pacchetto e la ricezione del suo ACK, escludendo il tempo di trasmissione dell'ACK stesso se piccolo. Comprende i tempi di propagazione e di accodamento.
 
-    \item \textbf{Utilizzo del Canale (Channel Utilization, U):} È la frazione di tempo in cui il mittente è effettivamente impegnato a trasmettere dati. In S&W, il ciclo completo per un pacchetto è $T_{tx} + RTT$ (tempo per trasmettere + tempo per attendere ACK).
+    \item \textbf{Utilizzo del Canale (Channel Utilization, U):} È la frazione di tempo in cui il mittente è effettivamente impegnato a trasmettere dati. In S\&W, il ciclo completo per un pacchetto è $T_{tx} + RTT$ (tempo per trasmettere + tempo per attendere ACK).
         \[ U = \frac{T_{tx}}{T_{tx} + RTT} \]
         Riprendendo l'esempio precedente, con RTT = 30 ms (30000 µs):
         \[ U = \frac{8 \text{ µs}}{8 \text{ µs} + 30000 \text{ µs}} = \frac{8}{30008} \approx 0.000266 \text{ (cioè 0.0266\%)} \]
-        Questo dimostra la bassa efficienza di S&W su canali con alto prodotto banda-ritardo.
+        Questo dimostra la bassa efficienza di S\&W su canali con alto prodotto banda-ritardo.
 
     \item \textbf{Throughput Effettivo ($Th_{eff}$):} È la quantità di dati utili trasferiti nell'unità di tempo.
         \[ Th_{eff} = \frac{\text{Dimensione Pacchetto (bit)}}{T_{tx} + RTT} \]
         Con i dati dell'esempio:
         \[ Th_{eff} = \frac{8000 \text{ bit}}{30008 \text{ µs}} \approx 266.59 \text{ Kbps} \]
-        \textit{Nota per esercizi:} A volte, per semplificazione o in contesti specifici, il throughput può essere calcolato come $\frac{\text{Dimensione Pacchetto}}{\text{RTT}}$, specialmente se $T_{tx} \ll RTT$ o se si intende la quantità di dati inviata per ciclo RTT idealizzato. Tuttavia, la formula completa $L/(T_{tx}+RTT)$ è più generale per S&W. L'utilizzo percentuale del canale richiede sempre la conoscenza del bitrate del canale (capacità) per calcolare $T_{tx}$.
+        \textit{Nota per esercizi:} A volte, per semplificazione o in contesti specifici, il throughput può essere calcolato come $\frac{\text{Dimensione Pacchetto}}{\text{RTT}}$, specialmente se $T_{tx} \ll RTT$ o se si intende la quantità di dati inviata per ciclo RTT idealizzato. Tuttavia, la formula completa $L/(T_{tx}+RTT)$ è più generale per S\&W. L'utilizzo percentuale del canale richiede sempre la conoscenza del bitrate del canale (capacità) per calcolare $T_{tx}$.
 \end{itemize}
 
 \subsubsection{Prodotto Banda-Ritardo (Bandwidth-Delay Product - BDP)}
 Il prodotto banda-ritardo (BDP) rappresenta la quantità di dati che possono essere "in transito" sulla rete, ossia riempire la "pipeline" tra mittente e ricevitore.
 \[ \text{BDP (bit)} = \text{Bitrate Canale (bps)} \times \text{RTT (s)} \]
-Idealmente, per massimizzare il throughput, si dovrebbe inviare una quantità di dati pari al BDP prima di attendere un ACK. Se si invia meno del BDP (come in Stop & Wait se $L < \text{BDP}$), il canale rimane sottoutilizzato. Se si invia molto più del BDP senza adeguato controllo, si può causare congestione.
+Idealmente, per massimizzare il throughput, si dovrebbe inviare una quantità di dati pari al BDP prima di attendere un ACK. Se si invia meno del BDP (come in Stop \& Wait se $L < \text{BDP}$), il canale rimane sottoutilizzato. Se si invia molto più del BDP senza adeguato controllo, si può causare congestione.
 
 \subsubsection{Pipelining: Go-Back-N (GBN) e Selective Repeat (SR)}
-Per superare i limiti di Stop & Wait e sfruttare il BDP, si usano protocolli a pipeline che consentono al mittente di inviare più pacchetti ("finestra" di pacchetti) prima di ricevere un ACK.
+Per superare i limiti di Stop \& Wait e sfruttare il BDP, si usano protocolli a pipeline che consentono al mittente di inviare più pacchetti ("finestra" di pacchetti) prima di ricevere un ACK.
 \begin{itemize}
     \item \textbf{Go-Back-N (GBN):} Permette una finestra di trasmissione $N$. In caso di perdita del pacchetto $i$, il ricevitore scarta tutti i pacchetti successivi e il mittente ritrasmette da $i$ in poi.
         \begin{itemize}
