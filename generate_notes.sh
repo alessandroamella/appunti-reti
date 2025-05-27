@@ -194,8 +194,8 @@ echo "✅ appunti_completi.tex creato."
 echo "Estraendo contenuto dai file e correggendo l'indentazione minted..."
 
 for FILE in "${FILES[@]}"; do
-  # Process only files that start with digits
-  if [[ $FILE =~ ^[0-9] ]]; then
+  # Process files that start with numbers followed by hyphen
+  if [[ $FILE =~ ^[0-9]+-.*\.tex$ ]]; then
     CONTENT_FILE="${FILE%.tex}-content.tex"
     TEMP_FILE="${FILE%.tex}-temp.tex"
     echo "Elaborazione di $FILE -> $CONTENT_FILE"
