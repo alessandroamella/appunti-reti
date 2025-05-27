@@ -726,4 +726,133 @@ Un grafico tipico (Figura \ref{fig:contention_control}) mostra che l'utilizzo de
 \label{fig:contention_control}
 \end{figure}
 
+\section{Recap: Protocolli MAC Wireless}
+Questa sezione riassume i punti cruciali trattati dal Prof. Bononi, fondamentali per una preparazione efficace all'esame. Assicurati di aver compreso a fondo ciascuno di questi argomenti.
+
+\subsection{Fondamenti del MAC Wireless e Sfide}
+\begin{itemize}
+    \item \textbf{Ruolo del MAC:} Controllo dell'accesso al mezzo condiviso (etere), gestione delle risorse scarse (banda, energia), impatto su performance e QoS.
+    \item \textbf{Natura Broadcast e Collisioni:} La trasmissione wireless è intrinsecamente broadcast, portando a collisioni. È cruciale capire che \textbf{non c'è Collision Detection (CD)} come in Ethernet; si punta alla \textbf{Collision Avoidance (CA)}.
+    \item \textbf{Effetto Cattura:} Possibilità di decodificare un segnale più forte in presenza di uno più debole. Utile per il riuso del canale.
+    \item \textbf{Dominio di Collisione:} L'insieme di nodi le cui trasmissioni possono interferire.
+    \item \textbf{Cross-Layering:} Potenzialità e rischi (es. "spaghetti design").
+\end{itemize}
+
+\subsection{Classificazione dei Protocolli MAC}
+\begin{itemize}
+    \item \textbf{Contention-Based vs. Contention-Free:}
+    \begin{itemize}
+        \item \textit{Distributed Contention-Based}: Nodi competono.
+        \begin{itemize}
+            \item Deterministici (es. ID mapping, allocazione statica).
+            \item Probabilistici (es. ALOHA, CSMA, allocazione dinamica).
+        \end{itemize}
+        \item \textit{Contention-Free}: Accesso regolato per evitare collisioni.
+        \begin{itemize}
+            \item Distribuiti Dinamici (es. Token-based, Implicit Reservation).
+            \item Centralizzati Statici (es. TDMA, FDMA, CDMA - basati su prenotazione con coordinatore).
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Cluster-based MAC:} Un concetto ibrido, da tenere a mente come possibile evoluzione o approccio specifico.
+\end{itemize}
+
+\subsection{Evoluzione MAC Distribuito: Dominio del Tempo}
+\begin{itemize}
+    \item \textbf{ALOHA (Puro e Slotted):}
+    \begin{itemize}
+        \item Principio base: trasmetti e spera; ritrasmetti su timeout ACK.
+        \item \textbf{Tempo di vulnerabilità del frame:} $2 \times T_{frame}$ (Puro), $1 \times T_{frame}$ (Slotted). Saperlo è fondamentale!
+        \item Flusso logico del protocollo (packet ready, transmit, wait ACK, backoff).
+    \end{itemize}
+    \item \textbf{CSMA (Carrier Sense Multiple Access - Puro e Slotted):}
+    \begin{itemize}
+        \item Principio base: "listen before talk".
+        \item \textbf{Tempo di vulnerabilità del frame:} $2 \times T_{prop}$ (Puro CSMA), $1 \times T_{prop}$ (Slotted CSMA). Anche questo è cruciale!
+        \item Flusso logico (aggiunta del "Channel Busy?").
+    \end{itemize}
+    \item \textbf{CSMA/CD:} Non pratico in wireless.
+    \item \textbf{CSMA/CA:} Il meccanismo chiave, con risoluzione/controllo delle contese.
+    \item \textbf{Confronto Throughput:} Ricorda l'ordine gerarchico (Slotted CSMA > Pure CSMA > Slotted ALOHA > Pure ALOHA) e il calo di prestazioni ad alto carico.
+\end{itemize}
+
+\subsection{Evoluzione MAC Distribuito: Dominio dello Spazio (RTS/CTS)}
+\begin{itemize}
+    \item \textbf{Problemi Spaziali:}
+    \begin{itemize}
+        \item \textbf{Terminale Nascosto:} Causa principale di collisioni non rilevate dal sender. RTS/CTS è la soluzione principale.
+        \item \textbf{Terminale Esposto:} Spreco di opportunità di trasmissione.
+    \end{itemize}
+    \item \textbf{Meccanismo RTS/CTS (Request To Send / Clear To Send):}
+    \begin{itemize}
+        \item Funzionamento base dell'handshake a 2 vie per "prenotare" il canale.
+        \item \textbf{Svantaggi:} Overhead, non è una soluzione garantita, problemi di \textit{asimmetria di potenza} (detection/interference range > transmission range).
+    \end{itemize}
+    \item \textbf{Protocolli Derivati (evoluzione):}
+    \begin{itemize}
+        \item \textbf{MACA:} RTS/CTS, no CS. Contesa sul ricevitore.
+        \item \textbf{MACAW:} MACA + ACK esplicito (RTS-CTS-DATA-ACK), backoff MILD/BEB. No CS. Problema: no sfruttamento spaziale concorrente.
+        \item \textbf{FAMA:} CS + RTS/CTS + ACK. Reintroduce CS, concetto di "floor acquisition".
+    \end{itemize}
+\end{itemize}
+
+\subsection{Problemi Specifici del Multi-hop}
+\begin{itemize}
+    \item \textbf{Auto-contesa (Self-contention):}
+    \begin{itemize}
+        \item \textit{Inter-stream} (es. Data vs ACK TCP).
+        \item \textit{Intra-stream} (es. trasmissione dello stesso nodo che interferisce con la sua ricezione).
+    \end{itemize}
+    \item Soluzioni proposte (fast forward, quick exchange, flow numbering).
+\end{itemize}
+
+\subsection{Lo Standard IEEE 802.11 (Wireless LAN)}
+Questo è un tema centrale e dettagliato.
+\begin{itemize}
+    \item \textbf{Architettura MAC:}
+    \begin{itemize}
+        \item Due funzioni: \textbf{DCF (Distributed Coordination Function)} e \textbf{PCF (Point Coordination Function)}.
+        \item DCF: obbligatoria, basata su contesa (CSMA/CA), per reti Ad-Hoc e infrastruttura.
+        \item PCF: opzionale, centralizzata (richiede AP come Point Coordinator), senza contesa (polling), per QoS "soft".
+        \item Schema dell'architettura (slide 23).
+    \end{itemize}
+    \item \textbf{PCF (Point Coordinated Mode):}
+    \begin{itemize}
+        \item Funzionamento in superframe: CFP (Contention Free Period) e CP (Contention Period).
+        \item Ruolo dell'AP (Beacon, lista di accesso, polling).
+        \item NAV (Network Allocation Vector): come viene usato per silenziare le stazioni.
+    \end{itemize}
+    \item \textbf{DCF (Distributed Coordination Function) - Il Cuore di 802.11:}
+    \begin{itemize}
+        \item \textbf{Interframe Spaces (IFS):} SIFS < PIFS < DIFS.
+        \begin{itemize}
+            \item \textbf{DIFS:} Attesa base prima di contendere.
+            \item \textbf{SIFS:} Usato per ACK, CTS, Poll response (alta priorità, breve).
+            \item \textbf{PIFS:} Usato dall'AP in PCF per prendere controllo del canale.
+            \item Comprendere \textit{chi può trasmettere dopo quale IFS} è essenziale (slide 25).
+        \end{itemize}
+        \item \textbf{Meccanismo di Accesso CSMA/CA:}
+        \begin{enumerate}
+            \item Ascolta il canale (Carrier Sense).
+            \item Se libero per DIFS, inizia procedura di backoff.
+            \item \textbf{Procedura di Backoff Esponenziale Binario (BEB):}
+            \begin{itemize}
+                \item \textbf{Contention Window (CW):} Inizia da $\text{CW}_{\min}$, raddoppia ad ogni collisione fino a $\text{CW}_{\max}$. Conoscere i valori tipici (slide 29).
+                \item Scelta di un numero casuale di slot di backoff.
+                \item \textbf{Decremento del contatore:} Per ogni slot time in cui il canale è idle.
+                \item \textbf{Stato "Frozen":} Il contatore si blocca se il canale diventa busy.
+            \end{itemize}
+            \item Trasmissione quando il contatore arriva a zero.
+        \end{enumerate}
+        \item \textbf{Handshake Base (Accesso Base DCF):} DATA -> (SIFS) -> ACK. Se l'ACK non arriva, si assume collisione e si riavvia il backoff con CW aumentata.
+        \item \textbf{RTS/CTS in DCF (opzionale):} Usato per pacchetti lunghi per mitigare il terminale nascosto, aggiungendo overhead (RTS-SIFS-CTS-SIFS-DATA-SIFS-ACK).
+    \end{itemize}
+    \item \textbf{Controllo della Contesa in IEEE 802.11:}
+    \begin{itemize}
+        \item L'alta contesa porta a molte collisioni e degrado del throughput (vedi grafico slide 31).
+        \item Il BEB è il meccanismo principale per gestire la contesa.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Consiglio Finale:} Rivedi attentamente i diagrammi temporali per ALOHA, CSMA, e specialmente per i vari scenari di IEEE 802.11 (DCF base, RTS/CTS, PCF, uso degli IFS). La comprensione di "chi fa cosa e quando" è la chiave. In bocca al lupo!
+
 \end{document}

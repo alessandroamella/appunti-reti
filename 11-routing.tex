@@ -22,8 +22,8 @@ Le MANET (Mobile Ad Hoc Networks) sono reti formate da \textbf{dispositivi (host
         \begin{itemize}
             \item \textit{Esempio pratico:} Un gruppo di persone con smartphone in un'area senza copertura WiFi/cellulare che vogliono scambiarsi messaggi o file. Ogni telefono può inoltrare i dati per gli altri.
         \end{itemize}
-    \item \textbf{Rotte multi-hop:} Per raggiungere una destinazione, un pacchetto potrebbe dover attraversare più nodi intermedi.
-    \item \textbf{La mobilità causa cambiamenti di rotta:} Se un nodo intermedio si sposta, la rotta precedentemente valida potrebbe non esserlo più, richiedendo la scoperta di una nuova rotta.
+    \item \textbf{Multi-hop route:} Per raggiungere una destinazione, un pacchetto potrebbe dover attraversare più nodi intermedi.
+    \item \textbf{La mobilità causa cambiamenti di route:} Se un nodo intermedio si sposta, la route precedentemente valida potrebbe non esserlo più, richiedendo la scoperta di una nuova route.
 \end{itemize}
 
 \begin{figure}[H]
@@ -39,9 +39,9 @@ Le MANET (Mobile Ad Hoc Networks) sono reti formate da \textbf{dispositivi (host
         \draw[link_style, dashed] (S) -- (I2);
         \draw[link_style, dashed] (I2) -- (D);
 
-        \node[info_box, below=of I2, yshift=-0.5cm] {Pacchetto da S a D. Rotta S-I1-D. Se I1 si sposta, potrebbe essere necessaria la rotta S-I2-D.};
+        \node[info_box, below=of I2, yshift=-0.5cm] {Pacchetto da S a D. Route S-I1-D. Se I1 si sposta, potrebbe essere necessaria la route S-I2-D.};
     \end{tikzpicture}
-    \caption{Esempio di rotta multi-hop e cambiamento di rotta in una MANET.}
+    \caption{Esempio di route multi-hop e cambiamento di route in una MANET.}
     \label{fig:manet_multihop}
 \end{figure}
 
@@ -52,7 +52,7 @@ Il routing in MANET è diverso da quello nelle reti cablate tradizionali a causa
     \item \textbf{Alta Frequenza di Fallimento/Riparazione dei Link:} La topologia della rete cambia rapidamente.
     \item \textbf{Nuovi Criteri di Performance:}
     \begin{itemize}
-        \item Stabilità della rotta vs. mobilità.
+        \item Stabilità della route vs. mobilità.
         \item Consumo energetico (nodi spesso a batteria).
     \end{itemize}
 \end{enumerate}
@@ -63,15 +63,15 @@ Le principali categorie sono:
 \begin{itemize}
     \item \textbf{Protocolli Proattivi (o Table-Driven):}
     \begin{itemize}
-        \item Determinano e mantengono le rotte verso tutte le destinazioni \textbf{indipendentemente dal traffico}.
+        \item Determinano e mantengono le route verso tutte le destinazioni \textbf{indipendentemente dal traffico}.
         \item Ogni nodo ha una tabella di routing aggiornata.
         \item Esempi: Protocolli basati su \textit{link-state} o \textit{distance-vector}, adattati per MANET.
         \item \textit{Esempio:} Ogni nodo invia periodicamente informazioni sulla sua connettività ai vicini, permettendo a tutti di costruire una mappa della rete.
     \end{itemize}
     \item \textbf{Protocolli Reattivi (o On-Demand):}
     \begin{itemize}
-        \item Trovano e mantengono rotte \textbf{solo quando necessario}.
-        \item \textit{Esempio:} Se il nodo A vuole inviare al nodo Z, e non sa come raggiungerlo, A avvia un processo di scoperta della rotta.
+        \item Trovano e mantengono route \textbf{solo quando necessario}.
+        \item \textit{Esempio:} Se il nodo A vuole inviare al nodo Z, e non sa come raggiungerlo, A avvia un processo di scoperta della route.
     \end{itemize}
     \item \textbf{Protocolli Ibridi:}
     \begin{itemize}
@@ -84,11 +84,12 @@ Le principali categorie sono:
     \centering
     \begin{tabular}{|l|p{5cm}|p{5cm}|}
         \hline
+        \rowcolor{bg_custom}
         \textbf{Caratteristica} & \textbf{Protocolli Proattivi} & \textbf{Protocolli Reattivi} \\
         \hline
-        Latenza Scoperta Rotta & Bassa (rotte già note) & Alta (rotta da scoprire su richiesta) \\
+        Latenza Scoperta Route & Bassa (route già note) & Alta (route da scoprire su richiesta) \\
         \hline
-        Overhead (Controllo) & Alto (aggiornamenti continui) & Basso (solo per rotte attive) \\
+        Overhead (Controllo) & Alto (aggiornamenti continui) & Basso (solo per route attive) \\
         \hline
         Ideale per... & Reti con bassa mobilità e traffico frequente. & Reti con alta mobilità e traffico sporadico. \\
         \hline
@@ -100,7 +101,7 @@ La scelta dell'approccio migliore dipende dai pattern di traffico e mobilità de
 
 \section{Panoramica dei Protocolli di Routing Unicast}
 
-\subsection{Flooding (Inondazione) per la Consegna dei Dati}
+\subsection{Flooding per la Consegna dei Dati}
 Meccanismo semplice ma spesso inefficiente.
 \begin{itemize}
     \item \textbf{Funzionamento:}
@@ -125,40 +126,40 @@ Meccanismo semplice ma spesso inefficiente.
 Molti protocolli usano il flooding in modo più intelligente:
 \begin{itemize}
     \item Flooding (potenzialmente limitato) di \textbf{pacchetti di controllo} (piccoli) invece dei pacchetti dati.
-    \item I pacchetti di controllo scoprono le rotte.
-    \item L'overhead è \textbf{ammortizzato} sui pacchetti dati che usano la rotta.
+    \item I pacchetti di controllo scoprono le route.
+    \item L'overhead è \textbf{ammortizzato} sui pacchetti dati che usano la route.
 \end{itemize}
 
 \subsection{Dynamic Source Routing (DSR)}
 Protocollo \textbf{reattivo} che usa il \textbf{source routing}.
 \begin{itemize}
-    \item \textbf{Route Discovery (Scoperta Rotta):}
+    \item \textbf{Route Discovery:}
     \begin{itemize}
         \item S invia in flooding un \texttt{RREQ} (Route Request).
         \item Ogni nodo intermedio aggiunge il proprio ID al pacchetto \texttt{RREQ}.
         \item \textit{Esempio:} \texttt{RREQ} da S, inoltrato da E arriva a F come \texttt{[S,E]}. F lo inoltra a J, che lo riceve come \texttt{[S,E,F]}.
     \end{itemize}
-    \item \textbf{Route Reply (Risposta di Rotta):}
+    \item \textbf{Route Reply:}
     \begin{itemize}
         \item D invia un \texttt{RREP} (Route Reply) a S.
-        \item L'\texttt{RREP} contiene la rotta completa (es. \texttt{[S,E,F,J,D]}) e torna indietro invertendo la rotta dell'\texttt{RREQ}. Presume link \textbf{bidirezionali}.
+        \item L'\texttt{RREP} contiene la route completa (es. \texttt{[S,E,F,J,D]}) e torna indietro invertendo la route dell'\texttt{RREQ}. Presume link \textbf{bidirezionali}.
     \end{itemize}
     \item \textbf{Invio Dati:}
     \begin{itemize}
-        \item S include l'\textbf{intera rotta nell'header} del pacchetto dati.
-        \item Svantaggio: header cresce con la lunghezza della rotta.
+        \item S include l'\textbf{intera route nell'header} del pacchetto dati.
+        \item Svantaggio: header cresce con la lunghezza della route.
     \end{itemize}
     \item \textbf{Ottimizzazione: Route Caching:}
     \begin{itemize}
-        \item Ogni nodo mantiene una cache delle rotte apprese.
-        \item Un nodo intermedio X con una rotta valida per D in cache può inviare un \texttt{RREP} per conto di D, velocizzando la scoperta e riducendo il flooding.
+        \item Ogni nodo mantiene una cache delle route apprese.
+        \item Un nodo intermedio X con una route valida per D in cache può inviare un \texttt{RREP} per conto di D, velocizzando la scoperta e riducendo il flooding.
     \end{itemize}
     \item \textbf{Route Error (\texttt{RERR}):}
     \begin{itemize}
         \item Se un link si rompe, il nodo a monte invia un \texttt{RERR} verso la sorgente, indicando il link rotto. I nodi aggiornano le cache.
     \end{itemize}
     \item \textbf{Attenzione alle Cache Obsolete (Stale Caches):} Possono degradare le prestazioni.
-    \item \textbf{Vantaggi:} Reattivo, route caching, una scoperta può dare molte rotte.
+    \item \textbf{Vantaggi:} Reattivo, route caching, una scoperta può dare molte route.
     \item \textbf{Svantaggi:} Header dati grande, potenziale flood di \texttt{RREQ}, Route Reply Storm, inquinamento da cache obsolete.
 \end{itemize}
 
@@ -177,10 +178,10 @@ Sfrutta informazioni sulla \textbf{posizione geografica} (es. GPS).
         % Expected Zone
         \node[node_style] (X) at (0,0) {X};
         \node[node_style] (Y) at (0.8, -0.5) {Y};
-        \draw[draw=accentcolor, thick] (X) -- (Y) node[midway, above, sloped, font=\tiny\sffamily] {r};
+        \draw[draw=accentcolor, thick] (X) -- (Y) node[midway, above, sloped, font=\small\sffamily] {r};
         \draw[draw=accentcolor, fill=nodecolor!50, fill opacity=0.4, thick] (X) circle (1.2cm);
         \node[below=0.1cm of X, xshift=0cm, yshift=-1cm, font=\sffamily\small] {Expected Zone};
-        \node[font=\sffamily\tiny, text width=3cm, anchor=west] at (X.east) [xshift=1.5cm, yshift=0cm]
+        \node[font=\sffamily\small, text width=4cm, anchor=west] at (X.east) [xshift=0.75cm, yshift=0cm]
         {X: ultima pos. nota di D (t0)\\Y: pos. attuale di D (t1, incognita a S)\\r = (t1-t0) * stima velocità D};
 
         % Request Zone (più a destra)
@@ -190,12 +191,12 @@ Sfrutta informazioni sulla \textbf{posizione geografica} (es. GPS).
             \node[node_style, above left=0.8cm and 0.5cm of S_lar] (A_lar) {A};
 
             % Expected Zone (come prima, ma più piccola e dentro Request Zone)
-            \node[node_style] (X_rq) at (3,0) {}; \node at (X_rq) {\tiny X};
-            \node[node_style] (Y_rq) at (3.4, -0.25) {}; \node at (Y_rq) {\tiny Y};
+            \node[node_style] (X_rq) at (3,0) {}; \node at (X_rq) {\small X};
+            \node[node_style] (Y_rq) at (3.4, -0.25) {}; \node at (Y_rq) {\small Y};
             \draw[draw=accentcolor!70, dashed] (X_rq) -- (Y_rq);
             \draw[draw=accentcolor!70, fill=nodecolor!20, fill opacity=0.3, dashed] (X_rq) circle (0.6cm);
 
-            \node (EZ_label) [below=0.1cm of X_rq, xshift=0cm, yshift=-0.5cm, font=\sffamily\tiny] {Exp.Zone};
+            \node (EZ_label) [below=0.1cm of X_rq, xshift=0cm, yshift=-0.5cm, font=\sffamily\small] {Exp.Zone};
 
             % Request Zone che contiene S e Expected Zone
             \coordinate (sw_corner) at ($(S_lar.south west)+(-0.5,-0.5)$);
@@ -205,7 +206,7 @@ Sfrutta informazioni sulla \textbf{posizione geografica} (es. GPS).
 
             \draw[link_style, gray] (S_lar) -- (A_lar);
             \draw[link_style, gray] (S_lar) -- (B_lar);
-            \node[info_box, below=of RZ, yshift=-1.5cm, text width=4cm] {Solo nodi nella Request Zone (es. B) inoltrano \texttt{RREQ}. A è fuori.};
+            \node[info_box, below=of RZ, yshift=1cm, text width=4cm] {Solo nodi nella Request Zone (es. B) inoltrano \texttt{RREQ}. A è fuori.};
         \end{scope}
     \end{tikzpicture}
     \caption{Expected Zone e Request Zone in LAR.}
@@ -226,22 +227,22 @@ Sfrutta informazioni sulla \textbf{posizione geografica} (es. GPS).
 \subsection{Ad Hoc On-Demand Distance Vector Routing (AODV)}
 Protocollo \textbf{reattivo} che combina DSR (on-demand) con distance-vector (tabelle di routing).
 \begin{itemize}
-    \item \textbf{Obiettivo:} Ridurre overhead eliminando la rotta dagli header dati.
+    \item \textbf{Obiettivo:} Ridurre overhead eliminando la route dagli header dati.
     \item \textbf{Route Request (\texttt{RREQ}):}
     \begin{itemize}
         \item Simile a DSR, S invia \texttt{RREQ} in flooding.
-        \item Un nodo che inoltra un \texttt{RREQ} imposta un \textbf{puntatore di rotta inversa} verso S.
+        \item Un nodo che inoltra un \texttt{RREQ} imposta un \textbf{puntatore di route inversa} verso S.
     \end{itemize}
     \item \textbf{Route Reply (\texttt{RREP}):}
     \begin{itemize}
-        \item D (o un intermedio con rotta "fresca") invia \texttt{RREP}.
+        \item D (o un intermedio con route "fresca") invia \texttt{RREP}.
         \item Freschezza determinata da \textbf{destination sequence numbers}.
         \item \texttt{RREP} viaggia lungo il \textbf{percorso inverso}.
-        \item Mentre \texttt{RREP} torna, ogni nodo crea un \textbf{puntatore di rotta diretta} verso D.
+        \item Mentre \texttt{RREP} torna, ogni nodo crea un \textbf{puntatore di route diretta} verso D.
     \end{itemize}
-    \item \textbf{Invio Dati:} Usa entry "next-hop". \textbf{Rotta non inclusa nell'header.}
-    \item \textbf{Mantenimento Rotte e Timeout:} Entry per rotte inverse e dirette scadono se non usate.
-    \item \textbf{Sommario AODV:} No rotte in header, tabelle solo per rotte attive, max un next-hop per dest, rotte non usate scadono.
+    \item \textbf{Invio Dati:} Usa entry "next-hop". \textbf{Route non inclusa nell'header.}
+    \item \textbf{Mantenimento Route e Timeout:} Entry per route inverse e dirette scadono se non usate.
+    \item \textbf{Sommario AODV:} No route in header, tabelle solo per route attive, max un next-hop per dest, route non usate scadono.
 \end{itemize}
 
 \subsection{Optimized Link State Routing (OLSR)}
@@ -251,7 +252,7 @@ Protocollo \textbf{proattivo} basato su link-state, ottimizzato per MANET.
     \item Ogni nodo seleziona un sottoinsieme dei suoi vicini a 1-hop come MPR.
     \item Gli MPR sono scelti per raggiungere tutti i vicini a 2-hop.
     \item \textbf{Solo gli MPR} inoltrano i messaggi di controllo (link state) generati da quel nodo.
-    \item Le rotte usano preferenzialmente i nodi MPR come intermedi.
+    \item Le route usano preferenzialmente i nodi MPR come intermedi.
 \end{itemize}
 \begin{figure}[H]
     \centering
@@ -273,7 +274,7 @@ Protocollo \textbf{proattivo} basato su link-state, ottimizzato per MANET.
         \draw[link_style] (E) -- (F); \draw[link_style] (E) -- (H);
         \draw[link_style] (H) -- (J); \draw[link_style] (H) -- (K);
 
-        \node[info_box, below=of D, yshift=-1.5cm, xshift=2cm, text width=7cm]
+        \node[info_box, below=of D, yshift=0.5cm, xshift=2cm, text width=7cm]
         {Nodo A: MPRs sono C ed E (colorati diversamente). Solo C ed E inoltrano info da A.
         Nodo H: MPRs potrebbero essere E e K. Se E ha già inoltrato info (come MPR di A), solo K la inoltra per H.};
     \end{tikzpicture}
@@ -299,7 +300,7 @@ Permette a un dispositivo mobile di mantenere lo stesso indirizzo IP spostandosi
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=2cm and 2.5cm, font=\sffamily\small]
-        \node[rectangle, minimum width=5cm, minimum height=3cm, fill=nodecolor!30, draw=accentcolor] (Internet) {Internet};
+        \node[rectangle, minimum width=5cm, minimum height=3cm, fill=bg_custom, draw=accentcolor] (Internet) {Internet};
         \node[node_style, rectangle, fill=accentcolor!70] (HA) [left=1cm of Internet, yshift=0.5cm] {HA (R1)};
         \node[node_style, rectangle, fill=accentcolor!70] (FA2) [right=1cm of Internet, yshift=0.8cm] {FA2 (R2)};
         \node[node_style, rectangle, fill=accentcolor!70] (FA3) [right=1cm of Internet, yshift=-0.8cm] {FA3 (R3)};
@@ -317,10 +318,10 @@ Permette a un dispositivo mobile di mantenere lo stesso indirizzo IP spostandosi
 
         % Flusso tunnel
         \coordinate (Sender) at ($(Internet.north)+(-1,0.5)$);
-        \node[node_style, ellipse, fill=gray!50] (S) at (Sender) {Sender};
-        \draw[highlight_link_style, bend left=10] (S) to node[above,sloped,font=\tiny] {1. To Home Addr} (HA);
-        \draw[highlight_link_style, bend left=10, dotted] (HA) to node[above,sloped,font=\tiny] {2. Tunnel to CoA} (FA2);
-        \draw[highlight_link_style, bend left=10, dotted] (FA2) to node[above,sloped,font=\tiny] {3. Deliver} (MN_FA2);
+        \node[node_style, ellipse, fill=bg_custom!70] (S) at (Sender) {Sender};
+        \draw[highlight_link_style, bend left=10] (S) to node[above,sloped,font=\small] {1. To Home Addr} (HA);
+        \draw[highlight_link_style, bend left=10, dotted] (HA) to node[above,sloped,font=\small] {2. Tunnel to CoA} (FA2);
+        \draw[highlight_link_style, bend left=10, dotted] (FA2) to node[above,sloped,font=\small] {3. Deliver} (MN_FA2);
     \end{tikzpicture}
     \caption{Funzionamento semplificato di Mobile IP.}
     \label{fig:mobile_ip}
@@ -396,14 +397,14 @@ TCP assume perdita = congestione.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/cwnd_timeout.png}
+    \includegraphics[width=1\textwidth]{images/cwnd_timeout.png}
     \caption{Effetto di un Timeout su CWND (Slow Start, Congestion Avoidance, Timeout, di nuovo Slow Start e Congestion Avoidance).}
     \label{fig:cwnd_timeout}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/cwnd_fastrecovery.png}
+    \includegraphics[width=1\textwidth]{images/cwnd_fastrecovery.png}
     \caption{Effetto di Fast Recovery su CWND (CWND si dimezza e continua in Congestion Avoidance).}
     \label{fig:cwnd_fastrecovery}
 \end{figure}
@@ -411,58 +412,11 @@ TCP assume perdita = congestione.
 
 \subsection{Sfide di TCP su MANET}
 \begin{itemize}
-    \item \textbf{Perdita di Pacchetti non dovuta a Congestione:} Errori wireless, collisioni, \textbf{rottura di rotte per mobilità}. TCP reagisce riducendo \texttt{cwnd} inutilmente.
-    \item \textbf{Variazioni dell'RTT:} Cambi di rotta rendono difficile calcolare RTO accurato.
+    \item \textbf{Perdita di Pacchetti non dovuta a Congestione:} Errori wireless, collisioni, \textbf{rottura di route per mobilità}. TCP reagisce riducendo \texttt{cwnd} inutilmente.
+    \item \textbf{Variazioni dell'RTT:} Cambi di route rendono difficile calcolare RTO accurato.
     \item \textbf{Out-of-Order Delivery:} Causa DupACKs e Fast Retransmit inutili.
-    \item \textbf{Impatto Cache Obsolete (es. DSR):} Perdite su rotte obsolete, TCP reagisce male, lento recupero.
+    \item \textbf{Impatto Cache Obsolete (es. DSR):} Perdite su route obsolete, TCP reagisce male, lento recupero.
 \end{itemize}
 Molti lavori cercano di adattare TCP per MANET.
-
-\section*{Possibili Argomenti per Seminario Finale (Generali)}
-\begin{itemize}
-    \item Multiple access techniques (including the impact of multiple antennas)
-    \item Cellular system design
-    \item Ad-hoc wireless networking
-    \item Multiuser information theory
-    \item Capacity of ad hoc networks
-    \item Access techniques in wireless networks
-    \item Dynamic resource allocation in wireless networks
-    \item Cross layer design in wireless networks
-    \item Adaptive modulation/coding in multiuser systems
-    \item Power control in wireless networks
-    \item Space-time processing for mobile communications
-    \item MIMO techniques for multiuser systems
-    \item Multiuser multicarrier /OFDM systems
-    \item CDMA systems
-    \item Interference cancellation / multiuser detection in CDMA
-    \item Coding/spreading tradeoffs in CDMA
-    \item CDMA vs. OFDM
-    \item User location strategies in WiNet
-    \item Multirate/multimedia over wireless networks
-\end{itemize}
-
-\section*{Possibili Argomenti per Seminario Finale}
-\begin{itemize}
-    \item Smart antennas
-    \item Traffic models for multimedia data
-    \item Energy efficient protocols for ad hoc and sensor systems
-    \item Routing for ad hoc wireless networks
-    \item Routing for vehicular wireless networks
-    \item Performance of TCP/IP and/or ATM over wireless channels
-    \item Performance of TCP/IP over multihop wireless networks
-    \item Software radios
-    \item Multiuser ultra wide band (UWB) systems
-    \item HW constraints in wireless systems
-    \item Wireless system services and killer applications
-    \item Innovative and visionary wireless-enabled services
-    \item RFID technologies
-    \item Wireless frameworks' implementations
-    \item Service frameworks for wireless devices synchronization
-    \item Mobile IP
-    \item Security issues in wireless systems
-    \item Vehicular Network Technologies
-    \item Wireless Monitoring
-    \item IEEE 802.[11-22] and related special task groups
-\end{itemize}
 
 \end{document}
