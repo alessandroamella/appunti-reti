@@ -64,6 +64,6 @@ if [ "$VERBOSE" = true ]; then
   nodemon --ext tex --watch "$TEX_FILE" --exec "$PREAMBLE_CMD && pdflatex -shell-escape \"$TEX_FILE\""
 else
   # Only show errors by redirecting stdout to /dev/null
-  echo "Watching $TEX_FILE for changes (only showing errors)..."
+  echo "Watching $TEX_FILE for changes..."
   nodemon --ext tex --watch "$TEX_FILE" --exec "$PREAMBLE_CMD > /dev/null && pdflatex -shell-escape -interaction=nonstopmode \"$TEX_FILE\" 2>&1 | grep -i 'error\|fatal'"
 fi
