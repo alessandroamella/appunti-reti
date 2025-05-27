@@ -145,6 +145,16 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
     \item \textit{Problema:} Come fanno Alice e Bob a concordare la chiave $K_S$ in modo sicuro?
 \end{itemize}
 
+\subsubsection{Notazione Formale Crittografia Simmetrica}
+\label{ssubsec:notazione_simmetrica}
+Data una chiave simmetrica $K_S$ condivisa tra Alice e Bob, e un messaggio in chiaro $m$:
+\begin{itemize}
+    \item Crittografia (eseguita da Alice): $c = E_{K_S}(m)$
+    \item Decrittografia (eseguita da Bob): $m = D_{K_S}(c)$
+\end{itemize}
+Dove $E$ è l'algoritmo di crittografia e $D$ quello di decrittografia, e si assume che $D_{K_S}(E_{K_S}(m)) = m$.
+Nelle slide viene spesso usato $K_S(m)$ per indicare $E_{K_S}(m)$.
+
 \subsubsection{Cifrario a Sostituzione Semplice (Monoalfabetico)}
 \begin{itemize}
     \item Ogni lettera del plaintext è sostituita da un'altra lettera.
@@ -182,6 +192,18 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
 \end{itemize}
 \textit{Flusso (Alice invia a Bob):} plaintext ($m$) $\xrightarrow{K_B^+}$ ciphertext ($K_B^+(m)$) $\xrightarrow{K_B^-}$ plaintext ($m$)
 
+\subsubsection{Notazione Formale Crittografia a Chiave Pubblica}
+\label{ssubsec:notazione_asimmetrica}
+Bob possiede una coppia di chiavi: pubblica $K_B^+$ e privata $K_B^-$.
+Alice vuole inviare un messaggio $m$ a Bob in modo confidenziale.
+\begin{itemize}
+    \item Alice crittografa con la chiave pubblica di Bob: $c = E_{K_B^+}(m)$
+    \item Bob decrittografa con la sua chiave privata: $m = D_{K_B^-}(c)$
+\end{itemize}
+Si deve avere $D_{K_B^-}(E_{K_B^+}(m)) = m$.
+Nelle slide viene spesso usato $K_B^+(m)$ per $E_{K_B^+}(m)$ e $K_B^-(c)$ per $D_{K_B^-}(c)$.
+La proprietà fondamentale è $K_B^-(K_B^+(m)) = m$.
+
 \subsubsection{RSA (Rivest, Shamir, Adelson Algorithm)}
 \begin{itemize}
     \item L'algoritmo a chiave pubblica più diffuso.
@@ -210,6 +232,61 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
     \item \textbf{Perché RSA è sicuro?} Si basa sulla difficoltà computazionale di \textbf{fattorizzare numeri molto grandi} ($n$).
     \item \textbf{RSA in Pratica: Chiavi di Sessione (Session Keys):}
     RSA è lento. Si usa RSA per scambiare una \textbf{chiave simmetrica di sessione ($K_S$)}, e poi si usa AES/DES (più veloci) con $K_S$ per i dati.
+\end{itemize}
+
+\subsubsection{Proprietà dell'Aritmetica Modulare per RSA}
+\label{ssubsec:prop_mod_rsa}
+Alcune proprietà utili:
+\begin{itemize}
+    \item $[(a \pmod n) + (b \pmod n)] \pmod n = (a+b) \pmod n$
+    \item $[(a \pmod n) - (b \pmod n)] \pmod n = (a-b) \pmod n$
+    \item $[(a \pmod n) \cdot (b \pmod n)] \pmod n = (a \cdot b) \pmod n$
+    \item Quindi, $(a \pmod n)^d \pmod n = a^d \pmod n$.
+\end{itemize}
+Un risultato cruciale per la correttezza di RSA, derivante dal Teorema di Eulero (o Piccolo Teorema di Fermat se $p,q$ sono primi e $n=pq$), è che se $ed \equiv 1 \pmod{\phi(n)}$ (dove $\phi(n)=(p-1)(q-1)=z$ nel nostro caso), allora $m^{ed} \equiv m \pmod n$.
+Più precisamente, la dimostrazione si basa su:
+$c^d \pmod n = (m^e)^d \pmod n = m^{ed} \pmod n$.
+Poiché $ed \equiv 1 \pmod z$, possiamo scrivere $ed = k \cdot z + 1$ per qualche intero $k$.
+Quindi $m^{ed} \pmod n = m^{kz+1} \pmod n$.
+Usando la proprietà $x^y \pmod n = x^{(y \pmod z)} \pmod n$ (che non è universalmente vera così scritta, ma il concetto è che l'esponente opera modulo $z=\phi(n)$), otteniamo:
+$m^{ed} \pmod n = m^{(ed \pmod z)} \pmod n = m^1 \pmod n = m \pmod n$.
+
+\subsubsection{Esempio Pratico RSA}
+\label{ssubsec:esempio_rsa}
+Bob sceglie:
+\begin{itemize}
+    \item Primi $p=5, q=7$.
+    \item $n = p \cdot q = 5 \cdot 7 = 35$.
+    \item $z = (p-1)(q-1) = (4)(6) = 24$.
+    \item $e=5$ (relativamente primo con $z=24$, cioè $\text{gcd}(5,24)=1$).
+    \item $d=29$ (infatti $e \cdot d = 5 \cdot 29 = 145$. $145 \pmod{24} = (6 \cdot 24 + 1) \pmod{24} = 1$).
+\end{itemize}
+Chiave pubblica di Bob: $(n,e) = (35,5)$.
+Chiave privata di Bob: $(n,d) = (35,29)$.
+
+Alice vuole inviare $m=12$ (NB: $m<n$).
+\begin{itemize}
+    \item \textbf{Crittografia (Alice):} $c = m^e \pmod n = 12^5 \pmod{35}$.
+    $12^2 = 144 \equiv 4 \pmod{35}$.
+    $12^4 \equiv 4^2 = 16 \pmod{35}$.
+    $12^5 = 12^4 \cdot 12 \equiv 16 \cdot 12 = 192 \pmod{35}$.
+    $192 = 5 \cdot 35 + 17 \Rightarrow 192 \equiv 17 \pmod{35}$. Quindi $c=17$.
+    Alice invia $c=17$.
+    \item \textbf{Decrittografia (Bob):} $m' = c^d \pmod n = 17^{29} \pmod{35}$.
+    Questo calcolo è più lungo, ma il risultato sarà $m'=12$.
+\end{itemize}
+
+\subsubsection{Dimostrazione della Commutatività di RSA}
+\label{ssubsec:comm_rsa_proof}
+Vogliamo mostrare che $K_B^+(K_B^-(m)) = m$.
+Sia $K_B^-(m) = m^d \pmod n$.
+Allora $K_B^+(K_B^-(m)) = K_B^+(m^d \pmod n) = (m^d \pmod n)^e \pmod n$.
+Per le proprietà dell'aritmetica modulare, questo è $ (m^d)^e \pmod n = m^{de} \pmod n$.
+Poiché $de \equiv 1 \pmod z$, come visto prima, $m^{de} \pmod n = m \pmod n$.
+Questo dimostra che l'ordine di applicazione di crittografia con una chiave e decrittografia con l'altra chiave della stessa coppia (pubblica/privata) restituisce il messaggio originale, indipendentemente da quale operazione (elevamento a $e$ o a $d$) viene fatta prima.
+\begin{itemize}
+    \item $K_B^-(K_B^+(m)) = (m^e)^d \pmod n = m^{ed} \pmod n = m$ (riservatezza)
+    \item $K_B^+(K_B^-(m)) = (m^d)^e \pmod n = m^{de} \pmod n = m$ (base per firme digitali)
 \end{itemize}
 
 \section{Integrità dei Messaggi e Autenticazione}
@@ -244,6 +321,27 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
     \end{enumerate}
     \textit{Falla di Sicurezza ap5.0:} \textbf{Man-in-the-Middle (MITM) Attack}. Trudy si frappone e scambia le sue chiavi pubbliche con Alice e Bob.
 \end{itemize}
+
+\subsubsection{Flusso di Messaggi ap4.0}
+\label{ssubsec:ap4_0_flow}
+Obiettivo: Alice si autentica con Bob usando una chiave simmetrica condivisa $K_{A-B}$ e un nonce $R$ per prevenire replay.
+\begin{enumerate}
+    \item Alice $\rightarrow$ Bob: ``Sono Alice'' (identificativo di Alice)
+    \item Bob $\rightarrow$ Alice: $R$ (Nonce generato da Bob)
+    \item Alice $\rightarrow$ Bob: $K_{A-B}(R)$ (Alice crittografa $R$ con la chiave condivisa)
+\end{enumerate}
+Bob decrittografa $K_{A-B}(R)$ usando $K_{A-B}$. Se il risultato è $R$, Alice è autenticata e "live".
+
+\subsubsection{Flusso di Messaggi ap5.0}
+\label{ssubsec:ap5_0_flow}
+Obiettivo: Alice si autentica con Bob usando la sua coppia di chiavi pubblica/privata ($K_A^+, K_A^-$) e un nonce $R$.
+\begin{enumerate}
+    \item Alice $\rightarrow$ Bob: ``Sono Alice'' (identificativo di Alice)
+    \item Bob $\rightarrow$ Alice: $R$ (Nonce generato da Bob)
+    \item Alice $\rightarrow$ Bob: $K_A^-(R)$ (Alice "firma" $R$ crittografandolo con la sua chiave privata $K_A^-$)
+\end{enumerate}
+Bob ottiene la chiave pubblica di Alice $K_A^+$ (da un certificato o altra fonte fidata) e calcola $K_A^+(K_A^-(R))$. Se il risultato è $R$, Alice è autenticata.
+Questo protocollo è vulnerabile all'attacco Man-in-the-Middle se $K_A^+$ non è ottenuta in modo sicuro.
 
 \subsection{Firme Digitali (Digital Signatures)}
 \begin{itemize}
@@ -295,6 +393,26 @@ Crittografare messaggi lunghi con chiave pubblica è costoso.
     \item \textbf{Algoritmi di Hash Comuni:} MD5 (insicuro), SHA-1 (debole), SHA-2 (SHA-256, SHA-512 - raccomandati).
 \end{itemize}
 
+\subsubsection{Passaggi Dettagliati Firma Digitale con Digest}
+\label{ssubsec:firma_digest_dettagli}
+Sia $m$ il messaggio, $H$ la funzione hash, $K_B^-$ la chiave privata di Bob, $K_B^+$ la chiave pubblica di Bob.
+
+\textbf{Processo di Firma (Bob):}
+\begin{enumerate}
+    \item Calcolare il digest del messaggio: $h = H(m)$.
+    \item Crittografare il digest con la chiave privata di Bob (firma): $S_B = K_B^-(h) = K_B^-(H(m))$.
+    \item Inviare il messaggio e la firma ad Alice: $(m, S_B)$.
+\end{enumerate}
+
+\textbf{Processo di Verifica (Alice):}
+\begin{enumerate}
+    \item Ricevere $(m', S'_B)$ da Bob (usiamo $m'$ e $S'_B$ per indicare che potrebbero essere stati alterati).
+    \item Calcolare il digest del messaggio ricevuto: $h' = H(m')$.
+    \item Decrittografare la firma ricevuta usando la chiave pubblica di Bob: $h_{firmato} = K_B^+(S'_B)$.
+    \item Confrontare i due digest: $h' \stackrel{?}{=} h_{firmato}$.
+    \item Se sono uguali, la firma è valida: il messaggio è integro e autenticato (proviene da Bob). Altrimenti, la verifica fallisce.
+\end{enumerate}
+
 \subsection{Certificazione della Chiave Pubblica (Public-Key Certification)}
 Risolve il problema del MITM per lo scambio di chiavi pubbliche.
 \begin{itemize}
@@ -312,6 +430,29 @@ Risolve il problema del MITM per lo scambio di chiavi pubbliche.
         \item Se la firma della CA è valida, Alice si fida che la chiave pubblica nel certificato sia di Bob.
     \end{enumerate}
 \end{itemize}
+
+\subsubsection{Formato e Verifica del Certificato Digitale (Concettuale)}
+\label{ssubsec:certificato_digitale_formato}
+Un certificato digitale per Bob, emesso dalla CA, contiene tipicamente:
+\begin{itemize}
+    \item Identificativo di Bob
+    \item Chiave Pubblica di Bob ($K_B^+$)
+    \item Identificativo della CA
+    \item Periodo di validità
+    \item Algoritmo di firma usato dalla CA
+    \item Altre informazioni...
+\end{itemize}
+Chiamiamo tutto questo blocco di informazioni $I_{Bob}$.
+La CA firma questo blocco: $S_{CA} = K_{CA}^-(H(I_{Bob}))$.
+Il certificato finale è $(I_{Bob}, S_{CA})$.
+
+Quando Alice riceve il certificato di Bob:
+\begin{enumerate}
+    \item Estrae $I_{Bob}$ e $S_{CA}$.
+    \item Calcola $H(I_{Bob})$.
+    \item Usa la chiave pubblica della CA, $K_{CA}^+$ (che Alice deve possedere e fidarsi), per verificare la firma: $H_{verificato} = K_{CA}^+(S_{CA})$. (Se la firma è solo $K_{CA}^-(I_{Bob})$, allora la verifica è $K_{CA}^+(S_{CA})$ e si confronta con $I_{Bob}$).
+    \item Se $H(I_{Bob}) = H_{verificato}$, allora Alice si fida che $K_B^+$ in $I_{Bob}$ appartenga veramente a Bob.
+\end{enumerate}
 
 \section{Protezione delle E-mail}
 \label{sec:protezione_email}
@@ -362,6 +503,61 @@ Alice vuole inviare email sicure a Bob (riservatezza, autenticazione, integrità
 \end{enumerate}
 Alice usa tre chiavi: la sua privata, la pubblica di Bob, e la $K_S$ simmetrica.
 
+\subsection{Schema Combinato per E-mail Sicura (PGP-like)}
+\label{ssec:email_pgp_like}
+Alice vuole inviare un'e-mail $m$ a Bob garantendo riservatezza, autenticazione del mittente e integrità del messaggio.
+Chiavi coinvolte:
+\begin{itemize}
+    \item Alice: $K_A^+, K_A^-$
+    \item Bob: $K_B^+, K_B^-$
+    \item Chiave di sessione simmetrica casuale: $K_S$
+\end{itemize}
+
+\textbf{Operazioni di Alice (Mittente):}
+\begin{enumerate}
+    \item \textbf{Firma:} Alice calcola il digest $H(m)$ e lo firma con la sua chiave privata: $S_A = K_A^-(H(m))$.
+    \item \textbf{Preparazione del Payload:} Alice concatena il messaggio originale con la sua firma: $P = m \mathbin{\|} S_A$.
+    \item \textbf{Crittografia Simmetrica:} Alice genera una chiave di sessione simmetrica casuale $K_S$. Crittografa il payload $P$ con $K_S$: $C_P = K_S(P) = K_S(m \mathbin{\|} K_A^-(H(m)))$.
+    \item \textbf{Crittografia della Chiave di Sessione:} Alice crittografa la chiave di sessione $K_S$ con la chiave pubblica di Bob: $C_K = K_B^+(K_S)$.
+    \item \textbf{Invio:} Alice invia $(C_P, C_K)$ a Bob.
+\end{enumerate}
+
+\textbf{Operazioni di Bob (Destinatario):}
+\begin{enumerate}
+    \item \textbf{Decrittografia della Chiave di Sessione:} Bob usa la sua chiave privata $K_B^-$ per decrittografare $C_K$ e ottenere $K_S$: $K_S = K_B^-(C_K)$.
+    \item \textbf{Decrittografia Simmetrica:} Bob usa $K_S$ per decrittografare $C_P$ e ottenere il payload $P = m \mathbin{\|} S_A$.
+    \item \textbf{Verifica della Firma:}
+        \begin{itemize}
+            \item Bob estrae $m$ e $S_A$ da $P$.
+            \item Bob calcola il digest del messaggio $m$ ricevuto: $H(m)$.
+            \item Bob usa la chiave pubblica di Alice $K_A^+$ per verificare la firma $S_A$: $H_{verificato} = K_A^+(S_A)$.
+            \item Se $H(m) = H_{verificato}$, il messaggio è autentico (da Alice) e integro.
+        \end{itemize}
+\end{enumerate}
+
+\subsubsection{Esempio d'Esame Adattato}
+\textit{Domanda: Alice spedisce M1 (grande) a Bob (solo non ripudio, no privacy). Bob risponde con m2 (piccolo) ad Alice (garanzia mittente, privacy, no replay). Costo minimo.}
+
+\textbf{Fase 1: Alice $\rightarrow$ Bob (M1, grande, solo non ripudio)}
+Non serve crittografare M1. Non ripudio è dato da firma digitale.
+\begin{itemize}
+    \item Alice calcola $H(M1)$.
+    \item Alice firma $H(M1)$ con la sua chiave privata: $S_{A1} = K_A^-(H(M1))$.
+    \item Alice invia a Bob: $(M1, S_{A1})$.
+\end{itemize}
+Bob verifica la firma usando $K_A^+$. Questo è efficiente perché si firma solo l'hash.
+
+\textbf{Fase 2: Bob $\rightarrow$ Alice (m2, piccolo, mittente, privacy, no replay)}
+\begin{itemize}
+    \item \textbf{Garanzia Mittente (Bob):} Bob firma $m2$ (o $H(m2)$ se $m2$ non fosse piccolo) con la sua chiave privata $K_B^-$. Per includere il no-replay, si firma $(m2 \mathbin{\|} R)$, dove $R$ è un nonce. Firma: $S_{B2} = K_B^-(H(m2 \mathbin{\|} R))$ (o $K_B^-(m2 \mathbin{\|} R)$ se $m2 \mathbin{\|} R$ è piccolo abbastanza per RSA).
+    \item \textbf{Payload da crittografare:} $P_2 = (m2 \mathbin{\|} R \mathbin{\|} S_{B2})$.
+    \item \textbf{Privacy (per Alice):} Bob crittografa $P_2$ con la chiave pubblica di Alice $K_A^+$ (essendo $m2$ piccolo, si può crittografare direttamente tutto il payload firmato con RSA senza usare una $K_S$ intermedia).
+    Ciphertext: $C_2 = K_A^+(P_2) = K_A^+(m2 \mathbin{\|} R \mathbin{\|} S_{B2})$.
+    \item Bob invia a Alice: $C_2$.
+    \item \textbf{Nonce R:} Può essere generato da Bob, oppure Alice potrebbe averlo inviato a Bob in un precedente messaggio non specificato qui, o potrebbe essere un contatore/timestamp. Se Bob lo genera, Alice deve poterlo validare (es. se è un contatore atteso).
+\end{itemize}
+Alice decrittografa $C_2$ con $K_A^-$, estrae $m2, R, S_{B2}$. Verifica $R$ (per no-replay) e poi verifica $S_{B2}$ usando $K_B^+$.
+
 \section{Protezione delle Connessioni TCP: SSL/TLS}
 \label{sec:ssl_tls}
 SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
@@ -394,6 +590,38 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
     Messaggi speciali (alert \texttt{close\_notify}) per chiudere in modo sicuro.
 \end{enumerate}
 
+\subsubsection{Flusso Concettuale Toy SSL}
+\label{ssubsec:toy_ssl_flow}
+\textbf{1. Handshake:}
+\begin{itemize}
+    \item Client $\rightarrow$ Server: \texttt{hello}
+    \item Server $\rightarrow$ Client: Certificato Pubblico del Server (contenente $K_{Server}^+$)
+    \item Client $\rightarrow$ Server: $K_{Server}^+(MS)$ (Master Secret $MS$ crittografato con la chiave pubblica del server, risultato $EMS$)
+\end{itemize}
+Ora Client e Server condividono $MS$.
+
+\textbf{2. Derivazione Chiavi:}
+Da $MS$ (e altri dati come i nonce scambiati nell'hello), si derivano (usando una Key Derivation Function - KDF):
+\begin{itemize}
+    \item $K_c$: Chiave di crittografia Client $\rightarrow$ Server
+    \item $M_c$: Chiave MAC Client $\rightarrow$ Server
+    \item $K_s$: Chiave di crittografia Server $\rightarrow$ Client
+    \item $M_s$: Chiave MAC Server $\rightarrow$ Client
+\end{itemize}
+
+\textbf{3. Trasferimento Dati (Record):}
+Esempio: Client invia dati al Server.
+\begin{itemize}
+    \item Dati applicativi suddivisi. Per un frammento di dati $D$:
+    \item Calcolo MAC: $MAC_D = \text{MAC}_{M_c}(D \mathbin{\|} \text{seq_num} \mathbin{\|} \text{type})$
+    \item Crittografia: $C_D = E_{K_c}(D \mathbin{\|} MAC_D)$
+    \item Record SSL: \texttt{[Header (type, version, length)] [Encrypted Data $C_D$]}
+\end{itemize}
+Il campo `type` può indicare dati applicativi, alert (es. chiusura), ecc. `seq_num` è un numero di sequenza per prevenire replay.
+
+\textbf{4. Chiusura:}
+Messaggio di tipo "closure" (es. \texttt{type 1}) inviato come un record protetto.
+
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[node distance=1.5cm and 2cm, auto]
@@ -418,7 +646,6 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
     \caption{Schema semplificato dell'Handshake SSL/TLS.}
 \end{figure}
 
-
 \subsection{Real SSL: Handshake (dettagli)}
 \begin{enumerate}
     \item \textbf{ClientHello:} Client invia lista cipher suite, versione SSL/TLS, nonce client.
@@ -430,6 +657,41 @@ SSL (Secure Sockets Layer) / TLS (Transport Layer Security).
 \end{enumerate}
 Gli ultimi due messaggi (Finished) proteggono l'handshake da manomissioni. I due nonce prevengono replay di sessioni.
 
+\subsubsection{Flusso Messaggi Handshake SSL/TLS (Semplificato)}
+\label{ssubsec:real_ssl_handshake_flow}
+\begin{enumerate}
+    \item \textbf{Client $\rightarrow$ Server: ClientHello}
+    (Lista CipherSuite supportate dal client, Nonce Client $N_C$, versione SSL/TLS)
+    \item \textbf{Server $\rightarrow$ Client: ServerHello, Certificate, ServerKeyExchange (opz.), ServerHelloDone}
+    (CipherSuite scelta dal server, Nonce Server $N_S$, Certificato del Server [contenente $K_S^+$], opz. parametri per Diffie-Hellman, fine messaggi server)
+    \item \textbf{Client $\rightarrow$ Server: ClientKeyExchange, ChangeCipherSpec, Finished}
+    (Client verifica certificato server. Client genera Pre-Master Secret $PMS$. Client invia $K_S^+(PMS)$ [o risultato DH]. Client deriva MasterSecret $MS$ e chiavi di sessione. \texttt{ChangeCipherSpec} indica che i messaggi successivi saranno crittografati. \texttt{Finished} è un MAC di tutti i messaggi handshake finora, crittografato con le nuove chiavi di sessione.)
+    \item \textbf{Server $\rightarrow$ Client: ChangeCipherSpec, Finished}
+    (Server decrittografa $PMS$, deriva $MS$ e chiavi di sessione. \texttt{ChangeCipherSpec}. \texttt{Finished} è il MAC dei messaggi handshake calcolato dal server, crittografato.)
+\end{enumerate}
+A questo punto l'handshake è completo e il canale sicuro è stabilito.
+
+\subsubsection{Derivazione delle Chiavi di Sessione in SSL/TLS}
+\label{ssubsec:ssl_key_derivation}
+Una volta che Client e Server hanno negoziato il Pre-Master Secret (PMS) e scambiato i nonce ($N_C, N_S$), entrambi calcolano il Master Secret (MS) in modo indipendente:
+\begin{itemize}
+    \item $MS = \text{PRF}(PMS, \text{"master secret"}, N_C \mathbin{\|} N_S)$
+    \item PRF è una Pseudo-Random Function, definita nello standard TLS.
+\end{itemize}
+Dal Master Secret, vengono derivati ulteriori blocchi di chiavi ("key block") usando nuovamente la PRF:
+\begin{itemize}
+    \item $\text{Key\_Block} = \text{PRF}(MS, \text{"key expansion"}, N_S \mathbin{\|} N_C)$
+\end{itemize}
+Il Key\_Block viene poi suddiviso per ottenere le chiavi di sessione effettive:
+\begin{itemize}
+    \item Chiave MAC scrittura client ($M_c$)
+    \item Chiave MAC scrittura server ($M_s$)
+    \item Chiave crittografia scrittura client ($K_c$)
+    \item Chiave crittografia scrittura server ($K_s$)
+    \item (Se necessario) Vettori di Inizializzazione (IV) per client e server (per cifrari a blocchi in modalità CBC)
+\end{itemize}
+Questo processo assicura che ogni sessione utilizzi chiavi uniche e che le chiavi per direzioni e scopi diversi (MAC vs. crittografia) siano indipendenti.
+
 \subsection{SSL Record Protocol}
 Dati frammentati $\rightarrow$ Aggiunta MAC $\rightarrow$ Crittografia (frammento+MAC) $\rightarrow$ Header SSL.
 
@@ -440,6 +702,33 @@ Fornisce sicurezza a livello IP (livello 3).
 \begin{itemize}
     \item \textbf{\textquotedblleft Blanket coverage\textquotedblright{}:} Protegge tutto il traffico tra due endpoint IPsec.
     \item \textbf{Virtual Private Networks (VPNs):} Traffico crittografato su Internet pubblica.
+\end{itemize}
+
+\subsubsection{Formato del Record SSL/TLS}
+\label{ssubsec:ssl_record_format}
+Ogni record SSL/TLS ha la seguente struttura generale (prima della crittografia del payload):
+\begin{verbatim}
++-----------------+----------------+-----------------+
+| Content Type (1)| Version (2)    | Length (2)      | Header (5 bytes)
++-----------------+----------------+-----------------+
+|                                                 |
+|                 Fragment Data (payload)           |
+|                                                 |
++-------------------------------------------------+
+|                 MAC (es. 20-32 bytes)           |
++-------------------------------------------------+
+|                 Padding (variable)              |
++-------------------------------------------------+
+|                 Pad Length (1)                  |
++-------------------------------------------------+
+\end{verbatim}
+Il blocco \texttt{[Fragment Data || MAC || Padding || Pad Length]} viene poi crittografato se la cipher suite lo prevede.
+\begin{itemize}
+    \item \textbf{Content Type:} Tipo di messaggio (es. handshake, alert, application data).
+    \item \textbf{Version:} Versione di SSL/TLS (es. TLS 1.2 è 0x0303).
+    \item \textbf{Length:} Lunghezza del frammento di dati crittografati (payload + MAC + padding).
+    \item \textbf{MAC:} Message Authentication Code, calcolato sui dati del frammento, un numero di sequenza implicito e altre informazioni dell'header.
+    \item \textbf{Padding:} Aggiunto per cifrari a blocchi o per oscurare la lunghezza reale dei dati.
 \end{itemize}
 
 \subsection{Servizi IPsec}
@@ -464,6 +753,33 @@ Integrità dati, autenticazione origine, prevenzione replay, confidenzialità.
     \item \textbf{SPI (Security Parameter Index):} Identificatore a 32 bit della SA.
     \item \textbf{SAD (Security Association Database):} Database dove gli endpoint IPsec memorizzano le SA.
 \end{itemize}
+
+\subsubsection{Parametri Tipici di una Security Association (SA)}
+\label{ssubsec:sa_parameters}
+Una SA da R1 a R2 (unidirezionale) memorizzata nella SAD di R1 potrebbe contenere:
+\begin{itemize}
+    \item \textbf{Security Parameter Index (SPI):} Un valore a 32 bit che identifica univocamente la SA presso il ricevitore (R2).
+    \item \textbf{Indirizzo IP di destinazione (per R2):} L'endpoint della SA.
+    \item \textbf{Protocollo IPsec utilizzato:} AH o ESP.
+    \item \textbf{Algoritmo di crittografia (per ESP):} Es. 3DES, AES.
+    \item \textbf{Chiave di crittografia (per ESP).}
+    \item \textbf{Algoritmo di autenticazione/integrità:} Es. HMAC-MD5, HMAC-SHA1.
+    \item \textbf{Chiave di autenticazione/integrità.}
+    \item \textbf{Modalità IPsec:} Transport o Tunnel.
+    \item \textbf{Lifetime della SA:} Per quanto tempo la SA è valida.
+    \item \textbf{(Opzionale) Finestra anti-replay.}
+\end{itemize}
+Un esempio di SA manuale (come da slide 100 per IKE):
+\begin{verbatim}
+SPI: 12345
+Source IP (interfaccia su R1): 200.168.1.100
+Dest IP (interfaccia su R2): 193.68.2.23
+Protocollo: ESP
+Algoritmo Crittografia: 3DES-cbc
+Algoritmo HMAC: MD5
+Chiave Crittografia: 0x7aeaca...
+Chiave HMAC: 0xc0291f...
+\end{verbatim}
 
 \subsection{Datagramma IPsec (Tunnel Mode con ESP)}
 \texttt{[New IP Hdr] [ESP Hdr] [Original IP Hdr] [Original Payload] [ESP Trailer] [ESP Auth]}
@@ -494,6 +810,49 @@ Integrità dati, autenticazione origine, prevenzione replay, confidenzialità.
     \caption{Struttura del datagramma IPsec (ESP Tunnel Mode).}
 \end{figure}
 
+\subsubsection{Struttura Dettagliata Datagramma IPsec (ESP Tunnel Mode)}
+\label{ssubsec:ipsec_esp_tunnel_packet}
+Un pacchetto IP originale viene trasformato come segue:
+
+\texttt{Original IP Packet: [Orig IP Hdr] [Orig Payload (es. TCP/UDP segment)]}
+
+\textbf{Passaggi di R1 (mittente IPsec):}
+\begin{enumerate}
+    \item \textbf{Aggiunta Trailer ESP:} Al pacchetto IP originale si aggiunge un ESP Trailer.
+    \texttt{[Orig IP Hdr] [Orig Payload] [ESP Trailer (Padding, Pad Length, Next Header)]}
+    Il campo "Next Header" indica il tipo di protocollo dell' "Orig IP Hdr" (es. IP).
+    \item \textbf{Crittografia (Payload ESP):} La porzione \texttt{[Orig IP Hdr] ... [ESP Trailer]} viene crittografata usando l'algoritmo e la chiave specificati nella SA.
+    \texttt{Encrypted\_Data = Enc( [Orig IP Hdr] [Orig Payload] [ESP Trailer] )}
+    \item \textbf{Aggiunta Header ESP:} Si antepone l'ESP Header.
+    \texttt{[ESP Hdr (SPI, Seq Num)] [Encrypted\_Data]}
+    \item \textbf{Calcolo ICV (Authentication):} Si calcola un Integrity Check Value (MAC) sulla porzione \texttt{[ESP Hdr] [Encrypted\_Data]} usando l'algoritmo e la chiave di autenticazione della SA.
+    \texttt{ESP\_Auth\_Data (ICV)}
+    \item \textbf{Aggiunta Nuovo Header IP:} Si crea un nuovo header IP (modalità tunnel) che instrada il pacchetto tra i gateway IPsec (es. R1 e R2).
+    \texttt{[New IP Hdr (src=R1, dst=R2)] [ESP Hdr] [Encrypted\_Data] [ESP\_Auth\_Data (opzionale, se ESP con autenticazione)]}
+\end{enumerate}
+
+La struttura finale visualizzata nelle slide (page 93) è:
+\begin{verbatim}
++------------+---------+-----------+---------------------+---------+----------+
+| New IP     | ESP     | Original  | Original IP         | ESP     | ESP      |
+| Header     | Header  | IP Header | Datagram Payload    | Trailer | Auth     |
++------------+---------+-----------+---------------------+---------+----------+
+             |<------------------ Encrypted ---------------------->|
+|<----------------------- Authenticated (by ESP Auth) ----------------------->|
+ (se ESP Auth è presente e copre l'ESP header)
+\end{verbatim}
+L'ESP Header contiene:
+\begin{itemize}
+    \item \textbf{SPI (Security Parameter Index):} Identifica la SA al destinatario.
+    \item \textbf{Sequence Number:} Contatore per prevenire attacchi di replay.
+\end{itemize}
+L'ESP Trailer contiene:
+\begin{itemize}
+    \item \textbf{Padding:} Per allineare il payload ai requisiti del cifrario a blocchi e/o per oscurare la lunghezza.
+    \item \textbf{Pad Length:} Lunghezza del padding.
+    \item \textbf{Next Header:} Tipo del payload incapsulato (es. IP, TCP, UDP).
+\end{itemize}
+L'ESP Auth (ICV) è il Message Authentication Code.
 
 \subsection{SPD (Security Policy Database)}
 Contiene policy che dicono \textbf{se} e \textbf{quale SA} usare per un dato traffico.
@@ -533,6 +892,37 @@ Protocollo per negoziare e stabilire dinamicamente le SA IPsec.
     Se $p_1$ è noto, si ricava $p_2$ e $KS_{IV}$.
 \end{itemize}
 
+\subsubsection{Cifrario a Flusso RC4 e WEP}
+\label{ssubsec:wep_rc4_stream}
+Un cifrario a flusso genera un \textit{keystream} ($ks$) pseudo-casuale.
+\begin{itemize}
+    \item \textbf{Input al generatore di keystream WEP:} Chiave WEP condivisa (104 bit) + IV (24 bit per pacchetto). Totale 128 bit.
+    \item \textbf{Generazione Keystream:} $ks = \text{RC4}(\text{Chiave WEP} \mathbin{\|} \text{IV})$
+    \item \textbf{Crittografia:} Sia $P$ il plaintext del frame (Dati + ICV). Il ciphertext $C$ è:
+    $C(i) = P(i) \oplus ks(i)$ (XOR byte per byte)
+    \item \textbf{Decrittografia:} $P(i) = C(i) \oplus ks(i)$
+\end{itemize}
+L'IV è trasmesso in chiaro nel frame 802.11. L'ICV è un CRC-32 sui dati originali, non crittograficamente sicuro.
+
+\subsubsection{Dettagli Attacco di Riutilizzo IV in WEP}
+\label{ssubsec:wep_iv_reuse_attack}
+Se un IV viene riutilizzato, lo stesso keystream $ks_{IV}$ viene generato.
+Supponiamo che Trudy intercetti due pacchetti crittografati con lo stesso IV:
+\begin{itemize}
+    \item $C_1 = P_1 \oplus ks_{IV}$
+    \item $C_2 = P_2 \oplus ks_{IV}$
+\end{itemize}
+Trudy può calcolare $C_1 \oplus C_2$:
+$C_1 \oplus C_2 = (P_1 \oplus ks_{IV}) \oplus (P_2 \oplus ks_{IV}) = P_1 \oplus P_2 \oplus ks_{IV} \oplus ks_{IV} = P_1 \oplus P_2$.
+Se Trudy conosce uno dei plaintext (es. $P_1$, un pacchetto ARP noto), può ricavare l'altro:
+$P_2 = (C_1 \oplus C_2) \oplus P_1$.
+Una volta ottenuto $P_2$, può anche ricavare il keystream: $ks_{IV} = C_2 \oplus P_2$.
+Da quel momento, Trudy può decrittografare qualsiasi pacchetto futuro crittografato con lo stesso IV.
+Dato che l'IV è solo a 24 bit, ci sono solo $2^{24} \approx 16$ milioni di IV possibili. Su una rete trafficata, gli IV si ripetono rapidamente.
+
+\textbf{Struttura del frame WEP (semplificata):}
+\texttt{[802.11 Header] [IV (24bit)] [Encrypted Data (PlaintextData + ICV)] [FCS]}
+
 \subsection{802.11i (WPA2/WPA3): Sicurezza Migliorata}
 Sostituisce WEP.
 \begin{itemize}
@@ -549,6 +939,96 @@ Sostituisce WEP.
     \item \textbf{EAP (Extensible Authentication Protocol):} Protocollo end-to-end client (STA) $\leftrightarrow$ AS.
     Incapsulato: EAPoL (STA-AP), RADIUS (AP-AS).
 \end{itemize}
+
+\subsubsection{Fasi Operative di 802.11i (Dettagliate)}
+\label{ssubsec:80211i_phases_detailed}
+\begin{enumerate}
+    \item \textbf{Discovery (Scoperta):}
+        \begin{itemize}
+            \item STA (Stazione, es. laptop) e AP (Access Point) si scambiano informazioni sulle capacità di sicurezza (es. tramite beacon e probe request/response).
+        \end{itemize}
+    \item \textbf{Authentication (Autenticazione EAP):}
+        \begin{itemize}
+            \item STA inizia l'autenticazione con l'AP (che agisce da Authenticator).
+            \item L'AP inoltra i messaggi EAP (Extensible Authentication Protocol) all'AS (Authentication Server, es. RADIUS). L'AP è un "pass-through".
+            \item STA e AS si autenticano reciprocamente (es. usando certificati TLS all'interno di EAP-TLS, o credenziali MSCHAPv2 per EAP-PEAP).
+            \item Se l'autenticazione ha successo, STA e AS generano indipendentemente la stessa \textbf{PMK (Pairwise Master Key)}.
+            \item L'AS invia la PMK all'AP (protetta, es. tramite attributi RADIUS crittografati).
+        \end{itemize}
+    \item \textbf{Key Generation (Generazione Chiavi - 4-Way Handshake):}
+        \begin{itemize}
+            \item AP e STA eseguono un handshake a 4 messaggi.
+            \item Scopi:
+                \begin{itemize}
+                    \item Confermare che entrambi possiedono la PMK.
+                    \item Negoziare e generare la \textbf{PTK (Pairwise Transient Key)}. La PTK è derivata dalla PMK, nonce dell'AP (ANonce), nonce della STA (SNonce), e indirizzi MAC di AP e STA.
+                    \item La PTK viene suddivisa in:
+                        \begin{itemize}
+                            \item KCK (Key Confirmation Key): Usata per MAC nell'handshake.
+                            \item KEK (Key Encryption Key): Usata per crittografare chiavi di gruppo.
+                            \item TK (Temporal Key): Usata per crittografare/decrittografare i dati unicast.
+                        \end{itemize}
+                    \item Sincronizzare l'installazione delle chiavi.
+                    \item (Opzionale) Distribuire la GTK (Group Temporal Key) per il traffico multicast/broadcast.
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{Protected Data Transfer (Trasferimento Dati Protetto):}
+        \begin{itemize}
+            \item I frame di dati unicast tra STA e AP sono crittografati e autenticati (integrità) usando la TK e algoritmi come AES-CCMP.
+        \end{itemize}
+\end{enumerate}
+
+\textbf{Diagramma di Livelli EAP (Slide 116):}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.3cm,
+        layer/.style={rectangle, draw, text=black, thick, minimum width=3.2cm, minimum height=0.7cm, align=center, font=\small},
+        device/.style={rectangle, draw, text=black, thick, rounded corners=3pt, minimum width=2.5cm, minimum height=0.8cm, align=center, fill=gray!15, font=\bfseries},
+        connection/.style={->, thick, >=Stealth},
+        wireless/.style={thick, themeblue, decorate, decoration={snake, amplitude=0.8mm, segment length=2mm}},
+    ]
+
+    % Title
+    \node[font=\Large\bfseries] (title) {Architettura di Autenticazione EAP};
+
+    % STA (left column)
+    \node[device, below=1.5cm of title, xshift=-5cm] (sta) {STA\\(Supplicant)};
+    \node[layer, below=of sta, fill=themeblue!20] (sta-method) {Metodo EAP\\(es. TLS)};
+    \node[layer, below=of sta-method, fill=green!20] (sta-eap) {EAP};
+    \node[layer, below=of sta-eap, fill=yellow!20] (sta-eapol) {EAPoL};
+
+    % AP (center)
+    \node[device, below=1.5cm of title] (ap) {AP\\(Authenticator)};
+    \node[layer, below=of ap, fill=yellow!20] (ap-eapol) {EAPoL / IEEE 802.11};
+
+    % AS (right column, positioned lower to accommodate full stack)
+    \node[device, below=1.5cm of title, xshift=5cm] (as) {AS\\(Server Auth)};
+    \node[layer, below=of as, fill=themeblue!20] (as-method) {Metodo EAP\\(es. TLS)};
+    \node[layer, below=of as-method, fill=green!20] (as-eap) {EAP};
+    \node[layer, below=of as-eap, fill=orange!20] (as-radius) {RADIUS};
+    \node[layer, below=of as-radius, fill=red!20] (as-udp) {UDP/IP};
+
+    % Wireless connection
+    \draw[wireless] (sta-eapol.east) -- (ap-eapol.west);
+    \node[above, themeblue, font=\footnotesize] at ($(sta-eapol.east)!0.5!(ap-eapol.west) + (0,0.4)$) {Wireless};
+
+    % Wired connection
+    \draw[connection, red, thick] (ap-eapol.east) -- (as-udp.west);
+    \node[above, red, font=\footnotesize] at ($(ap-eapol.east)!0.5!(as-udp.west) + (0,0.4)$) {Rete Cablata};
+
+    % End-to-end EAP method (conceptual)
+    \draw[connection, purple, thick, dashed] (sta-eap.east) to[out=0, in=180] (as-eap.west);
+    \node[below=0.1cm, purple, font=\footnotesize] at ($(sta-eap.east)!0.5!(as-eap.west)$) {Tunnel EAP End-to-End};
+
+    % Role labels
+    \node[below=0.2cm of sta-eapol, font=\large\bfseries, color=themeblue] {Cliente};
+    \node[below=0.2cm of ap-eapol, font=\large\bfseries, color=orange] {Relay};
+    \node[below=0.3cm of as-udp, font=\large\bfseries, color=red] {Server};
+
+    \end{tikzpicture}
+    \caption{Architettura di autenticazione EAP con i suoi componenti e protocolli.}
+\end{figure}
 
 \section{Sicurezza Operativa: Firewall e IDS}
 \label{sec:firewall_ids}
