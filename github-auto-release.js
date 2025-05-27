@@ -50,6 +50,10 @@ const octokit = new Octokit({
  */
 function generatePDF() {
   try {
+    // Remove LaTeX cache first
+    console.log("Removing LaTeX cache using rm_cache.sh...");
+    execSync("./rm_cache.sh", { stdio: "inherit" });
+
     // Generate light version first
     console.log("Generating light PDF using generate_notes.sh...");
     execSync("./generate_notes.sh", { stdio: "inherit" });
@@ -253,42 +257,6 @@ async function createGitHubRelease(zipInfo, customMessage = "") {
 }
 
 /**
- * Setup Git hook for automatic releases
- */
-function setupGitHook() {
-  try {
-    console.log("Setting up Git hook for automatic releases...");
-
-    // Create hooks directory if it doesn't exist
-    const hooksDir = path.join(process.cwd(), ".git", "hooks");
-    if (!fs.existsSync(hooksDir)) {
-      fs.mkdirSync(hooksDir, { recursive: true });
-    }
-
-    // Create post-commit hook
-    const hookPath = path.join(hooksDir, "post-commit");
-    const scriptPath = path.join(process.cwd(), "github-auto-release.js");
-
-    fs.writeFileSync(
-      hookPath,
-      `#!/bin/sh
-# Post-commit hook to create a GitHub release
-node "${scriptPath}" release
-`
-    );
-
-    // Make the hook executable
-    fs.chmodSync(hookPath, "755");
-
-    console.log("Git hook setup complete.");
-    console.log("A new release will be created automatically after each commit.");
-  } catch (error) {
-    console.error("Error setting up Git hook:", error.message);
-    process.exit(1);
-  }
-}
-
-/**
  * Main function
  */
 async function main() {
@@ -296,10 +264,6 @@ async function main() {
   const command = args.command;
 
   switch (command) {
-    case "setup":
-      setupGitHook();
-      break;
-
     case "release": {
       // Generate the combined PDF using the shell script
       generatePDF();
@@ -318,9 +282,6 @@ async function main() {
       console.log("This script automates creating GitHub releases with combined PDFs.");
       console.log("");
       console.log("Usage:");
-      console.log(
-        "  node github-auto-release.js setup                 - Set up the automatic release system"
-      );
       console.log(
         "  node github-auto-release.js release               - Manually trigger a release"
       );
