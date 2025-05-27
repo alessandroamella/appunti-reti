@@ -74,7 +74,7 @@ function generatePDF() {
 
     // Generate dark version
     console.log("Generating dark PDF using generate_notes.sh --dark...");
-    execSync("./generate_notes.sh --dark --once", { stdio: "inherit" });
+    execSync("./generate_notes.sh --dark", { stdio: "inherit" });
 
     // Check if the dark PDF was generated correctly
     if (!fs.existsSync("appunti_completi.pdf")) {
