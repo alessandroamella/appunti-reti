@@ -51,6 +51,7 @@ FILES=(
   "10-wireless-protocols.tex"
   "11-routing.tex"
   "12-esercitazioni.tex"
+  "13-risoluzione-esame.tex"
 )
 
 # Generate the appropriate preamble
@@ -184,6 +185,9 @@ Sentiti libero di utilizzare, condividere o contribuire a questi appunti attrave
 
 \chapter{Esercitazioni}
 \input{12-esercitazioni-content}
+
+\chapter{Guida alla Risoluzione degli Esercizi d'Esame}
+\input{13-risoluzione-esame-content}
 
 \end{document}
 EOT
