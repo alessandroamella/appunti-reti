@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Parse command line arguments
 DARK_MODE=false
 COMPILE_ONCE=false
@@ -269,25 +272,30 @@ TEMP_PDF="appunti_completi_temp.pdf"
 FINAL_PDF="appunti_completi.pdf"
 
 # First compilation
-pdflatex -shell-escape -jobname="${TEMP_PDF%.pdf}" appunti_completi.tex
+echo "Prima compilazione..."
+if ! pdflatex -shell-escape -jobname="${TEMP_PDF%.pdf}" appunti_completi.tex; then
+  echo "❌ Errore durante la prima compilazione. Il PDF non è stato generato."
+  exit 1
+fi
 
 if [ "$COMPILE_ONCE" = false ]; then
   echo "Compilando una seconda volta per l'indice..."
-  pdflatex -shell-escape -jobname="${TEMP_PDF%.pdf}" appunti_completi.tex
+  if ! pdflatex -shell-escape -jobname="${TEMP_PDF%.pdf}" appunti_completi.tex; then
+    echo "❌ Errore durante la seconda compilazione. Il PDF non è stato generato."
+    exit 1
+  fi
 fi
 
-# Check if compilation was successful
-if [ $? -eq 0 ] && [ -f "$TEMP_PDF" ]; then
-  # Move the temporary file to the final location
-  mv "$TEMP_PDF" "$FINAL_PDF"
-  echo "✅ Compilazione completata con successo."
-  echo "Il documento PDF è stato generato come '$FINAL_PDF'"
-else
-  echo "❌ Errore durante la compilazione. Il PDF non è stato generato."
-  # Clean up temporary files if they exist
-  [ -f "$TEMP_PDF" ] && rm "$TEMP_PDF"
+# Check if the temporary PDF was created
+if [ ! -f "$TEMP_PDF" ]; then
+  echo "❌ Il file PDF temporaneo non è stato creato."
   exit 1
 fi
+
+# Move the temporary file to the final location
+mv "$TEMP_PDF" "$FINAL_PDF"
+echo "✅ Compilazione completata con successo."
+echo "Il documento PDF è stato generato come '$FINAL_PDF'"
 
 echo "==================================================================="
 echo "Processo completato con successo!"

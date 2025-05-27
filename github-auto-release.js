@@ -53,21 +53,24 @@ function generatePDF() {
     // Generate light version first
     console.log("Generating light PDF using generate_notes.sh...");
     execSync("./generate_notes.sh", { stdio: "inherit" });
-    console.log("Light PDF generation completed successfully");
 
     // Check if the PDF was generated correctly
     if (!fs.existsSync("appunti_completi.pdf")) {
       throw new Error("Failed to generate light appunti_completi.pdf");
     }
 
+    console.log("Light PDF generation completed successfully");
+
     // Save light version with a different name
     fs.copyFileSync("appunti_completi.pdf", "appunti_completi_light.pdf");
+    if (!fs.existsSync("appunti_completi_light.pdf")) {
+      throw new Error("Failed to save light PDF version");
+    }
     console.log("Light PDF saved as appunti_completi_light.pdf");
 
     // Generate dark version
     console.log("Generating dark PDF using generate_notes.sh --dark...");
     execSync("./generate_notes.sh --dark --once", { stdio: "inherit" });
-    console.log("Dark PDF generation completed successfully");
 
     // Check if the dark PDF was generated correctly
     if (!fs.existsSync("appunti_completi.pdf")) {
@@ -76,9 +79,12 @@ function generatePDF() {
 
     // Save dark version with a different name
     fs.copyFileSync("appunti_completi.pdf", "appunti_completi_dark.pdf");
+    if (!fs.existsSync("appunti_completi_dark.pdf")) {
+      throw new Error("Failed to save dark PDF version");
+    }
     console.log("Dark PDF saved as appunti_completi_dark.pdf");
   } catch (error) {
-    console.error("Error generating PDFs:", error.message);
+    console.error("Error in PDF generation process:", error.message);
     process.exit(1);
   }
 }
