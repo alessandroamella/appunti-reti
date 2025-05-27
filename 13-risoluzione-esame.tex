@@ -1,0 +1,897 @@
+\documentclass[a4paper,12pt]{article} % Tipo di documento: articolo, formato A4, font 12pt
+
+% Pacchetti essenziali per la formattazione e il testo in italiano
+\usepackage[utf8]{inputenc}  % Consente l'uso di caratteri UTF-8 (es. lettere accentate)
+\usepackage[T1]{fontenc}     % Migliora la resa dei caratteri e la sillabazione
+\usepackage[italian]{babel}  % Supporto per la lingua italiana (sillabazione, nomi sezioni, ecc.)
+
+% Pacchetti per matematica
+\usepackage{amsmath}         % Supporto per ambienti matematici avanzati (es. testo in formule)
+\usepackage{amssymb}         % Simboli matematici aggiuntivi
+
+% Pacchetti per liste personalizzate e indentazione
+\usepackage{enumitem}        % Personalizzazione delle liste (enumerate, itemize)
+
+% Pacchetti per layout e links
+\usepackage[a4paper, margin=1in]{geometry} % Imposta i margini del documento
+\usepackage{hyperref}        % Rende il sommario e i riferimenti cliccabili nel PDF
+\hypersetup{
+    colorlinks=true,         % Colora i link
+    linkcolor=blue,          % Colore dei link interni
+    urlcolor=cyan,           % Colore dei link esterni
+    citecolor=green          % Colore dei riferimenti bibliografici
+}
+
+% Metadati del documento
+\title{Guida alla Risoluzione degli Esercizi di Reti di Calcolatori}
+\author{Il tuo Nome/Autore} % Puoi inserire il tuo nome o lasciarlo vuoto
+\date{\today}                % Inserisce la data corrente, o puoi specificare una data fissa
+
+% Inizio del documento
+\begin{document}
+
+\maketitle % Crea la pagina del titolo
+
+\begin{abstract}
+Questo documento è pensato per aiutarti a comprendere e risolvere le principali tipologie di esercizi pratici presenti negli esami di Reti di Calcolatori, basandosi sugli esempi forniti.
+\end{abstract}
+
+\clearpage % Forza una nuova pagina prima del sommario
+\tableofcontents % Genera automaticamente il sommario del documento
+\clearpage % Forza una nuova pagina dopo il sommario
+
+% Introduzione e indice delle tipologie di esercizi (come nel tuo MD, ma con riferimenti)
+\section*{Introduzione alle Tipologie di Esercizi} % Sezione senza numero e non nel sommario
+Questo documento è pensato per aiutarti a comprendere e risolvere le principali tipologie di esercizi pratici presenti negli esami di Reti di Calcolatori, basandosi sugli esempi forniti.
+
+\bigskip % Piccola spaziatura verticale
+
+\textbf{Indice delle Tipologie di Esercizi:}
+\begin{enumerate}[leftmargin=*,label=\arabic*.] % Lista numerata con margine allineato
+    \item \hyperref[sec:ipv4-subnetting]{Indirizzamento IPv4 e Subnetting (VLSM)}
+    \item \hyperref[sec:protocolli-sicuri]{Progettazione di Protocolli di Comunicazione Sicura (Alice \& Bob)}
+    \item \hyperref[sec:wireless]{Comunicazioni Wireless (Link Budget, OFDM, Fresnel)}
+    \item \hyperref[sec:openflow]{Configurazione Tabelle OpenFlow}
+    \item Analisi e Interpretazione di Output/Configurazioni di Rete (DNS, PING, URL) % Placeholder, sezione da aggiungere
+    \item Calcolo Prestazioni di Rete (Throughput, Latenza, Congestione) % Placeholder, sezione da aggiungere
+    \item Routing (Algoritmo di Dijkstra) % Placeholder, sezione da aggiungere
+    \item Codifica del Segnale Wireless % Placeholder, sezione da aggiungere
+\end{enumerate}
+
+\hrule % Linea orizzontale come separatore
+
+% --- Sezione 1: Indirizzamento IPv4 e Subnetting (VLSM) ---
+\section{Indirizzamento IPv4 e Subnetting (VLSM)} % Sezione principale
+\label{sec:ipv4-subnetting} % Etichetta per riferimenti incrociati
+
+\subsection{Concetti Chiave}
+\begin{itemize}[leftmargin=*] % Lista puntata con margine allineato
+    \item \textbf{Indirizzo IP:} Identificatore univoco di un host in una rete.
+    \item \textbf{Netmask (Maschera di Sottorete):} Divide l'indirizzo IP in parte di rete e parte di host.
+    \item \textbf{CIDR (Classless Inter-Domain Routing):} Notazione \texttt{/n} che indica i primi \texttt{n} bit come parte di rete.
+    \item \textbf{Indirizzo di Rete:} Primo indirizzo di un range, con tutti i bit della parte host a 0. Non assegnabile a host.
+    \item \textbf{Indirizzo di Broadcast:} Ultimo indirizzo di un range, con tutti i bit della parte host a 1. Invia dati a tutti gli host della sottorete. Non assegnabile a host.
+    \item \textbf{Indirizzi Host Validi:} Indirizzi compresi tra l'indirizzo di rete e quello di broadcast. Numero di host = $2^{(32-n)} - 2$.
+    \item \textbf{VLSM:} Tecnica che permette di usare maschere di sottorete di lunghezza variabile per ottimizzare l'uso degli indirizzi IP, creando sottoreti di dimensioni diverse in base alle necessità.
+\end{itemize}
+
+\subsection{Procedura di Svolgimento (VLSM - Esercizio 9 tipico)}
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+    \item \textbf{Analisi Requisiti:} Identifica il numero massimo di host richiesto per ogni sottorete.
+    \item \textbf{Ordinamento:} Ordina le sottoreti in base al numero di host richiesti, dalla più grande alla più piccola. Questo aiuta a prevenire la frammentazione dello spazio di indirizzamento.
+    \item \textbf{Calcolo Bit Host:} Per ogni sottorete, calcola il numero minimo di bit $h$ necessari per la parte host: $2^h - 2 \ge \text{numero\_host\_richiesti}$. La maschera sarà $32 - h$.
+    \item \textbf{Allocazione Spazio:} Partendo dall'indirizzo di rete generale fornito (o da un blocco scelto):
+    \begin{itemize}
+        \item Alloca il primo blocco contiguo di indirizzi sufficiente per la sottorete più grande.
+        \item Calcola: Indirizzo di Rete, Primo Host, Ultimo Host, Indirizzo di Broadcast, IP del Router (solitamente il primo o l'ultimo host valido della sottorete, o uno specifico se indicato).
+        \item L'indirizzo successivo al broadcast della sottorete appena creata diventa l'inizio del blocco disponibile per la successiva.
+    \end{itemize}
+    \item \textbf{Iterazione:} Ripeti il punto 4 per tutte le sottoreti, allocando blocchi contigui.
+    \item \textbf{Router IP:} Assegna gli IP ai router. Un router che connette più sottoreti avrà un IP per ogni interfaccia su quella sottorete. L'IP del router è spesso il Default Gateway per gli host di quella sottorete.
+    \item \textbf{Verifica:} Assicurati che i range di indirizzi delle sottoreti non si sovrappongano.
+\end{enumerate}
+
+\subsection{Formule Utili}
+\begin{itemize}[leftmargin=*]
+    \item Numero host disponibili: $2^h - 2$ (dove $h$ sono i bit per la parte host)
+    \item Netmask da $h$: $32 - h$ bit a 1.
+    \item Indirizzo di Rete: $\text{IP AND Netmask}$
+    \item Indirizzo di Broadcast: $\text{IndirizzoRete OR (NOT Netmask)}$ (o più semplicemente, l'indirizzo prima della rete successiva).
+    \item Primo Host: $\text{IndirizzoRete} + 1$
+    \item Ultimo Host: $\text{IndirizzoBroadcast} - 1$
+\end{itemize}
+
+\subsection{Esempio Svolto (basato su Esercizio 9, "Scritto 26 Maggio 2023" e "Scritto Reti Di Calcolatori 2024-30-31")}
+Prendiamo l'esercizio 9 della prova del 26 Maggio 2023.
+\texttt{Network N = 177.34.146.0/23}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Netmask N:} \texttt{/23} $\to$ \texttt{255.255.254.0} (11111111.11111111.11111110.00000000)
+    \item \textbf{Rete N:} \texttt{177.34.146.0}
+    \item \textbf{Bit host per N:} $32 - 23 = 9$ bit. Host totali: $2^9 = 512$. Host validi: $510$.
+    \item \textbf{Range N:} \texttt{177.34.146.0} - \texttt{177.34.147.255}
+    \item \textbf{Primo Host N:} \texttt{177.34.146.1}
+    \item \textbf{Ultimo Host N (o Router IP N):} \texttt{177.34.147.254}
+    \item \textbf{Broadcast N:} \texttt{177.34.147.255}
+\end{itemize}
+
+Ora suddividiamo. Supponiamo le richieste (come da figura ma invento i numeri per semplicità, tu usa quelli reali):
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+    \item Subnet B: max 157 host
+    \item Subnet A: max 118 host
+    \item Subnet A2 (di A): max 56 host
+    \item Subnet A1 (di A): max 42 host
+\end{enumerate}
+
+\textbf{1. Subnet B (max 157 host):}
+$2^h - 2 \ge 157$. $2^8 - 2 = 254 \ge 157$. Quindi $h=8$. Maschera \texttt{/24} (32-8).
+\begin{itemize}[leftmargin=*]
+    \item Rete B: \texttt{177.34.146.0/24}
+    \item Netmask B: \texttt{255.255.255.0}
+    \item Primo Host B: \texttt{177.34.146.1}
+    \item Router IP (interfaccia di N verso B, o router di B): \texttt{177.34.146.254} (o .1)
+    \item Ultimo Host B: \texttt{177.34.146.253}
+    \item Broadcast B: \texttt{177.34.146.255}
+    \item Default Gateway per host in B: IP del router sull'interfaccia di B.
+\end{itemize}
+
+\textbf{2. Subnet A (max 118 host) $\to$ /25 (128 indirizzi)}
+\begin{itemize}[leftmargin=*]
+    \item Spazio disponibile successivo: \texttt{177.34.147.0}
+    \item Rete A: \texttt{177.34.147.0/25}
+    \item Netmask A: \texttt{255.255.255.128}
+    \item Primo Host A: \texttt{177.34.147.1}
+    \item Router IP (interfaccia di N verso A, o router di A): \texttt{177.34.147.126} (o .1)
+    \item Ultimo Host A: \texttt{177.34.147.125}
+    \item Broadcast A: \texttt{177.34.147.127}
+    \item Default Gateway per host in A: IP del router sull'interfaccia di A.
+\end{itemize}
+
+\textbf{3. Subnet A2 (di A, max 56 host) $\to$ /26 (64 indirizzi)}
+\textit{Attenzione: A2 è una sottorete di A. Quindi deve prendere un blocco \textbf{interno} allo spazio di A. Ma la figura suggerisce che A, A1, A2 siano sottoreti di N, con A1 e A2 collegate tramite Router A. L'esercizio va letto con attenzione. Se "Subnet A (max 118 host)" si riferisce allo spazio totale per A e le sue sottoreti, allora dobbiamo allocare A1 e A2 \textbf{dentro} lo spazio di A. Se invece N si divide in A e B, e A si divide in A1 e A2, la logica cambia.}
+
+\textit{Assumiamo che la figura indichi Router N che connette a "Subnet A" e "Subnet B". Poi Router A (che è in Subnet A) connette a A1 e A2.}
+\textit{Questo significa che "Subnet A" non è una rete di soli host finali, ma contiene Router A e potenzialmente altri host. E lo spazio IP di "Subnet A" deve essere grande abbastanza da contenere A1 e A2.}
+
+\textit{Rivediamo: N si divide. Le sottoreti più grandi sono B (157 host) e A (che deve contenere A1=42, A2=56 e le connessioni).}
+\begin{itemize}[leftmargin=*]
+    \item A1: 42 host $\to$ \texttt{/26} (64 indirizzi)
+    \item A2: 56 host $\to$ \texttt{/26} (64 indirizzi)
+    \item Servono anche indirizzi per le interfacce dei router tra N-A, A-A1, A-A2. E se A ha host propri.
+\end{itemize}
+\textit{Questo tipo di problema (gerarchico) va affrontato allocando prima lo spazio per le "reti padre" e poi suddividendolo. Oppure, se si fa VLSM sull'intero blocco di N, si allocano prima le foglie più grandi.}
+
+\textbf{Approccio corretto per gerarchie (come da "Scritto 26 Maggio 2023"):}
+Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+    \item \textbf{Subnet B (max 157 host $\to$ /24):}
+    \begin{itemize}
+        \item Rete: \texttt{177.34.146.0/24} (Netmask \texttt{255.255.255.0})
+        \item Router IP (su interfaccia di Router N per B): \texttt{177.34.146.1} (o \texttt{.254})
+        \item Default GW per host in B: \texttt{177.34.146.1}
+    \end{itemize}
+    \item \textbf{Subnet A (max 118 host $\to$ /25):}
+    \begin{itemize}
+        \item Rete: \texttt{177.34.147.0/25} (Netmask \texttt{255.255.255.128}) (parte da \texttt{177.34.146.255 + 1})
+        \item Router IP (su interfaccia di Router N per A): \texttt{177.34.147.1} (o \texttt{.126})
+        \item Default GW per host in A: \texttt{177.34.147.1}
+    \end{itemize}
+    \item \textbf{Subnet A2 (max 56 host $\to$ /26):}
+    \begin{itemize}
+        \item Rete: \texttt{177.34.147.128/26} (Netmask \texttt{255.255.255.192}) (parte da \texttt{177.34.147.127 + 1})
+        \item Router IP (su interfaccia di Router A per A2): \texttt{177.34.147.129} (o \texttt{.190})
+        \item Default GW per host in A2: \texttt{177.34.147.129}
+    \end{itemize}
+    \item \textbf{Subnet A1 (max 42 host $\to$ /26):}
+    \begin{itemize}
+        \item Rete: \texttt{177.34.147.192/26} (Netmask \texttt{255.255.255.192}) (parte da \texttt{177.34.147.191 + 1})
+        \item Router IP (su interfaccia di Router A per A1): \texttt{177.34.147.193} (o \texttt{.254})
+        \item Default GW per host in A1: \texttt{177.34.147.193}
+    \end{itemize}
+\end{enumerate}
+
+\textit{Importante:} Devi essere molto preciso con i calcoli binari/decimali per non sovrapporre gli indirizzi. Converti in binario per i calcoli di rete e broadcast se non sei sicuro.
+
+\textbf{Router IP:}
+\begin{itemize}[leftmargin=*]
+    \item Router N: avrà un IP per l'interfaccia verso Internet (non specificato), un IP in Subnet A (es. \texttt{177.34.147.1}), un IP in Subnet B (es. \texttt{177.34.146.1}).
+    \item Router A: avrà un IP nell'interfaccia verso N (es. \texttt{177.34.147.2} - se A è una "subnet" e non solo un router), un IP in Subnet A1 (es. \texttt{177.34.147.193}), un IP in Subnet A2 (es. \texttt{177.34.147.129}). Gli host in A1/A2 useranno questi come Default Gateway.
+\end{itemize}
+
+\subsection{Consigli e Errori Comuni}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Errore di 1 bit:} Un errore comune è sbagliare la maschera di 1 bit, che dimezza o raddoppia lo spazio.
+    \item \textbf{Non Sottrarre 2:} Ricorda che indirizzo di rete e broadcast non sono usabili per gli host.
+    \item \textbf{Sovrapposizione:} Alloca sempre blocchi contigui. Verifica che il broadcast di una sottorete sia l'indirizzo \textit{prima} della rete successiva.
+    \item \textbf{Conversione Binaria:} Per calcoli complessi o per verifica, convertire gli ottetti rilevanti in binario è il modo più sicuro.
+    \item \textbf{Interpretazione Topologia:} L'errore più grande può essere non capire come sono collegate le sottoreti e chi fa da gateway per chi. Chiarisci sempre se una "Subnet X" è una rete di host finali o un link tra router che poi gestiscono altre sottoreti. L'esercizio 9 del 26 Maggio 2023 sembra trattare A, A1, A2, B come sottoreti dirette o indirette dello spazio N, con allocazione flat.
+\end{itemize}
+
+\hrule % Linea orizzontale come separatore
+
+% --- Sezione 2: Progettazione di Protocolli di Comunicazione Sicura (Alice & Bob) ---
+\section{Progettazione di Protocolli di Comunicazione Sicura (Alice \& Bob)}
+\label{sec:protocolli-sicuri}
+
+\subsection{Concetti Chiave}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Confidenzialità:} Solo il destinatario autorizzato può leggere il messaggio (Cifratura).
+    \begin{itemize}
+        \item $K_{\text{pub\_B}}(M)$: Cifratura di M con la chiave pubblica di Bob. Solo Bob con $K_{\text{priv\_B}}$ può decifrare.
+        \item $K_s(M)$: Cifratura simmetrica di M con chiave $K_s$ (condivisa tra Alice e Bob).
+    \end{itemize}
+    \item \textbf{Integrità:} Il messaggio non è stato alterato durante la trasmissione (Funzione Hash).
+    \begin{itemize}
+        \item $H(M)$: Hash del messaggio M.
+    \end{itemize}
+    \item \textbf{Autenticazione del Mittente:} Il destinatario è sicuro dell'identità del mittente (Firma Digitale).
+    \begin{itemize}
+        \item $K_{\text{priv\_A}}(H(M))$: Firma digitale di Alice dell'hash di M. Chiunque con $K_{\text{pub\_A}}$ può verificarla.
+    \end{itemize}
+    \item \textbf{Non Ripudio:} Il mittente non può negare di aver inviato il messaggio. Richiede spesso una terza parte fidata o meccanismi che leghino inequivocabilmente il mittente al messaggio e alla sua ricezione. La firma digitale è un componente chiave.
+    \item \textbf{Protezione da Replay:} Il messaggio non può essere catturato e riutilizzato da un attaccante (Nonce, Timestamp).
+    \begin{itemize}
+        \item \textbf{Nonce (N):} Numero casuale usato una sola volta.
+        \item \textbf{Timestamp (T):} Data/ora di invio.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Procedura di Svolgimento}
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+    \item \textbf{Identifica i Requisiti:} Leggi attentamente quali garanzie sono richieste (confidenzialità, integrità, autenticazione, non ripudio, protezione da replay) per ogni messaggio e per ogni attore.
+    \item \textbf{Scegli gli Strumenti Crittografici:}
+    \begin{itemize}
+        \item Messaggi brevi: RSA (cifratura asimmetrica) può andare bene per tutto.
+        \item Messaggi lunghi: Usa cifratura simmetrica $K_s(M)$ per il messaggio e cifra $K_s$ con la chiave pubblica del destinatario: $K_{\text{pub\_B}}(K_s)$. Questo è l'approccio "hybrid".
+        \item Per integrità e autenticazione: $M, K_{\text{priv\_A}}(H(M))$.
+    \end{itemize}
+    \item \textbf{Costruisci i Messaggi:} Combina gli strumenti per soddisfare i requisiti.
+    \begin{itemize}
+        \item Es: Alice invia M a Bob, confidenziale, autenticato, integro: $K_{\text{pub\_B}}( M, K_{\text{priv\_A}}(H(M)) )$. (Non ideale per M grande)
+        \item Meglio per M grande: Alice invia a Bob $K_{\text{pub\_B}}(K_s), K_s(M, K_{\text{priv\_A}}(H(M)))$. O più spesso: $K_{\text{pub\_B}}(K_s), K_s(M), K_{\text{priv\_A}}(H( K_s(M) ))$.
+    \end{itemize}
+    \item \textbf{Gestisci i Replay:} Includi Nonce (N) o Timestamp (T) nel messaggio, tipicamente firmati o cifrati insieme al messaggio per proteggerli.
+    \item \textbf{Considera Trudy (Attaccante):}
+    \begin{itemize}
+        \item \textbf{DoS (Denial of Service):} Trudy può bloccare i messaggi. Difficile da prevenire a livello protocollare senza ridondanza o "i militari".
+        \item \textbf{Replay:} Se non ci sono Nonce/Timestamp, Trudy può ri-spedire messaggi vecchi.
+        \item \textbf{Man-in-the-Middle (MitM):} Se le chiavi pubbliche non sono certificate (da una CA), Trudy può impersonare Alice verso Bob e Bob verso Alice. La CA è fondamentale.
+    \end{itemize}
+    \item \textbf{Scambio tra Bob e Charlie (se presente):} Applica la stessa logica. Se Bob deve inoltrare un messaggio da Alice a Charlie, deve garantire che Charlie sappia che il messaggio \textit{originale} era di Alice e non modificato, e che Bob è il \textit{mittente attuale} del messaggio inoltrato.
+\end{enumerate}
+
+\subsection{Esempio Svolto (basato su Esercizio 4, "Scritto 26 Maggio 2023")}
+\begin{itemize}[leftmargin=*]
+    \item Alice spedisce m1 (breve) a Bob, e m2 (breve) a Charlie.
+    \item Bob e Charlie leggono m1 e m2.
+    \item Bob e Charlie si scambiano m1 e m2.
+    \item Garanzie: Confidenzialità (Trudy non legge m1, m2), Autenticazione Mittente (Alice), Integrità (m1, m2).
+    \item CA per chiavi pubbliche $K_{\text{b+}}$, $K_{\text{c+}}$, $K_{\text{a+}}$.
+\end{itemize}
+
+\textbf{Passaggi:}
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+    \item \textbf{Alice $\to$ Bob (m1):}
+    \begin{itemize}
+        \item Requisiti: Confidenzialità per Bob, Integrità di m1, Autenticazione di Alice.
+        \item Messaggio: $K_{\text{b+}}(m1, K_{\text{a-}}(H(m1)))$
+        \item Bob riceve, decifra con $K_{\text{b-}}$. Ottiene $m1$ e $K_{\text{a-}}(H(m1))$.
+        \item Verifica firma: con $K_{\text{a+}}$ ottiene $H(m1)$. Calcola $H(m1_{\text{ricevuto}})$. Se coincidono, OK.
+    \end{itemize}
+    \item \textbf{Alice $\to$ Charlie (m2):}
+    \begin{itemize}
+        \item Requisiti: Confidenzialità per Charlie, Integrità di m2, Autenticazione di Alice.
+        \item Messaggio: $K_{\text{c+}}(m2, K_{\text{a-}}(H(m2)))$
+        \item Charlie riceve e verifica similarmente.
+    \end{itemize}
+    \item \textbf{Bob $\to$ Charlie (inoltra m1):}
+    Bob vuole mandare a Charlie il messaggio $m1$ che ha ricevuto da Alice, con le stesse garanzie originali (provenienza Alice, integrità). Charlie deve anche sapere che Bob lo sta inoltrando.
+    \begin{itemize}
+        \item Bob potrebbe fare: $K_{\text{c+}}( m1, K_{\text{a-}}(H(m1)), K_{\text{b-}}(H_{\text{bob}}(m1, K_{\text{a-}}(H(m1)))) )$
+        \begin{itemize}
+            \item $m1, K_{\text{a-}}(H(m1))$ è il messaggio originale firmato da Alice.
+            \item $K_{\text{b-}}(H_{\text{bob}}(...))$ è la firma di Bob sull'intero pacchetto che sta inoltrando, per autenticare Bob come \textit{inoltratore}.
+            \item $K_{\text{c+}}$ per confidenzialità verso Charlie.
+        \end{itemize}
+        \item \textit{L'esempio nella prova è più semplice e assume che la firma di Alice basti:} $K_{\text{c+}}(m1, K_{\text{a-}}(H(m1)))$. Questo va bene se Charlie si fida che Bob non alteri la parte $K_{\text{a-}}(H(m1))$.
+    \end{itemize}
+    \item \textbf{Charlie $\to$ Bob (inoltra m2):}
+    \begin{itemize}
+        \item Simile: $K_{\text{b+}}(m2, K_{\text{a-}}(H(m2)))$
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Attacchi di Trudy (come specificato nella soluzione dell'esame):}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{DoS:} Trudy può bloccare i pacchetti. Soluzione: "i militari" (cioè, infrastruttura resiliente, non un problema protocollare semplice).
+    \item \textbf{Replay:} Trudy può intercettare $K_{\text{b+}}(m1, K_{\text{a-}}(H(m1)))$ e rispedirlo a Bob più tardi.
+    \begin{itemize}
+        \item \textbf{Soluzione con Nonce:}
+            \begin{itemize}
+                \item Alice $\to$ Bob: $K_{\text{b+}}(m1, K_{\text{a-}}(H(m1)), N1)$ dove N1 è un nonce.
+                \item Bob deve tenere traccia dei Nonce usati per evitare duplicati.
+                \item Oppure, se lo scambio è richiesta-risposta, Bob può inviare un nonce a Alice, che Alice include nel suo messaggio.
+            \end{itemize}
+        \item L'esercizio menziona il Nonce come soluzione per i replay.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Consigli e Errori Comuni}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Ordine delle Operazioni:} Firma prima, poi cifra. $K_{\text{pub\_Dest}}(\text{Msg}, K_{\text{priv\_Mitt}}(H(\text{Msg})))$.
+    \item \textbf{Cifratura Simmetrica per Dati Grandi:} Ricorda $K_{\text{pub\_Dest}}(K_s), K_s(\text{Msg})$.
+    \item \textbf{Nonce/Timestamp:} Non dimenticarli se la protezione da replay è un requisito o se l'attaccante può ritardare/riordinare. Il nonce va protetto (cifrato o firmato insieme al resto).
+    \item \textbf{CA:} Senza una CA, le chiavi pubbliche non sono fidate (rischio MitM). L'esercizio spesso lo dà per assunto ("A chiede alla CA...").
+\end{itemize}
+
+\hrule % Linea orizzontale come separatore
+
+% --- Sezione 3: Comunicazioni Wireless (Link Budget, OFDM, Fresnel) ---
+\section{Comunicazioni Wireless (Link Budget, OFDM, Fresnel)}
+\label{sec:wireless}
+
+\subsection{Concetti Chiave}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Link Budget:} Bilancio delle potenze e delle perdite in un collegamento radio.
+    \[ \text{P}_{\text{rx}} = \text{P}_{\text{tx}} + \text{G}_{\text{tx}} + \text{G}_{\text{rx}} - \text{L}_{\text{path}} - \text{L}_{\text{misc}} \]
+    \begin{itemize}
+        \item $\text{P}_{\text{rx}}$: Potenza ricevuta (\text{dBm})
+        \item $\text{P}_{\text{tx}}$: Potenza trasmessa (\text{dBm})
+        \item $\text{G}_{\text{tx}}, \text{G}_{\text{rx}}$: Guadagno antenna trasmittente/ricevente (\text{dBi})
+        \item $\text{L}_{\text{path}}$: Perdita di propagazione (Path Loss) (\text{dB})
+        \item $\text{L}_{\text{misc}}$: Altre perdite (cavi, connettori, fade margin) (\text{dB})
+    \end{itemize}
+    \item \textbf{Receiver Sensitivity (RS):} Minima potenza ricevuta affinché il ricevitore decodifichi il segnale (\text{dBm}).
+    \item \textbf{Fade Margin (FM):} Margine di sicurezza per compensare fluttuazioni del segnale (fading). $\text{P}_{\text{rx}} - \text{RS} \ge \text{FM}$.
+    \item \textbf{6\text{dB} Rule:} Dimezzando la distanza, il segnale aumenta di 6\text{dB}. Raddoppiando la distanza, diminuisce di 6\text{dB} (approssimazione per spazio libero).
+    \item \textbf{OFDM (Orthogonal Frequency Division Multiplexing):} Tecnica di modulazione che usa multiple sottoportanti ortogonali.
+    \begin{itemize}
+        \item Data Rate = $\text{N}_{\text{subcarriers}} \times \text{R}_{\text{symbol}} \times \text{bits}_{\text{per\_symbol}} \times \text{coding\_rate}$
+    \end{itemize}
+    \item \textbf{PSK/QAM:} Tecniche di modulazione digitale (BPSK: 1 bit/simbolo, QPSK: 2 bit/simbolo, 16-QAM: 4 bit/simbolo, etc.).
+    \item \textbf{Zona di Fresnel:} Regione ellissoidale attorno al percorso diretto tra due antenne. Per una buona comunicazione, almeno il 60\% della prima zona di Fresnel dovrebbe essere libera da ostacoli.
+\end{itemize}
+
+\subsection{Formule Utili}
+\begin{itemize}[leftmargin=*]
+    \item Conversione \text{mW} $\leftrightarrow$ \text{dBm}:
+    \begin{itemize}
+        \item $\text{P}(\text{dBm}) = 10 \times \log_{10}( \text{P}(\text{mW}) / 1\text{mW} )$
+        \item $\text{P}(\text{mW}) = 1\text{mW} \times 10^{( \text{P}(\text{dBm}) / 10 )}$
+    \end{itemize}
+    \item Path Loss Friis (spazio libero): $\text{L}_{\text{path}}(\text{dB}) = 20\log_{10}(d) + 20\log_{10}(f) + 20\log_{10}(4\pi/c) - \text{G}_{\text{tx}} - \text{G}_{\text{rx}}$ (se $\text{G}_{\text{tx}}, \text{G}_{\text{rx}}$ non sono nel budget a parte). Spesso viene data una formula semplificata o un valore.
+    \item Bitrate (semplificato): $\text{Bitrate} = \text{SymbolRate} \times \text{bits}_{\text{per\_symbol}}$
+    \item Tempo trasferimento: $\text{DimensioneFile (bit)} / \text{Bitrate (bit/s)}$
+\end{itemize}
+
+\subsection{Esempio Svolto (basato su Esercizio 10, "Scritto 26 Maggio 2023", pagina 4)}
+\begin{itemize}[leftmargin=*]
+    \item $\text{P}_{\text{tx}} = 25\text{mW}$, $\text{G}_{\text{tx}} = 8\text{dBi}$, $\text{G}_{\text{rx}} = 3\text{dBi}$, Path Loss (1 miglio) = 80\text{dB} (NB: Path loss è positivo, quindi -80\text{dB} nel budget). $\text{RS} = -75\text{dBm}$.
+    \item Tabella Bitrate vs Link Budget minimo ($\text{P}_{\text{rx}} - \text{RS}$).
+\end{itemize}
+
+\textbf{1) Calcolo Link Budget attuale ($\text{P}_{\text{rx}} - \text{RS}$):}
+\begin{itemize}[leftmargin=*]
+    \item $\text{P}_{\text{tx}} (\text{dBm})$: $10 \times \log_{10}(25\text{mW} / 1\text{mW}) = 10 \times \log_{10}(25) = 10 \times 1.3979 \approx 14\text{dBm}$.
+    \item $\text{P}_{\text{rx}} = \text{P}_{\text{tx}} + \text{G}_{\text{tx}} + \text{G}_{\text{rx}} - \text{L}_{\text{path}} = 14\text{dBm} + 8\text{dBi} + 3\text{dBi} - 80\text{dB} = 25 - 80 = -55\text{dBm}$.
+    \item Link Budget effettivo sopra la sensibilità: $\text{P}_{\text{rx}} - \text{RS} = -55\text{dBm} - (-75\text{dBm}) = -55 + 75 = +20\text{dB}$.
+    \item Dalla tabella fornita (non inclusa qui, ma la si trova nell'esame originale), un Link Budget di +20\text{dB} corrisponde a \textbf{8 Mbps}.
+\end{itemize}
+
+\textbf{2) Distanza ridotta a 1/3 di miglio:}
+\begin{itemize}[leftmargin=*]
+    \item La regola dei 6\text{dB} dice che dimezzando la distanza si guadagnano 6\text{dB}.
+    \item Passare da 1 miglio a 1/2 miglio: Path Loss migliora di 6\text{dB} (diventa $80 - 6 = 74\text{dB}$).
+    \item Passare da 1/2 miglio a 1/4 miglio: Path Loss migliora di altri 6\text{dB} (diventa $74 - 6 = 68\text{dB}$).
+    \item 1/3 di miglio è tra 1/2 e 1/4.
+    \item La formula del path loss (se fosse proporzionale a $20\log_{10}(d)$) indica:
+    \begin{itemize}
+        \item $\text{L}_{\text{nuovo}} = \text{L}_{\text{vecchio}} + 20\log_{10}(d_{\text{nuova}} / d_{\text{vecchia}})$
+        \item $\text{L}_{\text{nuovo}} = 80\text{dB} + 20\log_{10}( (1/3) / 1 ) = 80\text{dB} + 20 \times (-0.477) = 80\text{dB} - 9.54\text{dB} \approx 70.46\text{dB}$.
+    \end{itemize}
+    \item Nuovo $\text{P}_{\text{rx}} = 14 + 8 + 3 - 70.46 = 25 - 70.46 = -45.46\text{dBm}$.
+    \item Nuovo Link Budget = $\text{P}_{\text{rx}} - \text{RS} = -45.46\text{dBm} - (-75\text{dBm}) = -45.46 + 75 = +29.54\text{dB}$.
+    \item Dalla tabella, questo potrebbe corrispondere a 16 Mbps (che richiede 26\text{dB}) o avvicinarsi a 32 Mbps (che richiede 32\text{dB}). La soluzione dell'esame sceglie \textbf{16 Mbps} (+26\text{dBm}). Questo implica che si prende il livello di velocità garantito dal budget inferiore più vicino, o che c'è un arrotondamento/semplificazione nella "regola dei 6dB" usata nell'esame.
+    \begin{itemize}
+        \item \textit{Soluzione esame: "Essendo ad 1/3 mi trovo a meta' tra 1/2 e 1/4, quindi il link budget sara' compreso tra +26\text{dBm} e +32\text{dBm} esclusi, quindi posso prendere il livello con +26\text{dBm} con velocita' 16 Mbps". Questo è un ragionamento approssimato ma accettato.}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Esempio Svolto (OFDM - Esercizio 6, "Scritto 26 Maggio 2023", pagina 2)}
+\begin{itemize}[leftmargin=*]
+    \item 18 sub-carrier, Symbol rate = 500.000 simboli/sec per sub-carrier (implicito, di solito è il rate totale).
+    \item File 54 Mbit, in max 4 secondi. Massimizzare resistenza all'errore (PSK preferito a QAM se possibile, BPSK $>$ QPSK $>$ 8PSK...).
+    \item \textbf{Prestazione canale (symbol rate totale):} Se 500.000 è per sub-carrier, allora $18 \times 500.000 = 9.000.000$ simboli/sec. Se è totale, allora 500.000 simboli/sec. La soluzione dell'esame assume il primo caso.
+    $\text{Canale\_symbol\_rate} = 18 \times 500.000 = 9.000.000$ simboli/sec.
+    \item \textbf{Requisito bitrate minimo:} $54 \text{Mbit} / 4 \text{ sec} = 13.5 \text{Mbit/s} = 13.500.000 \text{ bit/s}$.
+    \item \textbf{Bits per simbolo necessari ($\text{b}_{\text{sym}}$):} $\text{Bitrate\_richiesto} / \text{Canale\_symbol\_rate} = 13.500.000 / 9.000.000 = 1.5 \text{ bit/simbolo}$.
+    \item Per avere almeno 1.5 bit/simbolo, serve una modulazione che dia $\text{ceil}(1.5) = 2$ bit/simbolo.
+    \item \textbf{QPSK} fornisce 2 bit/simbolo. (BPSK fornisce 1 bit/simbolo, non sufficiente).
+    \item \textbf{Bitrate con QPSK:} $9.000.000 \text{ simboli/sec} \times 2 \text{ bit/simbolo} = 18.000.000 \text{ bit/s} = 18 \text{Mbit/s}$.
+    \item Questo soddisfa il requisito di $13.5 \text{Mbit/s}$ ed è una modulazione PSK (buona resistenza all'errore).
+    \item \textbf{Tempo trasferimento effettivo:} $54.000.000 \text{ bit} / 18.000.000 \text{ bit/s} = 3 \text{ secondi}$.
+\end{itemize}
+
+\subsection{Consigli e Errori Comuni}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Unità di Misura:} Fai attenzione a \text{dB}, \text{dBi}, \text{dBm}, \text{mW}, \text{Mbps}, \text{Mbit}, \text{MB}.
+    \item \textbf{Logaritmi:} Ripassa le proprietà dei logaritmi e come fare i calcoli.
+    \item \textbf{Path Loss:} Il path loss è una \textit{perdita}, quindi nel budget si sottrae (o si somma se dato come valore negativo).
+    \item \textbf{Interpretazione tabelle:} Leggi attentamente cosa rappresenta ogni colonna/riga.
+\end{itemize}
+
+\hrule % Linea orizzontale come separatore
+
+% --- Sezione 4: Configurazione Tabelle OpenFlow ---
+\section{Configurazione Tabelle OpenFlow}
+\label{sec:openflow}
+
+\subsection{Concetti Chiave}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{OpenFlow:} Protocollo che permette a un controller SDN (Software Defined Networking) di gestire le tabelle di flusso di uno switch.
+    \item \textbf{Regola di Flusso:} Consiste in:
+    \begin{itemize}
+        \item \textbf{Match Fields (Campi di Corrispondenza):} Criteri per identificare i pacchetti (es. MAC src/dst, IP src/dst, porta TCP/UDP, VLAN ID, porta di ingresso switch). Un \texttt{*} significa "qualsiasi valore".
+        \item \textbf{Priority:} Se più regole matchano, quella con priorità più alta vince.
+        \item \textbf{Counters:} Statistiche sui pacchetti che matchano la regola.
+        \item \textbf{Instructions/Actions:} Cosa fare con i pacchetti che matchano (es. \texttt{drop}, \texttt{forward} a una porta, \texttt{modify field}).
+    \end{itemize}
+    \item \textbf{Pipeline:} Un pacchetto può attraversare più tabelle di flusso.
+\end{itemize}
+
+\subsection{Procedura di Svolgimento (Interpretazione regole)}
+\begin{enumerate}[leftmargin=*,label=\arabic*.]
+    \item Analizza ogni regola riga per riga.
+    \item Identifica i \textbf{Match Fields}: quali pacchetti verranno "catturati" da questa regola?
+    \begin{itemize}
+        \item Porta di ingresso switch (Switch Port)
+        \item MAC sorgente/destinazione
+        \item EtherType (es. IPv4, ARP)
+        \item VLAN ID
+        \item IP sorgente/destinazione
+        \item Protocollo IP (TCP, UDP, ICMP)
+        \item Porte TCP/UDP sorgente/destinazione
+    \end{itemize}
+    \item Identifica l'\textbf{Action}: cosa succede a questi pacchetti?
+    \begin{itemize}
+        \item \texttt{drop}: scarta il pacchetto.
+        \item \texttt{portX}: inoltra il pacchetto alla porta fisica X.
+        \item \texttt{mod\_vlan\_vid}: modifica l'ID VLAN.
+        \item Altre azioni più complesse.
+    \end{itemize}
+    \item Descrivi in linguaggio naturale la politica implementata dalla regola.
+\end{enumerate}
+
+\subsection{Esempio Svolto (basato su Esercizio 5, "Scritto 26 Maggio 2023", pagina 1-2)}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Regola 1:}
+    \begin{itemize}
+        \item Match: IP Dst \texttt{100.2.3.4}, TCP dport \texttt{80} (HTTP). Altri campi \texttt{*}.
+        \item Action: \texttt{drop}.
+        \item \textbf{Interpretazione:} Blocca tutto il traffico HTTP (porta 80) diretto all'IP \texttt{100.2.3.4}, indipendentemente dalla sorgente o dalla porta di ingresso.
+    \end{itemize}
+
+    \item \textbf{Regola 2:}
+    \begin{itemize}
+        \item Match: VLAN ID \texttt{12}, IP Dst \texttt{100.2.3.5}, TCP dport \texttt{25} (SMTP).
+        \item Action: \texttt{port3}.
+        \item \textbf{Interpretazione:} Inoltra sulla porta fisica 3 i pacchetti appartenenti alla VLAN 12, destinati al server SMTP \texttt{100.2.3.5} (porta 25).
+    \end{itemize}
+
+    \item \textbf{Regola 3:}
+    \begin{itemize}
+        \item Match: IP Src \texttt{100.2.3.6}, IP Dst \texttt{100.2.3.7}, TCP sport \texttt{3918}, TCP dport \texttt{4233}. IP Prot \texttt{*} (ma è TCP dalle porte).
+        \item Action: \texttt{drop}.
+        \item \textbf{Interpretazione:} Blocca la comunicazione TCP specifica dalla socket \texttt{<100.2.3.6:3918>} alla socket \texttt{<100.2.3.7:4233>}.
+    \end{itemize}
+
+    \item \textbf{Regola 4:}
+    \begin{itemize}
+        \item Match: MAC Dst \texttt{FF:FF:FF:FF:FF:FF} (Broadcast MAC).
+        \item Action: \texttt{port5}.
+        \item \textbf{Interpretazione:} Inoltra tutti i frame di broadcast a livello MAC che arrivano su qualsiasi porta dello switch, sulla porta fisica 5. (Questo potrebbe essere per un segmento specifico collegato a port5).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Consigli e Errori Comuni}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Wildcard \texttt{*}:} Ricorda che \texttt{*} significa "qualsiasi".
+    \item \textbf{Priorità:} Se non specificata, l'ordine potrebbe avere importanza, o c'è una priorità di default.
+    \item \textbf{Completezza:} Descrivi tutti i campi di match rilevanti e l'azione esatta.
+\end{itemize}
+
+\section{Analisi e Interpretazione di Output/Configurazioni di Rete (DNS, PING, URL)}
+
+\subsection*{Concetti Chiave:}
+\begin{itemize}
+    \item \textbf{DNS (Domain Name System):}
+    \begin{itemize}
+        \item Risolve nomi di dominio (es. \texttt{www.google.com}) in indirizzi IP e viceversa.
+        \item \textbf{Record DNS Comuni:}
+        \begin{itemize}
+            \item \texttt{A}: Mappa un hostname a un indirizzo IPv4. (Es. \texttt{(cs.unibo.it, 130.136.1.110, A, 10)})
+            \item \texttt{AAAA}: Mappa un hostname a un indirizzo IPv6.
+            \item \texttt{CNAME (Canonical Name)}: Crea un alias per un hostname. (Es. \texttt{(cs.unibo.it, leporello.cs.unibo.it, CNAME, 10)} $\to$ \texttt{cs.unibo.it} è un alias per \texttt{leporello.cs.unibo.it})
+            \item \texttt{MX (Mail Exchange)}: Specifica il mail server responsabile per un dominio. (Es. \texttt{(cs.unibo.it, serpina.cs.unibo.it, MX, 10)} $\to$ \texttt{serpina.cs.unibo.it} è il mail server per il dominio \texttt{cs.unibo.it})
+            \item \texttt{NS (Name Server)}: Delega una zona DNS a un server autoritativo. (Es. \texttt{(cs.unibo.it, dns1.cs.unibo.it, NS, 10)} $\to$ \texttt{dns1.cs.unibo.it} è un name server autoritativo per il dominio \texttt{cs.unibo.it})
+            \item \texttt{TTL (Time To Live)}: Per quanto tempo un resolver può cachare il record.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{PING (Packet InterNet Groper):}
+    \begin{itemize}
+        \item Utility per testare la raggiungibilità di un host su una rete IP.
+        \item Usa messaggi \textbf{ICMP (Internet Control Message Protocol)} Echo Request e Echo Reply.
+        \item Output tipico:
+        \begin{itemize}
+            \item \texttt{64 bytes from 130.136.5.36: icmp\_seq=0 ttl=54 time=16.624 ms}: Risposta ricevuta, dimensione, IP sorgente, sequenza ICMP, Time To Live del pacchetto ricevuto, tempo di Round Trip (RTT).
+            \item \texttt{ping: sendto: No route to host}: Il sistema locale non ha una rotta per raggiungere l'IP di destinazione. Il problema è probabilmente sul tuo host o sul primo router.
+            \item \texttt{Request timeout for icmp\_seq X}: Nessuna risposta ricevuta per quella richiesta entro il timeout. Può indicare congestione, host down, firewall che blocca ICMP.
+            \item \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown host}: Il DNS non è riuscito a risolvere l'hostname in un IP. Problema DNS.
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{URL (Uniform Resource Locator):}
+    \begin{itemize}
+        \item Indirizzo standard per localizzare una risorsa su Internet.
+        \item Struttura: \texttt{protocollo://hostname:porta/percorso/nel/filesystem?querystring\#fragment}
+        \begin{itemize}
+            \item \texttt{protocollo}: es. \texttt{http}, \texttt{https}, \texttt{ftp}.
+            \item \texttt{hostname}: Nome del server (es. \texttt{www.example.com}) o indirizzo IP.
+            \item \texttt{porta}: Numero di porta del servizio (es. \texttt{80} per HTTP, \texttt{443} per HTTPS). Spesso omessa se è quella di default.
+            \item \texttt{percorso}: Path della risorsa sul server.
+            \item \texttt{querystring}: Parametri aggiuntivi (dopo \texttt{?}).
+            \item \texttt{fragment}: Riferimento a una specifica parte della pagina (dopo \texttt{\#}).
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Procedura di Svolgimento:}
+\begin{enumerate}
+    \item \textbf{DNS:}
+    \begin{itemize}
+        \item Identifica il tipo di record (\texttt{A}, \texttt{CNAME}, \texttt{MX}, \texttt{NS}).
+        \item Interpreta il significato di \texttt{Name} e \texttt{Value} in base al tipo.
+        \item Il \texttt{TTL} indica la durata della cache.
+    \end{itemize}
+    \item \textbf{PING:}
+    \begin{itemize}
+        \item Verifica se la risoluzione del nome (se usato) ha avuto successo.
+        \item Analizza ogni riga di risposta o errore.
+        \item RTT basso indica buona connettività. RTT variabile può indicare congestione.
+        \item Errori specifici indicano la natura del problema (DNS, routing, host down).
+    \end{itemize}
+    \item \textbf{URL:}
+    \begin{itemize}
+        \item Scomponi l'URL nelle sue parti costitutive.
+        \item Identifica protocollo, host, porta (anche se implicita), path.
+        \item Ricava informazioni sulla classe dell'IP (se è un IP), sulla natura sicura/non sicura della connessione.
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Esempio Svolto (URL - Esercizio 7, "Prova Scritta 21 Luglio 2023"):}
+\texttt{https://128.238.251.26:6789/User/Faculty/pippo/html/HelloWorld.html}
+\begin{itemize}
+    \item \texttt{https}: Protocollo applicazione (HTTP sicuro).
+    \begin{itemize}
+        \item Usa TLS/SSL per la sicurezza.
+        \item Porta di default: \texttt{443}.
+    \end{itemize}
+    \item \texttt{128.238.251.26}: Indirizzo IPv4 del server.
+    \begin{itemize}
+        \item \texttt{128.238.x.x} è un indirizzo di Classe B (anche se la classful addressing è obsoleta, a volte viene chiesta).
+        \item Netmask di default per Classe B (se classful): \texttt{/16} (\texttt{255.255.0.0}).
+        \item Indirizzo di rete (classful): \texttt{128.238.0.0}.
+        \item Host: \texttt{.251.26} all'interno della rete \texttt{128.238.0.0}.
+    \end{itemize}
+    \item \texttt{:6789}: Porta TCP esplicita usata dal server per il servizio HTTPS (non la default 443).
+    \item \texttt{/User/Faculty/pippo/html/HelloWorld.html}: Path della risorsa sul file system del server.
+    \item \texttt{HelloWorld.html}: Nome del file richiesto.
+    \item Formato del file: \texttt{html} (testuale, ipertestuale).
+    \item Operazione HTTP tipica: \texttt{GET /User/Faculty/pippo/html/HelloWorld.html HTTP/1.1} (o versione successiva).
+\end{itemize}
+
+\subsection*{Esempio Svolto (PING - Esercizio 5, "Scritto Reti Di Calcolatori 2024-30-31"):}
+\begin{verbatim}
+PING flora.cs.unibo.it (130.136.5.36): 56 data bytes
+64 bytes from 130.136.5.36: icmp_seq=0 ttl=54 time=16.624 ms
+64 bytes from 130.136.5.36: icmp_seq=1 ttl=54 time=15.590 ms
+ping: sendto: No route to host
+ping: sendto: No route to host
+Request timeout for icmp_seq 2
+Request timeout for icmp_seq 3
+64 bytes from 130.136.5.36: icmp_seq=4 ttl=54 time=15.404 ms
+64 bytes from 130.136.5.36: icmp_seq=5 ttl=54 time=14.712 ms
+\end{verbatim}
+\begin{itemize}
+    \item \textbf{Causa:} Il comando \texttt{ping flora.cs.unibo.it} prima risolve \texttt{flora.cs.unibo.it} in \texttt{130.136.5.36} (tramite DNS).
+    \item Le prime due risposte (\texttt{icmp\_seq=0, 1}) e le ultime due (\texttt{icmp\_seq=4, 5}) indicano che l'host \texttt{130.136.5.36} è raggiungibile e risponde.
+    \item \texttt{ping: sendto: No route to host}: Questo errore si verifica per i pacchetti ICMP \texttt{icmp\_seq=2} e \texttt{icmp\_seq=3} (anche se poi l'output mostra \texttt{Request timeout}). L'errore \texttt{No route to host} significa che il sistema locale che esegue il ping, \textit{in quel momento specifico}, non aveva una rotta nella sua tabella di routing per raggiungere \texttt{130.136.5.36}. Questo è strano dato che le altre richieste funzionano.
+    \begin{itemize}
+        \item Possibile causa: Un problema di routing intermittente o una modifica temporanea della tabella di routing locale. Oppure, un firewall che ha iniziato a bloccare o un problema di rete sorto e poi risolto.
+        \item Se l'errore fosse \textit{solo} \texttt{Request timeout}, significherebbe che la richiesta è partita ma la risposta non è tornata (host remoto non risponde, pacchetto perso, risposta persa).
+        \item La combinazione \texttt{No route to host} seguito da \texttt{Request timeout} per la stessa sequenza è insolita. Di solito \texttt{No route to host} impedisce l'invio, quindi non ci sarebbe un \texttt{timeout} per la stessa \texttt{seq}. Potrebbe essere un modo in cui quel particolare sistema operativo riporta l'errore.
+    \end{itemize}
+    \item \textbf{Protocolli/Servizi:}
+    \begin{itemize}
+        \item \textbf{DNS:} Per risolvere \texttt{flora.cs.unibo.it} in \texttt{130.136.5.36}.
+        \item \textbf{ICMP:} Per i messaggi Echo Request/Reply.
+        \item \textbf{IP:} Per l'instradamento dei pacchetti ICMP.
+        \item Protocolli di routing (es. OSPF, RIP, BGP, o rotte statiche) per popolare le tabelle di routing.
+    \end{itemize}
+\end{itemize}
+Se l'output fosse stato \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown host}:
+\begin{itemize}
+    \item \textbf{Causa:} Il server DNS non è riuscito a trovare un record A per \texttt{flora.cs.unibo.it}, oppure il server DNS non è raggiungibile.
+    \item \textbf{Protocolli/Servizi:} Principalmente DNS.
+\end{itemize}
+
+\subsection*{Consigli e Errori Comuni:}
+\begin{itemize}
+    \item \textbf{Porte di Default:} Ricorda le porte comuni (HTTP \texttt{80}, HTTPS \texttt{443}, SMTP \texttt{25}, DNS \texttt{53}).
+    \item \textbf{Distinguere Errori:} \texttt{Unknown host} è DNS. \texttt{No route to host} è routing locale. \texttt{Request timeout} è problema di raggiungibilità/risposta del target o perdita pacchetti.
+\end{itemize}
+
+\clearpage % Inizia una nuova pagina per la prossima sezione per chiarezza
+
+\section{Calcolo Prestazioni di Rete (Throughput, Latenza, Congestione)}
+
+\subsection*{Concetti Chiave:}
+\begin{itemize}
+    \item \textbf{Throughput:} Tasso effettivo di trasferimento dati (\text{bit/s}).
+    \item \textbf{Latenza (Delay):} Tempo impiegato da un bit per viaggiare dalla sorgente alla destinazione.
+    \item \textbf{RTT (Round Trip Time):} Tempo per un segnale per andare dalla sorgente alla destinazione e tornare indietro.
+    \item \textbf{Bandwidth-Delay Product (BDP):} Capacità massima di dati "in volo" su un link: $\text{Capacità} \cdot \text{RTT}$. Importante per TCP window sizing.
+    \item \textbf{Utilizzo del Canale:} $\frac{\text{Throughput}}{\text{Capacità}_{\text{Teorica}}} \cdot 100\%$.
+    \item \textbf{Congestione:} Si verifica quando la richiesta di risorse di rete (banda, buffer router) supera la disponibilità. Porta a perdita di pacchetti e aumento della latenza.
+    \item \textbf{TCP Stop\&Wait:} Invia un pacchetto e attende ACK prima di inviare il successivo. Throughput = $\frac{\text{DimensionePacchetto}}{\text{RTT}}$.
+    \item \textbf{TCP Slow Start e Congestion Avoidance:} Meccanismi TCP per trovare la banda disponibile ed evitare la congestione.
+    \begin{itemize}
+        \item \textbf{Slow Start:} La finestra di congestione (\texttt{cwnd}) aumenta esponenzialmente (raddoppia ogni RTT) fino a una soglia (\texttt{ssthresh}).
+        \item \textbf{Congestion Avoidance:} \texttt{cwnd} aumenta linearmente (1 MSS per RTT) dopo \texttt{ssthresh}.
+        \item Se si verifica perdita (timeout o 3 ACK duplicati), \texttt{ssthresh} viene ridotto (solitamente a metà di \texttt{cwnd} al momento della perdita) e \texttt{cwnd} viene resettato (a 1 MSS per timeout, o a \texttt{ssthresh} per 3 ACK duplicati - varia tra implementazioni TCP Tahoe/Reno/NewReno).
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Formule Utili:}
+\begin{itemize}
+    \item Throughput (Stop\&Wait): $L / \text{RTT}$ (L = dimensione pacchetto)
+    \item Utilizzo (Stop\&Wait): $\frac{(L/\text{RTT})}{C}$ (C = capacità canale)
+    \item Latenza Web Proxy: $L_{\text{avg}} = (\text{HitRate} \cdot L_{\text{cache}}) + ((1 - \text{HitRate}) \cdot (L_{\text{cache}} + L_{\text{internet}}))$ (approssimato, dipende se $L_{\text{cache}}$ è già inclusa nel percorso internet).
+    \begin{itemize}
+        \item Meglio: $L_{\text{avg}} = (\text{HitRate} \cdot L_{\text{locale}}) + ((1 - \text{HitRate}) \cdot L_{\text{remoto}})$ dove $L_{\text{locale}}$ è la latenza per accedere alla cache e $L_{\text{remoto}}$ è la latenza per accedere a Internet (che potrebbe includere il passaggio dalla rete locale).
+    \end{itemize}
+    \item Condizione di non congestione router: $\text{Traffico}_{\text{Ingresso}} \text{ (bit/s)} \leq \text{Capacità}_{\text{Uscita}} \text{ (bit/s)}$.
+    \begin{itemize}
+        \item $\text{Numero}_{\text{Pacchetti\_al\_Secondo}} \cdot \text{Dimensione}_{\text{Pacchetto\_bit}} \leq \text{Capacità}_{\text{Uscita\_bit\_al\_Secondo}}$.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Esempio Svolto (TCP Stop\&Wait - Esercizio 1, "Soluzione Prova Scritta 10 Giugno 2022"):}
+\begin{itemize}
+    \item Protocollo TCP Stop\&Wait. Pacchetto L = 10\text{KB}. RTT = 1 milliSecondo.
+    \item \textbf{Throughput medio:}
+    \begin{itemize}
+        \item L = 10 \text{KB} = $10 \cdot 1024$ Byte = $10 \cdot 1024 \cdot 8$ bit = 81920 bit. (L'esame usa 1KB = 1000B, quindi 10KB = 80000 bit). Usiamo la convenzione dell'esame.
+        \item L = 10 \text{KB} = $10 \cdot 1000$ Byte = 80000 bit.
+        \item RTT = 1 \text{ms} = 0.001 \text{ s}.
+        \item Throughput = $\frac{\text{L}}{\text{RTT}} = \frac{80000 \text{ bit}}{0.001 \text{ s}} = 80.000.000 \text{ bit/s} = 80 \text{ Mbps}$.
+        \item (La soluzione esame fa 10KB / (1/1000)s = 10KB * 1000/s = 10000 KB/s = 10 MB/s. Qui B = Byte. Quindi $10 \cdot 8 = 80 \text{ Mbps}$. Corretto.)
+    \end{itemize}
+    \item \textbf{Utilizzo percentuale della rete:}
+    \begin{itemize}
+        \item Utilizzo = $\frac{\text{Throughput}}{\text{Capacità}_{\text{Canale}}}$.
+        \item Non è possibile determinarlo perché la \textbf{capacità del canale/rete non è fornita}.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Esempio Svolto (Congestione Router - Esercizio 2, "Soluzione Prova Scritta 10 Giugno 2022"):}
+\begin{itemize}
+    \item Dimensione massima pacchetto P (Byte) per congestione router R.
+    \item Arrivo: $a = 5000$ pacchetti/secondo.
+    \item Capacità uscita: $C = 8 \text{ Mbit/s} = 8.000.000 \text{ bit/s}$.
+    \item Congestione si ha quando $\frac{L \cdot a}{C} \geq 1$ (o tende a 1). Cioè $L \cdot a = C$.
+    \item $L \text{ (bit)} = \frac{C}{a} = \frac{8.000.000 \text{ bit/s}}{5000 \text{ pacchetti/s}} = 1600 \text{ bit/pacchetto}$.
+    \item $P \text{ (Byte)} = \frac{L}{8} = \frac{1600 \text{ bit}}{8 \text{ bit/Byte}} = 200 \text{ Byte}$.
+\end{itemize}
+
+\subsection*{Esempio Svolto (Web Proxy - Esercizio 6, "Scritto Reti Di Calcolatori 2024-30-31"):}
+\begin{itemize}
+    \item Web Proxy locale. X\% hit rate.
+    \item Latenza rete locale (accesso cache) = $L_{\text{loc}} = 9\text{ms}$.
+    \item Latenza collegamento Internet (accesso esterno) = $L_{\text{ext}} = 300\text{ms}$.
+    \item \textbf{Ritardo medio richiesta HTTP:}
+        \begin{itemize}
+            \item $L_{\text{avg}} = \left(\frac{X}{100} \cdot L_{\text{loc}}\right) + \left(\left(1 - \frac{X}{100}\right) \cdot (L_{\text{loc}} + L_{\text{ext}})\right)$
+                \begin{itemize}
+                    \item \textit{Nota:} Il problema dice "latenza della rete locale è 9ms" e "latenza del collegamento a internet...è 300ms". Se una richiesta va a Internet, passa comunque dalla rete locale. Quindi il tempo per una miss è $L_{\text{loc}}$ (per uscire dalla rete locale) + $L_{\text{ext}}$ (per il server esterno e ritorno).
+                    \item Quindi $L_{\text{avg}} = \left(\frac{X}{100} \cdot L_{\text{loc}}\right) + \left(\frac{100-X}{100} \cdot (L_{\text{loc}} + L_{\text{ext}})\right)$
+                    \item Se $L_{\text{loc}}$ è solo il tempo per raggiungere la cache e $L_{\text{ext}}$ è il tempo totale da PC a server esterno (incluso il passaggio locale), allora:
+                    $L_{\text{avg}} = \left(\frac{X}{100} \cdot L_{\text{loc}}\right) + \left(\frac{100-X}{100} \cdot L_{\text{ext}}\right)$
+                    \item L'esercizio del 30-31 sembra implicare che $L_{\text{loc}}$ è per una hit, e $L_{\text{ext}}$ è per una miss (totale).
+                    $L_{\text{avg}} = \left(\frac{X}{100} \cdot 9\text{ms}\right) + \left(\frac{100-X}{100} \cdot 300\text{ms}\right)$
+                \end{itemize}
+        \end{itemize}
+    \item \textbf{Quale X\% per ritardo medio di 97ms?}
+        \begin{align*}
+            97 &= \left(\frac{X}{100} \cdot 9\right) + \left(\frac{100-X}{100} \cdot 300\right) \\
+            9700 &= 9X + 30000 - 300X \\
+            9700 - 30000 &= -291X \\
+            -20300 &= -291X \\
+            X &= \frac{20300}{291} \approx 69.76\%
+        \end{align*}
+        (L'esame dice 97\%ms, ma 97\% è un hit rate, non una latenza. Forse intendeva "ritardo medio di 97ms".)
+\end{itemize}
+
+\subsection*{Consigli e Errori Comuni:}
+\begin{itemize}
+    \item \textbf{Bit vs Byte:} Estrema attenzione alle unità. Capacità di rete spesso in bit/s, dimensione file in Byte.
+    \item \textbf{Kilo, Mega:} 1 KB = 1024 Byte, 1 MB = 1024 KB (per storage). Per networking, 1 kbps = 1000 bps, 1 Mbps = 1000 kbps. Gli esami a volte usano 1KB=1000B; chiarisci o segui la convenzione dell'esempio se presente.
+    \item \textbf{Slow Start vs Congestion Avoidance:} Comprendi la differenza e quando si passa da una all'altra.
+\end{itemize}
+
+\clearpage % Inizia una nuova pagina per la prossima sezione per chiarezza
+
+\section{Routing (Algoritmo di Dijkstra)}
+
+\subsection*{Concetti Chiave:}
+\begin{itemize}
+    \item \textbf{Algoritmo di Dijkstra:} Trova il cammino minimo (minor costo) da un nodo sorgente a tutti gli altri nodi in un grafo pesato con pesi non negativi.
+    \item \textbf{Tabella di Routing:} Mantenuta da ogni router, indica per ogni rete di destinazione, quale è il prossimo hop (next hop router) e/o l'interfaccia di uscita da usare.
+    \item \textbf{Link State Routing (es. OSPF):}
+    \begin{enumerate}
+        \item Ogni router scopre i suoi vicini e il costo del link verso di loro.
+        \item Ogni router assembla queste informazioni in un Link State Packet (LSP).
+        \item Gli LSP vengono inviati (flooding) a tutti gli altri router nella rete.
+        \item Ogni router costruisce una mappa completa della topologia della rete.
+        \item Ogni router esegue Dijkstra sulla mappa per calcolare i cammini minimi verso tutte le destinazioni e costruisce la sua tabella di routing.
+    \end{enumerate}
+\end{itemize}
+
+\subsection*{Procedura di Svolgimento (Dijkstra):}
+\begin{enumerate}
+    \item \textbf{Inizializzazione:}
+    \begin{itemize}
+        \item Nodo Sorgente (S): Costo = 0.
+        \item Tutti gli altri nodi: Costo = $\infty$.
+        \item Insieme N' = \{S\} (nodi il cui cammino minimo è noto).
+        \item Per ogni nodo $v$ non in N', $D(v)$ = costo del link $(S,v)$ se esiste, altrimenti $\infty$. $p(v)$ = S.
+    \end{itemize}
+    \item \textbf{Iterazione:}
+    \begin{itemize}
+        \item Trova il nodo $w$ non in N' con il $D(w)$ minimo.
+        \item Aggiungi $w$ a N'.
+        \item Per ogni vicino $v$ di $w$ che non è in N':
+        \begin{itemize}
+            \item Se $D(w) + \text{costo}(w,v) < D(v)$:
+            \begin{itemize}
+                \item $D(v) = D(w) + \text{costo}(w,v)$
+                \item $p(v) = w$ (il predecessore di $v$ nel cammino minimo da S è $w$)
+            \end{itemize}
+        \end{itemize}
+    \item Ripeti il passo 2 finché tutti i nodi sono in N'.
+    \item \textbf{Costruzione Tabella di Routing per il nodo sorgente S:}
+        \item Per ogni destinazione \texttt{Dest}:
+        \begin{itemize}
+            \item Il costo minimo è $D(\text{Dest})$.
+            \item Per trovare il \textit{prossimo hop} da S verso \texttt{Dest}: traccia a ritroso i predecessori $p()$ da \texttt{Dest} fino a che il predecessore è S. Il nodo subito dopo S in questo cammino è il prossimo hop. Oppure, se $p(\text{Dest})$ è $y$ e $p(y)$ è $z$ ... e $p(q)$ è S, allora il primo passo da S è verso $q$.
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Esempio Svolto (basato su Esercizio 10, "18 febbraio 2021"):}
+Trovare cammino minimo A $\to$ B e tabella di routing per R4.
+
+\textit{Il riempimento della tabella Dijkstra completa come mostrato in Markdown è un processo laborioso e va fatto con molta attenzione. La tabella in sede d'esame è spesso il risultato finale delle iterazioni. Per la visualizzazione, riporterò solo la tabella di routing finale.}
+
+\textbf{Tabella di instradamento di R4:}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Destinazione} & \textbf{Prossimo Hop} \\
+\hline
+A                     & A                     \\
+R1                    & R1                    \\
+R2                    & R2                    \\
+R3                    & R2                    \\
+R5                    & R7                    \\
+R6                    & R2                    \\
+R7                    & R7                    \\
+R8                    & R7                    \\
+R9                    & R7                    \\
+B                     & R2                    \\
+\hline
+\end{tabular}
+
+\subsection*{Consigli e Errori Comuni:}
+\begin{itemize}
+    \item \textbf{Precisione:} Dijkstra è un algoritmo meccanico, ma un errore di calcolo in un passo si propaga.
+    \item \textbf{Aggiornamento Predecessori:} Non dimenticare di aggiornare $p(v)$ quando trovi un cammino migliore per $D(v)$.
+    \item \textbf{Next Hop vs Predecessore:} La tabella di routing usa il \textit{prossimo hop} dalla sorgente, non il predecessore diretto della destinazione.
+\end{itemize}
+
+\clearpage % Inizia una nuova pagina per la prossima sezione per chiarezza
+
+\section{Codifica del Segnale Wireless}
+
+\subsection*{Concetti Chiave:}
+\begin{itemize}
+    \item \textbf{Modulazione Digitale:} Processo di variazione di una o più caratteristiche di un'onda portante (ampiezza, frequenza, fase) in base a un segnale digitale.
+    \item \textbf{Costellazione:} Rappresentazione grafica dei simboli di modulazione nello spazio I/Q (In-phase / Quadrature). Ogni punto rappresenta un simbolo, che codifica uno o più bit.
+    \item \textbf{Simbolo:} Un particolare stato dell'onda portante (es. una specifica ampiezza e fase).
+    \item \textbf{Symbol Rate (Baud Rate):} Numero di simboli trasmessi al secondo.
+    \item \textbf{Bit Rate:} Numero di bit trasmessi al secondo ($\text{Symbol Rate} \cdot \text{bit\_per\_simbolo}$).
+    \item \textbf{Fase:} Spostamento temporale dell'onda rispetto a un riferimento. (Anticipo = fase positiva o $<$360\textdegree; Ritardo = fase negativa o $>$0\textdegree).
+    \item \textbf{Ampiezza:} "Altezza" dell'onda.
+\end{itemize}
+
+\subsection*{Procedura di Svolgimento (Interpretazione Encoding K/H):}
+\begin{enumerate}
+    \item \textbf{Analizza la Leggenda/Encoding:} Studia attentamente la figura che definisce la codifica (es. Encoding K o H nell'esame del 18 Feb 2021). Ogni punto della costellazione corrisponde a una sequenza di bit (solitamente 3 bit se ci sono 8 punti).
+    \item \textbf{Segnale di Riferimento:} Comprendi il segnale $A \cdot \sin(B \cdot t)$ (fase zero, ampiezza A).
+    \item \textbf{Decodifica i Simboli Ricevuti:}
+    \begin{itemize}
+        \item Per ogni "symbol duration" nel segnale ricevuto:
+        \begin{itemize}
+            \item Confronta la forma d'onda ricevuta con il segnale di riferimento.
+            \item Determina la \textbf{fase} relativa (0\textdegree, 90\textdegree{} anticipo, 90\textdegree{} ritardo, 180\textdegree).
+            \item Determina l'\textbf{ampiezza} relativa (es. "ampiezza $<$" o "ampiezza $>$" rispetto al riferimento, o due livelli specifici).
+            \item Usa fase e ampiezza per trovare il punto corrispondente nella costellazione della codifica scelta (K o H).
+            \item Leggi i bit associati a quel punto.
+        \end{itemize}
+    \item \textbf{Assembla la Sequenza di Bit.}
+    \item \textbf{Conversione Esadecimale/Parità (se richiesto):}
+    \begin{itemize}
+        \item Dividi la sequenza di bit in gruppi di 8 (byte).
+        \item Verifica la parità (se c'è un bit di parità per ogni byte).
+        \item Converti i byte corretti in esadecimale.
+    \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Esempio Svolto (basato su Esercizio 2, "18 febbraio 2021" e Esercizio 10 "21 Luglio 2023"):}
+Prendiamo l'Encoding K dell'esame del 18 Feb 2021 e la sequenza esadecimale OEAF... dell'esame del 21 Luglio 2023.
+
+\textbf{Esercizio 10, "21 Luglio 2023":}
+\begin{itemize}
+    \item \texttt{Encoding K} (dall'altro esame, ma il principio è lo stesso):
+    \begin{description}[font=\texttt\bfseries]
+        \item[000:] ampiezza $<$, fase 0\textdegree
+        \item[001:] ampiezza $>$, fase 0\textdegree{} (segnale riferimento)
+        \item[010:] ampiezza $>$, fase 90\textdegree{} ritardo
+        \item[011:] ampiezza $>$, fase 90\textdegree{} anticipo
+        \item[100:] ampiezza $<$, fase 90\textdegree{} ritardo
+        \item[101:] ampiezza $<$, fase 180\textdegree
+        \item[110:] ampiezza $>$, fase 180\textdegree
+        \item[111:] ampiezza $<$, fase 90\textdegree{} anticipo
+    \end{description}
+    \item \textbf{a) Sequenza esadecimale OEAF... $\to$ binario (primi 18 bit) + padding 00:}
+    \begin{itemize}
+        \item O (esadecimale) = \texttt{0000} (binario)
+        \item E (esadecimale) = \texttt{1110} (binario)
+        \item A (esadecimale) = \texttt{1010} (binario)
+        \item F (esadecimale) = \texttt{1111} (binario)
+        \item Sequenza binaria: \texttt{0000 1110 1010 1111}. Sono 16 bit. Ne servono 18.
+        \item Completare a 18 bit aggiungendo zero a destra: \texttt{0000 1110 1010 1111 00}.
+        \item La soluzione dell'esame dice: \texttt{0000 (O) 1110 (E) 1010 (A) 1111 (F) + 00 (padding)}
+        \texttt{000 011 101 010 111 100} (raggruppati a 3 bit per simbolo)
+    \end{itemize}
+    \item \textbf{c) Simboli trasmessi (binario):}
+    \texttt{000}, \texttt{011}, \texttt{101}, \texttt{010}, \texttt{111}, \texttt{100}
+    \item \textbf{b) Forme d'onda (basate sulla mia interpretazione dell'Encoding K sopra):}
+    \begin{enumerate}
+        \item \texttt{000}: $\sin(t)$ con ampiezza ridotta, fase 0\textdegree.
+        \item \texttt{011}: $\sin(t)$ con ampiezza piena, fase 90\textdegree{} anticipo (inizia dal picco positivo).
+        \item \texttt{101}: $\sin(t)$ con ampiezza ridotta, fase 180\textdegree{} (inizia da zero andando verso il negativo).
+        \item \texttt{010}: $\sin(t)$ con ampiezza piena, fase 90\textdegree{} ritardo (inizia dal picco negativo).
+        \item \texttt{111}: $\sin(t)$ con ampiezza ridotta, fase 90\textdegree{} anticipo.
+        \item \texttt{100}: $\sin(t)$ con ampiezza ridotta, fase 90\textdegree{} ritardo.
+    \end{enumerate}
+    \textit{Disegna queste forme d'onda nei box forniti, rispettando la durata del simbolo.}
+\end{itemize}
+
+\subsection*{Consigli e Errori Comuni:}
+\begin{itemize}
+    \item \textbf{Leggere la Leggenda:} La chiave è capire la mappatura bit $\to$ simbolo (fase/ampiezza).
+    \item \textbf{Fase 0 vs 180:} $\sin(t)$ a fase 0\textdegree{} inizia da 0 e va positivo. $\sin(t)$ a fase 180\textdegree{} inizia da 0 e va negativo.
+    \item \textbf{Fase 90 Anticipo/Ritardo:} Anticipo (es. +90\textdegree) significa che l'onda è "spostata a sinistra" rispetto al riferimento; inizia prima nel suo ciclo. Ritardo (es. -90\textdegree{} o +270\textdegree) è spostata a destra. $\sin(t+90\textdegree) = \cos(t)$ (inizia dal picco). $\sin(t-90\textdegree) = -\cos(t)$ (inizia dal minimo).
+    \item \textbf{Ampiezza:} Assicurati di distinguere i livelli di ampiezza correttamente.
+\end{itemize}
+
+\end{document}
