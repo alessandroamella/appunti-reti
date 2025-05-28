@@ -306,8 +306,8 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
         \item $\text{L}_{\text{path}}$: Perdita di propagazione (Path Loss) (\text{dB})
         \item $\text{L}_{\text{misc}}$: Altre perdite (cavi, connettori, fade margin) (\text{dB})
     \end{itemize}
-    \item \textbf{Receiver Sensitivity (RS):} Minima potenza ricevuta affinché il ricevitore decodifichi il segnale (\text{dBm}).
-    \item \textbf{Fade Margin (FM):} Margine di sicurezza per compensare fluttuazioni del segnale (fading). $\text{P}_{\text{rx}} - \text{RS} \ge \text{FM}$.
+    \item \textbf{Receiver Sensitivity (RS):} Minima potenza ricevuta affinché il ricevitore decodifichi il segnale (\text{dBm}). È fondamentale \textbf{considerarlo} negli esercizi: se la potenza ricevuta è minore di RS, il segnale non viene ricevuto/decodificato!
+    \item \textbf{Fade Margin (FM)} o \textbf{Fade Operating Margin:} Margine di sicurezza per compensare fluttuazioni del segnale (fading). $\text{P}_{\text{rx}} - \text{RS} \ge \text{FM}$. Tipicamente tra 10\text{dB} e 20\text{dB} (solitamente 10\text{dB}, ma può essere aumentato fino a 20\text{dB} in condizioni sfavorevoli). È fondamentale \textbf{considerarlo} negli esercizi che richiedono il calcolo della potenza di trasmissione necessaria, poiché non è sufficiente operare al limite minimo di potenza ricevuta!!
     \item \textbf{6\text{dB} Rule:} Dimezzando la distanza, il segnale aumenta di 6\text{dB}. Raddoppiando la distanza, diminuisce di 6\text{dB} (approssimazione per spazio libero).
     \item \textbf{OFDM (Orthogonal Frequency Division Multiplexing):} Tecnica di modulazione che usa multiple sottoportanti ortogonali.
     \begin{itemize}
@@ -329,6 +329,16 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \[ L_{FSPL} = K + 20\log_{10}(F) + 20\log_{10}(D) \]
     dove $K = 32.4$ (distanza in km) o $K = 36.6$ (distanza in miglia), $F$ in MHz, $D$ in km o miglia.
 
+    \item \textbf{Lunghezza d'onda ($\lambda$):} Distanza tra due creste consecutive dell'onda elettromagnetica. Si calcola come:
+    \[ \lambda = \frac{c}{f} = \frac{3 \times 10^8 \text{ m/s}}{f \text{ Hz}} \]
+    dove:
+    \begin{itemize}
+        \item $c$ è la velocità della luce nel vuoto ($3 \times 10^8$ m/s)
+        \item $f$ è la frequenza del segnale in Hz
+    \end{itemize}
+    Per frequenze in GHz, la formula diventa:
+    \[ \lambda \text{ (metri)} = \frac{0.3}{f \text{ (GHz)}} \]
+
     \textit{\textbf{Nota bene:} Per qualche strana ragione il prof considera $K = 32.4$ come buono scenario (buone condizioni) e $K = 36.6$ come brutto scenario (cattive condizioni, tipo nebbia, pioggia, ecc.), mentre invece la distanza la considera \textbf{sempre in miglia!!}.}
 \end{itemize}
 
@@ -341,6 +351,15 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \end{itemize}
     \item Bitrate (semplificato): $\text{Bitrate} = \text{SymbolRate} \times \text{bits}_{\text{per\_symbol}}$
     \item Tempo trasferimento: $\text{DimensioneFile (bit)} / \text{Bitrate (bit/s)}$
+    \item Conversioni di unità di misura:
+    \begin{itemize}
+        \item \textbf{Lunghezza:}
+        \begin{itemize}
+            \item 1 miglio $\approx$ 1.61 km $\Longleftrightarrow$ 1 km $\approx$ 0.62 miglia
+            \item 1 piede $\approx$ 0.305 metri $\Longleftrightarrow$ 1 metro $\approx$ 3.28 piedi
+            \item 1 miglio = 5280 piedi
+        \end{itemize}
+    \end{itemize}
 \end{itemize}
 
 \subsection{Esempio Svolto (basato su Esercizio 10, "Scritto 26 Maggio 2023", pagina 4)}

@@ -62,8 +62,14 @@ Il livello fisico (PHY) si occupa della trasmissione dei bit grezzi attraverso i
 \subsubsection{Frequenza (Frequency) e Lunghezza d'Onda (Wavelength)}
 \begin{itemize}
     \item \textbf{Spettro Wireless:} L'insieme di tutte le possibili frequenze radio. Solo porzioni di questo spettro sono regolamentate e assegnate a specifiche tecnologie wireless.
-    \item \textbf{Relazione:} $\lambda = \frac{c}{f}$
-    dove $c$ è la velocità della luce (circa $3 \times 10^8 \, \text{m/s}$) e $f$ è la frequenza in Hertz (Hz).
+    \item \textbf{Relazione:} La lunghezza d'onda ($\lambda$) è inversamente proporzionale alla frequenza ($f$):
+    \[ \lambda = \frac{c}{f} \]
+    dove:
+    \begin{itemize}
+        \item $\lambda$ è la lunghezza d'onda in metri (m)
+        \item $c$ è la velocità della luce (circa $3 \times 10^8 \, \text{m/s}$)
+        \item $f$ è la frequenza in Hertz (Hz)
+    \end{itemize}
     \item \textbf{Esempio Pratico (Banda ISM a \SI{2.4}{\giga\hertz}):}
     $f = \SI{2.4}{\giga\hertz} = 2.4 \times 10^9 \, \text{Hz}$
     \[ \lambda = \frac{3 \times 10^8 \, \text{m/s}}{2.4 \times 10^9 \, \text{Hz}} = 0.125 \, \text{m} = \SI{12.5}{\centi\meter} \]
@@ -1245,7 +1251,7 @@ Il Link Budget, noto anche come System Operating Margin (SOM) o Margine Operativ
 \end{itemize}
 
 \subsubsection{Fade Margin (Margine di Fading)}
-Nella pratica, non basta che $P_{RX}$ sia appena sopra $RS$. I segnali wireless sono soggetti a fluttuazioni dovute al fading (multipath, ostacoli temporanei, ecc.). Per garantire che il collegamento rimanga stabile anche in presenza di queste fluttuazioni, si introduce un \textbf{Fade Margin (Margine di Fading)}.
+Nella pratica, non basta che $P_{RX}$ sia appena sopra $RS$. I segnali wireless sono soggetti a fluttuazioni dovute al fading (multipath, ostacoli temporanei, ecc.). Per garantire che il collegamento rimanga stabile anche in presenza di queste fluttuazioni, si introduce un \textbf{Fade Margin (Margine di Fading)}, dal prof chiamato \textbf{Fade Operating Margin (FOM)}.
 Questo è un margine di sicurezza aggiuntivo, tipicamente tra i $\SI{10}{dB}$ e i $\SI{20}{dB}$ (o più, per collegamenti critici o in ambienti difficili).
 Quindi, per un link affidabile, si richiede:
 \[ P_{RX} (\text{dBm}) \ge RS (\text{dBm}) + \text{Fade Margin (dB)} \]
