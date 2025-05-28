@@ -847,6 +847,9 @@ Concentrano energia in una direzione più specifica.
     \item \textbf{Beamwidth (Larghezza del Fascio):} Angolo entro cui la potenza è almeno -3dB rispetto al massimo.
 \end{itemize}
 
+\subsection{Antenne Settorizzate-Direzionali}
+Array di antenne direzionali per coprire settori specifici. Permettono Space Multiplexing (riuso canali).
+
 \subsection{Antenne Altamente-Direzionali}
 Concentrano energia in un fascio molto stretto, alto guadagno.
 \begin{itemize}
@@ -860,7 +863,8 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
         \item \textbf{Curvatura Terrestre:} Importante per link > \SI{10}{\kilo\meter}.
     \end{itemize}
 \end{itemize}
-\begin{center}
+\begin{figure}[H]
+\centering
     \begin{tikzpicture}[scale=1.2, every node/.style={transform shape}]
         % Define antenna style
         \tikzset{
@@ -927,10 +931,122 @@ Concentrano energia in un fascio molto stretto, alto guadagno.
         };
     
     \end{tikzpicture}
-\end{center}
+    \caption{Illustrazione della Prima Zona di Fresnel e un ostacolo.}
+\end{figure}
 
-\subsection{Antenne Settorizzate-Direzionali}
-Array di antenne direzionali per coprire settori specifici. Permettono Space Multiplexing (riuso canali).
+\subsection{Zona di Fresnel (Fresnel Zone - FZ)}
+Quando si progetta un collegamento wireless punto-punto, specialmente su lunghe distanze utilizzando antenne direzionali, la semplice Line of Sight (LOS) -- una linea retta visiva tra le due antenne -- non è sufficiente per garantire una comunicazione ottimale. È fondamentale considerare la \textbf{Zona di Fresnel}.
+
+\subsubsection{Cos'è la Zona di Fresnel?}
+Le onde radio non si propagano come un singolo raggio laser, ma si espandono nello spazio attorno alla linea diretta tra trasmettitore e ricevitore. La Zona di Fresnel descrive una serie di ellissoidi concentrici di spazio attorno al percorso LOS. La maggior parte dell'energia del segnale RF si concentra all'interno di queste zone.
+
+\begin{itemize}
+    \item \textbf{Importanza:} Se ostacoli significativi invadono queste zone, possono causare riflessioni, diffrazioni e attenuazioni del segnale, portando a interferenza distruttiva (fading) e a una riduzione della qualità del link, anche se la LOS diretta è libera.
+    \item \textbf{Prima Zona di Fresnel (F1):} È l'ellissoide più interno e il più critico. Contiene la porzione più significativa dell'energia trasmessa. Idealmente, la prima Zona di Fresnel dovrebbe essere mantenuta il più possibile libera da ostruzioni.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1, every node/.style={transform shape}]
+    % Define antenna style
+    \tikzset{
+        antenna_dish/.style={ % Style for a dish antenna
+            draw=blue!80!black, 
+            thick,
+            fill=blue!20,
+            transform shape
+        }
+    }
+
+    % Antenna positions
+    \coordinate (tx_pos) at (-5,0.5);
+    \coordinate (rx_pos) at (5,0.5);
+
+    % Draw Antennas (simplified dish shapes)
+    \begin{scope}[shift={(-5,0.5)}] % TX Antenna
+        \draw[antenna_dish] (0,0) -- (-0.5,0.3) -- (-0.5,-0.3) -- cycle; % small feed horn part
+        \draw[antenna_dish] (0.1,0) ellipse (0.1cm and 0.6cm); % dish
+        \node[below, font=\small, primarytext] at (0,-0.8) {TX};
+    \end{scope}
+    \begin{scope}[shift={(5,0.5)}] % RX Antenna
+        \draw[antenna_dish, xscale=-1] (0,0) -- (-0.5,0.3) -- (-0.5,-0.3) -- cycle;
+        \draw[antenna_dish] (-0.1,0) ellipse (0.1cm and 0.6cm);
+        \node[below, font=\small, primarytext] at (0,-0.8) {RX};
+    \end{scope}
+
+    % Line of Sight (LOS)
+    \draw[dashed, red, thick] (tx_pos) -- (rx_pos) node[midway, below=2pt, font=\scriptsize, text=red] {LOS};
+
+    % First Fresnel Zone (F1)
+    \draw[orange, thick] (0,0.5) ellipse (4.8cm and 1.2cm); % Outer ellipse for F1
+    \fill[orange!15, opacity=0.5] (0,0.5) ellipse (4.8cm and 1.2cm);
+    \node[font=\scriptsize, text=orange!80!black] at (0,1.9) {Prima Zona di Fresnel (F1)};
+
+    % Obstacle in FZ (removed fading effect)
+    \fill[green!60!black] (1.5,0.5) ellipse (0.4cm and 0.8cm); % Tree-like shape
+    \node[draw, fill=green!20, text=black, font=\small, rounded corners=1pt, inner sep=1pt] at (1.5, -0.5) {Ostacolo};
+
+    % Radius of FZ indicator at the center
+    \draw[<->, black, thin] (0,0.5) -- (0,0.5+1.2) node[midway, right, font=\small, text=black] {$R_{F1}$};
+    
+    % Distance D indicator
+    \draw[<->, black, thin] (-5,-1.5) -- (5,-1.5) node[midway, below, font=\small, text=black] {Distanza (D)};
+
+\end{tikzpicture}
+\caption{Illustrazione della Prima Zona di Fresnel e un ostacolo.}
+\end{figure}
+
+\subsubsection{Calcolo del Raggio della Prima Zona di Fresnel}
+Il raggio massimo ($R_{F1}$) della prima Zona di Fresnel (al centro del collegamento) può essere calcolato utilizzando la seguente formula pratica, dove le unità sono specificate:
+\[ R_{F1_{\text{100\%}}} (\text{piedi}) = 72.2 \times \sqrt{\frac{D (\text{miglia})}{4 \times F (\text{GHz})}} \]
+Oppure, in modo equivalente:
+\[ R_{F1_{\text{100\%}}} (\text{piedi}) = 36.1 \times \sqrt{\frac{D (\text{miglia})}{F (\text{GHz})}} \]
+Dove:
+\begin{itemize}
+    \item $R_{F1_{\text{100\%}}}$ è il raggio del 100\% della prima Zona di Fresnel in \textbf{piedi (feet)}.
+    \item $D$ è la distanza totale del collegamento in \textbf{miglia (miles)}.
+    \item $F$ è la frequenza del segnale in \textbf{Gigahertz (GHz)}.
+\end{itemize}
+Per convertire in metri: $1 \text{ piede} \approx 0.305 \text{ metri}$ (o $1 \text{ piede} = \SI{30.48}{\centi\meter}$).
+$1 \text{ miglio} \approx 1.609 \text{ chilometri}$.
+
+Spesso, si considera accettabile una parziale ostruzione. Una regola comune è che almeno il \textbf{60\% del raggio della prima Zona di Fresnel debba essere libero} da ostacoli. Il raggio per il 60\% della FZ è:
+\[ R_{F1_{\text{60\%}}} (\text{piedi}) = 43.3 \times \sqrt{\frac{D (\text{miglia})}{4 \times F (\text{GHz})}} \]
+Un'altra regola pratica è che l'ostruzione totale della FZ non dovrebbe superare il 20-40\% del suo diametro (o raggio) per evitare degradazioni significative.
+
+\subsubsection{Esempio di Calcolo del Raggio FZ}
+Consideriamo un collegamento wireless con le seguenti caratteristiche:
+\begin{itemize}
+    \item Distanza ($D$): 5 miglia
+    \item Frequenza ($F$): 1.9 GHz
+\end{itemize}
+Calcoliamo il raggio del 100\% della prima Zona di Fresnel:
+\[ R_{F1_{\text{100\%}}} (\text{piedi}) = 72.2 \times \sqrt{\frac{5 \text{ miglia}}{4 \times 1.9 \text{ GHz}}} = 72.2 \times \sqrt{\frac{5}{7.6}} = 72.2 \times \sqrt{0.65789} \]
+\[ R_{F1_{\text{100\%}}} (\text{piedi}) \approx 72.2 \times 0.8111 \approx 58.56 \text{ piedi} \]
+Per convertire in metri:
+\[ R_{F1_{\text{100\%}}} (\text{metri}) = 58.56 \text{ piedi} \times 0.305 \frac{\text{metri}}{\text{piede}} \approx 17.86 \text{ metri} \]
+Quindi, al centro del collegamento, è necessario uno spazio libero con un raggio di circa 17.86 metri attorno alla LOS. Se si applica la regola del 60\%:
+\[ R_{F1_{\text{60\%}}} (\text{piedi}) = 43.3 \times \sqrt{\frac{5}{7.6}} \approx 43.3 \times 0.8111 \approx 35.12 \text{ piedi} \]
+\[ R_{F1_{\text{60\%}}} (\text{metri}) = 35.12 \text{ piedi} \times 0.305 \frac{\text{metri}}{\text{piede}} \approx 10.71 \text{ metri} \]
+In questo caso, il raggio minimo da mantenere libero da ostacoli sarebbe di circa 10.71 metri.
+
+\subsubsection{Fattori che Influenzano il Raggio della FZ}
+\begin{itemize}
+    \item \textbf{Distanza del link ($D$):} All'aumentare della distanza, il raggio della FZ aumenta (proporzionale a $\sqrt{D}$).
+    \item \textbf{Frequenza del segnale ($F$):} All'aumentare della frequenza, il raggio della FZ diminuisce (proporzionale a $1/\sqrt{F}$). Frequenze più alte hanno Zone di Fresnel più strette.
+    \item \textbf{Indipendenza dal tipo di antenna:} Il raggio della Zona di Fresnel \textbf{non dipende} dal tipo di antenna, dal suo guadagno o dalla larghezza del fascio. È una caratteristica della propagazione dell'onda RF nello spazio.
+\end{itemize}
+\textbf{Implicazione pratica:} Se una Zona di Fresnel è parzialmente ostruita, utilizzare antenne con guadagno più elevato (e quindi fascio più stretto) non risolve il problema dell'ostruzione della FZ stessa, poiché le dimensioni della FZ rimangono le stesse.
+
+\subsubsection{Considerazioni Aggiuntive}
+\begin{itemize}
+    \item \textbf{Scenari Indoor:} In ambienti indoor, a causa delle brevi distanze e delle numerose riflessioni multiple, il concetto di Zona di Fresnel è generalmente meno critico o più difficile da applicare rispetto ai collegamenti outdoor a lunga distanza. Le riflessioni possono, in alcuni casi, compensare parziali ostruzioni della LOS.
+    \item \textbf{Curvatura Terrestre (Earth Bulge):} Per collegamenti molto lunghi (tipicamente oltre i \SIrange{7}{10}{\kilo\meter} o \SIrange{5}{7}{miglia}), la curvatura terrestre può invadere la parte inferiore della Zona di Fresnel. In questi casi, le antenne devono essere montate a un'altezza sufficiente per compensare sia l'ostruzione della FZ dovuta al terreno che la curvatura terrestre. L'altezza dell'ostruzione dovuta alla curvatura terrestre (h, in piedi) al centro di un link di distanza D (in miglia) è approssimativamente $h \approx D^2/8$. L'altezza minima dell'antenna $H$ dovrebbe quindi essere:
+    \[ H (\text{piedi}) \approx R_{F1_{\text{60\%/100\%}}} (\text{piedi}) + h_{\text{ostacolo}} (\text{piedi}) + \frac{D^2 (\text{miglia})}{8} \]
+    dove $h_{\text{ostacolo}}$ è l'altezza del più alto ostacolo lungo il percorso.
+\end{itemize}
+
+La corretta pianificazione della Zona di Fresnel è essenziale per la stabilità e l'affidabilità dei collegamenti wireless a lunga distanza.
 
 \subsection{Grafici di Copertura Antenna (Azimuth e Elevation)}
 Diagrammi polari della potenza relativa nelle varie direzioni.

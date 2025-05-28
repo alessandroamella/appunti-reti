@@ -11,13 +11,8 @@
 \tableofcontents
 \newpage
 
-% Introduzione e indice delle tipologie di esercizi (come nel tuo MD, ma con riferimenti)
-\section{Introduzione alle Tipologie di Esercizi} % Sezione senza numero e non nel sommario
-Questo documento è pensato per aiutarti a comprendere e risolvere le principali tipologie di esercizi pratici presenti negli esami di Reti di Calcolatori, basandosi sugli esempi forniti.
 
-\bigskip % Piccola spaziatura verticale
-
-\textbf{Indice delle Tipologie di Esercizi:}
+\section*{Indice delle Tipologie di Esercizi:}
 \begin{enumerate}[label=\arabic*.] % Lista numerata con margine allineato
     \item \hyperref[sec:ipv4-subnetting]{Indirizzamento IPv4 e Subnetting (VLSM)}
     \item \hyperref[sec:protocolli-sicuri]{Progettazione di Protocolli di Comunicazione Sicura (Alice \& Bob)}
@@ -72,6 +67,34 @@ Questo documento è pensato per aiutarti a comprendere e risolvere le principali
     \item Ultimo Host: $\text{IndirizzoBroadcast} - 1$
 \end{itemize}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\rowcolor{bg_custom}
+\textbf{CIDR} & \textbf{Subnet Mask} & \textbf{Host Bits} & \textbf{Host Disponibili} \\
+\hline
+/8  & 255.0.0.0 & 24 & 16777214 \\
+/16 & 255.255.0.0 & 16 & 65534 \\
+/17 & 255.255.128.0 & 15 & 32766 \\
+/18 & 255.255.192.0 & 14 & 16382 \\
+/19 & 255.255.224.0 & 13 & 8190 \\
+/20 & 255.255.240.0 & 12 & 4094 \\
+/21 & 255.255.248.0 & 11 & 2046 \\
+/22 & 255.255.252.0 & 10 & 1022 \\
+/23 & 255.255.254.0 & 9  & 510 \\
+/24 & 255.255.255.0 & 8  & 254 \\
+/25 & 255.255.255.128 & 7  & 126 \\
+/26 & 255.255.255.192 & 6  & 62 \\
+/27 & 255.255.255.224 & 5  & 30 \\
+/28 & 255.255.255.240 & 4  & 14 \\
+/29 & 255.255.255.248 & 3  & 6 \\
+/30 & 255.255.255.252 & 2  & 2 \\
+\hline
+\end{tabular}
+\caption{Mappatura CIDR a subnet mask e numero di host ($2^h - 2$ dove $h$ = bit host)}
+\end{table}
+
 \subsection{Esempio Svolto (basato su Esercizio 9, "Scritto 26 Maggio 2023" e "Scritto Reti Di Calcolatori 2024-30-31")}
 Prendiamo l'esercizio 9 della prova del 26 Maggio 2023.
 \texttt{Network N = 177.34.146.0/23}
@@ -92,44 +115,6 @@ Ora suddividiamo. Supponiamo le richieste (come da figura ma invento i numeri pe
     \item Subnet A2 (di A): max 56 host
     \item Subnet A1 (di A): max 42 host
 \end{enumerate}
-
-\textbf{1. Subnet B (max 157 host):}
-$2^h - 2 \ge 157$. $2^8 - 2 = 254 \ge 157$. Quindi $h=8$. Maschera \texttt{/24} (32-8).
-\begin{itemize}
-    \item Rete B: \texttt{177.34.146.0/24}
-    \item Netmask B: \texttt{255.255.255.0}
-    \item Primo Host B: \texttt{177.34.146.1}
-    \item Router IP (interfaccia di N verso B, o router di B): \texttt{177.34.146.254} (o .1)
-    \item Ultimo Host B: \texttt{177.34.146.253}
-    \item Broadcast B: \texttt{177.34.146.255}
-    \item Default Gateway per host in B: IP del router sull'interfaccia di B.
-\end{itemize}
-
-\textbf{2. Subnet A (max 118 host) $\to$ /25 (128 indirizzi)}
-\begin{itemize}
-    \item Spazio disponibile successivo: \texttt{177.34.147.0}
-    \item Rete A: \texttt{177.34.147.0/25}
-    \item Netmask A: \texttt{255.255.255.128}
-    \item Primo Host A: \texttt{177.34.147.1}
-    \item Router IP (interfaccia di N verso A, o router di A): \texttt{177.34.147.126} (o .1)
-    \item Ultimo Host A: \texttt{177.34.147.125}
-    \item Broadcast A: \texttt{177.34.147.127}
-    \item Default Gateway per host in A: IP del router sull'interfaccia di A.
-\end{itemize}
-
-\textbf{3. Subnet A2 (di A, max 56 host) $\to$ /26 (64 indirizzi)}
-\textit{Attenzione: A2 è una sottorete di A. Quindi deve prendere un blocco \textbf{interno} allo spazio di A. Ma la figura suggerisce che A, A1, A2 siano sottoreti di N, con A1 e A2 collegate tramite Router A. L'esercizio va letto con attenzione. Se "Subnet A (max 118 host)" si riferisce allo spazio totale per A e le sue sottoreti, allora dobbiamo allocare A1 e A2 \textbf{dentro} lo spazio di A. Se invece N si divide in A e B, e A si divide in A1 e A2, la logica cambia.}
-
-\textit{Assumiamo che la figura indichi Router N che connette a "Subnet A" e "Subnet B". Poi Router A (che è in Subnet A) connette a A1 e A2.}
-\textit{Questo significa che "Subnet A" non è una rete di soli host finali, ma contiene Router A e potenzialmente altri host. E lo spazio IP di "Subnet A" deve essere grande abbastanza da contenere A1 e A2.}
-
-\textit{Rivediamo: N si divide. Le sottoreti più grandi sono B (157 host) e A (che deve contenere A1=42, A2=56 e le connessioni).}
-\begin{itemize}
-    \item A1: 42 host $\to$ \texttt{/26} (64 indirizzi)
-    \item A2: 56 host $\to$ \texttt{/26} (64 indirizzi)
-    \item Servono anche indirizzi per le interfacce dei router tra N-A, A-A1, A-A2. E se A ha host propri.
-\end{itemize}
-\textit{Questo tipo di problema (gerarchico) va affrontato allocando prima lo spazio per le "reti padre" e poi suddividendolo. Oppure, se si fa VLSM sull'intero blocco di N, si allocano prima le foglie più grandi.}
 
 \textbf{Approccio corretto per gerarchie (come da "Scritto 26 Maggio 2023"):}
 Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
@@ -187,7 +172,7 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
 \begin{itemize}
     \item \textbf{Confidenzialità:} Solo il destinatario autorizzato può leggere il messaggio (Cifratura).
     \begin{itemize}
-        \item $K_{\text{pub\_B}}(M)$: Cifratura di M con la chiave pubblica di Bob. Solo Bob con $K_{\text{priv\_B}}$ può decifrare.
+        \item $K_B^+(M)$: Cifratura di M con la chiave pubblica di Bob. Solo Bob con $K_B^-$ può decifrare.
         \item $K_s(M)$: Cifratura simmetrica di M con chiave $K_s$ (condivisa tra Alice e Bob).
     \end{itemize}
     \item \textbf{Integrità:} Il messaggio non è stato alterato durante la trasmissione (Funzione Hash).
@@ -196,7 +181,7 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \end{itemize}
     \item \textbf{Autenticazione del Mittente:} Il destinatario è sicuro dell'identità del mittente (Firma Digitale).
     \begin{itemize}
-        \item $K_{\text{priv\_A}}(H(M))$: Firma digitale di Alice dell'hash di M. Chiunque con $K_{\text{pub\_A}}$ può verificarla.
+        \item $K_A^-(H(M))$: Firma digitale di Alice dell'hash di M. Chiunque con $K_A^+$ può verificarla.
     \end{itemize}
     \item \textbf{Non Ripudio:} Il mittente non può negare di aver inviato il messaggio. Richiede spesso una terza parte fidata o meccanismi che leghino inequivocabilmente il mittente al messaggio e alla sua ricezione. La firma digitale è un componente chiave.
     \item \textbf{Protezione da Replay:} Il messaggio non può essere catturato e riutilizzato da un attaccante (Nonce, Timestamp).
@@ -212,83 +197,83 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \item \textbf{Scegli gli Strumenti Crittografici:}
     \begin{itemize}
         \item Messaggi brevi: RSA (cifratura asimmetrica) può andare bene per tutto.
-        \item Messaggi lunghi: Usa cifratura simmetrica $K_s(M)$ per il messaggio e cifra $K_s$ con la chiave pubblica del destinatario: $K_{\text{pub\_B}}(K_s)$. Questo è l'approccio "hybrid".
-        \item Per integrità e autenticazione: $M, K_{\text{priv\_A}}(H(M))$.
+        \item Messaggi lunghi: Usa cifratura simmetrica $K_s(M)$ per il messaggio e cifra $K_s$ con la chiave pubblica del destinatario: $K_B^+(K_s)$. Questo è l'approccio "hybrid".
+        \item Per integrità e autenticazione: $M, K_A^-(H(M))$.
     \end{itemize}
     \item \textbf{Costruisci i Messaggi:} Combina gli strumenti per soddisfare i requisiti.
     \begin{itemize}
-        \item Es: Alice invia M a Bob, confidenziale, autenticato, integro: $K_{\text{pub\_B}}( M, K_{\text{priv\_A}}(H(M)) )$. (Non ideale per M grande)
+        \item Es: Alice invia M a Bob, confidenziale, autenticato, integro: $K_B^+( M, K_A^-(H(M)) )$. (Non ideale per M grande)
         \item Meglio per M grande: Alice invia a Bob:
-        \begin{align*}
-            &K_{\text{pub\_B}}(K_s), \\
-            &K_s(M, K_{\text{priv\_A}}(H(M)))
-        \end{align*}
+        \begin{itemize}
+            \item $K_B^+(K_s)$: Chiave simmetrica cifrata con la chiave pubblica di Bob
+            \item $K_s(M, K_A^-(H(M)))$: Messaggio e firma cifrati con la chiave simmetrica
+        \end{itemize}
         O più spesso:
-        \begin{align*}
-            &K_{\text{pub\_B}}(K_s), \\
-            &K_s(M), \\
-            &K_{\text{priv\_A}}(H( K_s(M) ))
-        \end{align*}
+        \begin{itemize}
+            \item $K_B^+(K_s)$: Chiave simmetrica cifrata con la chiave pubblica di Bob
+            \item $K_s(M)$: Messaggio cifrato con la chiave simmetrica
+            \item $K_A^-(H( K_s(M) ))$: Firma del messaggio cifrato
+        \end{itemize}
     \end{itemize}
     \item \textbf{Gestisci i Replay:} Includi Nonce (N) o Timestamp (T) nel messaggio, tipicamente firmati o cifrati insieme al messaggio per proteggerli.
     \item \textbf{Considera Trudy (Attaccante):}
     \begin{itemize}
         \item \textbf{DoS (Denial of Service):} Trudy può bloccare i messaggi. Difficile da prevenire a livello protocollare senza ridondanza o "i militari".
         \item \textbf{Replay:} Se non ci sono Nonce/Timestamp, Trudy può ri-spedire messaggi vecchi.
-        \item \textbf{Man-in-the-Middle (MitM):} Se le chiavi pubbliche non sono certificate (da una CA), Trudy può impersonare Alice verso Bob e Bob verso Alice. La CA è fondamentale.
+        \item \textbf{Man-in-the-Middle (MITM):} Se le chiavi pubbliche non sono certificate (da una CA), Trudy può impersonare Alice verso Bob e Bob verso Alice. La CA è fondamentale.
     \end{itemize}
     \item \textbf{Scambio tra Bob e Charlie (se presente):} Applica la stessa logica. Se Bob deve inoltrare un messaggio da Alice a Charlie, deve garantire che Charlie sappia che il messaggio \textit{originale} era di Alice e non modificato, e che Bob è il \textit{mittente attuale} del messaggio inoltrato.
 \end{enumerate}
 
 \subsection{Esempio Svolto (basato su Esercizio 4, "Scritto 26 Maggio 2023")}
 \begin{itemize}
-    \item Alice spedisce m1 (breve) a Bob, e m2 (breve) a Charlie.
-    \item Bob e Charlie leggono m1 e m2.
-    \item Bob e Charlie si scambiano m1 e m2.
-    \item Garanzie: Confidenzialità (Trudy non legge m1, m2), Autenticazione Mittente (Alice), Integrità (m1, m2).
-    \item CA per chiavi pubbliche $K_{\text{b+}}$, $K_{\text{c+}}$, $K_{\text{a+}}$.
+    \item Alice spedisce \textit{m1} (breve) a Bob, e \textit{m2} (breve) a Charlie.
+    \item Bob e Charlie leggono \textit{m1} e \textit{m2}.
+    \item Bob e Charlie si scambiano \textit{m1} e \textit{m2}.
+    \item Garanzie: Confidenzialità (Trudy non legge \textit{m1}, \textit{m2}), Autenticazione Mittente (Alice), Integrità (\textit{m1}, \textit{m2}).
+    \item CA per chiavi pubbliche $K_B^+$, $K_C^+$, $K_A^+$.
 \end{itemize}
 
 \textbf{Passaggi:}
 \begin{enumerate}[label=\arabic*.]
-    \item \textbf{Alice $\to$ Bob (m1):}
+    \item \textbf{Alice $\to$ Bob (\textit{m1}):}
     \begin{itemize}
-        \item Requisiti: Confidenzialità per Bob, Integrità di m1, Autenticazione di Alice.
-        \item Messaggio: $K_{\text{b+}}(m1, K_{\text{a-}}(H(m1)))$
-        \item Bob riceve, decifra con $K_{\text{b-}}$. Ottiene $m1$ e $K_{\text{a-}}(H(m1))$.
-        \item Verifica firma: con $K_{\text{a+}}$ ottiene $H(m1)$. Calcola $H(m1_{\text{ricevuto}})$. Se coincidono, OK.
+        \item Requisiti: Confidenzialità per Bob, Integrità di \textit{m1}, Autenticazione di Alice.
+        \item Messaggio: $K_B^+(m1, K_A^-(H(m1)))$
+        \item Bob riceve, decifra con $K_B^-$. Ottiene $m1$ e $K_A^-(H(m1))$.
+        \item Verifica firma: con $K_A^+$ ottiene $H(m1)$. Calcola $H(m1_{\text{ricevuto}})$. Se coincidono, OK.
     \end{itemize}
-    \item \textbf{Alice $\to$ Charlie (m2):}
+    \item \textbf{Alice $\to$ Charlie (\textit{m2}):}
     \begin{itemize}
-        \item Requisiti: Confidenzialità per Charlie, Integrità di m2, Autenticazione di Alice.
-        \item Messaggio: $K_{\text{c+}}(m2, K_{\text{a-}}(H(m2)))$
+        \item Requisiti: Confidenzialità per Charlie, Integrità di \textit{m2}, Autenticazione di Alice.
+        \item Messaggio: $K_C^+(m2, K_A^-(H(m2)))$
         \item Charlie riceve e verifica similarmente.
     \end{itemize}
-    \item \textbf{Bob $\to$ Charlie (inoltra m1):}
-    Bob vuole mandare a Charlie il messaggio $m1$ che ha ricevuto da Alice, con le stesse garanzie originali (provenienza Alice, integrità). Charlie deve anche sapere che Bob lo sta inoltrando.
+    \item \textbf{Bob $\to$ Charlie (inoltra \textit{m1}):}
+    Bob vuole mandare a Charlie il messaggio \textit{m1} che ha ricevuto da Alice, con le stesse garanzie originali (provenienza Alice, integrità). Charlie deve anche sapere che Bob lo sta inoltrando.
     \begin{itemize}
-        \item Bob potrebbe fare: $K_{\text{c+}}( m1, K_{\text{a-}}(H(m1)), K_{\text{b-}}(H_{\text{bob}}(m1, K_{\text{a-}}(H(m1)))) )$
+        \item Bob potrebbe fare: $K_C^+( m1, K_A^-(H(m1)), K_B^-(H_{\text{bob}}(m1, K_A^-(H(m1)))) )$
         \begin{itemize}
-            \item $m1, K_{\text{a-}}(H(m1))$ è il messaggio originale firmato da Alice.
-            \item $K_{\text{b-}}(H_{\text{bob}}(...))$ è la firma di Bob sull'intero pacchetto che sta inoltrando, per autenticare Bob come \textit{inoltratore}.
-            \item $K_{\text{c+}}$ per confidenzialità verso Charlie.
+            \item $m1, K_A^-(H(m1))$ è il messaggio originale firmato da Alice.
+            \item $K_B^-(H_{\text{bob}}(...))$ è la firma di Bob sull'intero pacchetto che sta inoltrando, per autenticare Bob come \textit{inoltratore}.
+            \item $K_C^+$ per confidenzialità verso Charlie.
         \end{itemize}
-        \item \textit{L'esempio nella prova è più semplice e assume che la firma di Alice basti:} $K_{\text{c+}}(m1, K_{\text{a-}}(H(m1)))$. Questo va bene se Charlie si fida che Bob non alteri la parte $K_{\text{a-}}(H(m1))$.
+        \item \textit{L'esempio nella prova è più semplice e assume che la firma di Alice basti:} $K_C^+(m1, K_A^-(H(m1)))$. Questo va bene se Charlie si fida che Bob non alteri la parte $K_A^-(H(m1))$.
     \end{itemize}
-    \item \textbf{Charlie $\to$ Bob (inoltra m2):}
+    \item \textbf{Charlie $\to$ Bob (inoltra \textit{m2}):}
     \begin{itemize}
-        \item Simile: $K_{\text{b+}}(m2, K_{\text{a-}}(H(m2)))$
+        \item Simile: $K_B^+(m2, K_A^-(H(m2)))$
     \end{itemize}
 \end{enumerate}
 
 \textbf{Attacchi di Trudy (come specificato nella soluzione dell'esame):}
 \begin{itemize}
     \item \textbf{DoS:} Trudy può bloccare i pacchetti. Soluzione: "i militari" (cioè, infrastruttura resiliente, non un problema protocollare semplice).
-    \item \textbf{Replay:} Trudy può intercettare $K_{\text{b+}}(m1, K_{\text{a-}}(H(m1)))$ e rispedirlo a Bob più tardi.
+    \item \textbf{Replay:} Trudy può intercettare $K_B^+(m1, K_A^-(H(m1)))$ e rispedirlo a Bob più tardi.
     \begin{itemize}
         \item \textbf{Soluzione con Nonce:}
             \begin{itemize}
-                \item Alice $\to$ Bob: $K_{\text{b+}}(m1, K_{\text{a-}}(H(m1)), N1)$ dove N1 è un nonce.
+                \item Alice $\to$ Bob: $K_B^+(m1, K_A^-(H(m1)), N1)$ dove N1 è un nonce.
                 \item Bob deve tenere traccia dei Nonce usati per evitare duplicati.
                 \item Oppure, se lo scambio è richiesta-risposta, Bob può inviare un nonce a Alice, che Alice include nel suo messaggio.
             \end{itemize}
@@ -298,10 +283,10 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
 
 \subsection{Consigli e Errori Comuni}
 \begin{itemize}
-    \item \textbf{Ordine delle Operazioni:} Firma prima, poi cifra. $K_{\text{pub\_Dest}}(\text{Msg}, K_{\text{priv\_Mitt}}(H(\text{Msg})))$.
-    \item \textbf{Cifratura Simmetrica per Dati Grandi:} Ricorda $K_{\text{pub\_Dest}}(K_s), K_s(\text{Msg})$.
+    \item \textbf{Ordine delle Operazioni:} Firma prima, poi cifra. $K_{\text{Dest}}^+(\text{Msg}, K_{\text{Mitt}}^-(H(\text{Msg})))$.
+    \item \textbf{Cifratura Simmetrica per Dati Grandi:} Ricorda $K_{\text{Dest}}^+(K_s), K_s(\text{Msg})$.
     \item \textbf{Nonce/Timestamp:} Non dimenticarli se la protezione da replay è un requisito o se l'attaccante può ritardare/riordinare. Il nonce va protetto (cifrato o firmato insieme al resto).
-    \item \textbf{CA:} Senza una CA, le chiavi pubbliche non sono fidate (rischio MitM). L'esercizio spesso lo dà per assunto ("A chiede alla CA...").
+    \item \textbf{CA:} Senza una CA, le chiavi pubbliche non sono fidate (rischio MITM). L'esercizio spesso lo dà per assunto ("A chiede alla CA...").
 \end{itemize}
 
 \hrule % Linea orizzontale come separatore
@@ -611,8 +596,6 @@ Se l'output fosse stato \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown 
     \item \textbf{Distinguere Errori:} \texttt{Unknown host} è DNS. \texttt{No route to host} è routing locale. \texttt{Request timeout} è problema di raggiungibilità/risposta del target o perdita pacchetti.
 \end{itemize}
 
-\clearpage % Inizia una nuova pagina per la prossima sezione per chiarezza
-
 \section{Calcolo Prestazioni di Rete (Throughput, Latenza, Congestione)}
 
 \subsection{Concetti Chiave:}
@@ -648,7 +631,7 @@ Se l'output fosse stato \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown 
 
 \subsection{Esempio Svolto (TCP Stop\&Wait - Esercizio 1, "Soluzione Prova Scritta 10 Giugno 2022"):}
 \begin{itemize}
-    \item Protocollo TCP Stop\&Wait. Pacchetto L = 10\text{KB}. RTT = 1 milliSecondo.
+    \item Protocollo TCP Stop\&Wait. Pacchetto L = 10\text{KB}. RTT = 1 millisecondo.
     \item \textbf{Throughput medio:}
     \begin{itemize}
         \item L = 10 \text{KB} = $10 \cdot 1024$ Byte = $10 \cdot 1024 \cdot 8$ bit = 81920 bit. (L'esame usa 1KB = 1000B, quindi 10KB = 80000 bit). Usiamo la convenzione dell'esame.
@@ -709,8 +692,6 @@ Se l'output fosse stato \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown 
     \item \textbf{Slow Start vs Congestion Avoidance:} Comprendi la differenza e quando si passa da una all'altra.
 \end{itemize}
 
-\clearpage % Inizia una nuova pagina per la prossima sezione per chiarezza
-
 \section{Routing (Algoritmo di Dijkstra)}
 
 \subsection{Concetti Chiave:}
@@ -764,8 +745,6 @@ Se l'output fosse stato \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown 
     \item \textbf{Aggiornamento Predecessori:} Non dimenticare di aggiornare $p(v)$ quando trovi un cammino migliore per $D(v)$.
     \item \textbf{Next Hop vs Predecessore:} La tabella di routing usa il \textit{prossimo hop} dalla sorgente, non il predecessore diretto della destinazione.
 \end{itemize}
-
-\clearpage % Inizia una nuova pagina per la prossima sezione per chiarezza
 
 \section{Codifica del Segnale Wireless}
 
