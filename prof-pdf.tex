@@ -1,0 +1,200 @@
+\title{Esercizio wireless}
+
+\include{preambolo_comune}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Questo documento analizza un problema d'esame riguardante un sistema di comunicazione wireless, spiegando i concetti teorici e la soluzione passo dopo passo.
+\end{abstract}
+
+\section*{Testo del Problema}
+Un sistema di comunicazione wireless deve supportare comunicazione su distanza di \SI{5}{miglia} (\SI{1}{miglio} = \SI{1.609}{km}) utilizzando una frequenza di comunicazione di \SI{1.9}{GHz}. Se le due antenne non hanno alcuna ostruzione della zona di Fresnel e hanno entrambe un guadagno di \SI{+7}{dBi}, e il dispositivo ricevente ha una receiver sensitivity (RS) pari a \SI{-97}{dBm}.
+
+\begin{enumerate}[label=\textbf{\Alph*)}]
+    \item Quale deve essere la potenza trasmissiva del trasmettitore in \si{mW} per potere avere una comunicazione affidabile anche in una giornata di nebbia?
+    \item È possibile spostare i due dispositivi a distanza doppia mantenendo la stessa comunicazione? Spiegare.
+    \item A quanto ammonta la dimensione del 100\% raggio della zona di Fresnel in metri? (\SI{1}{feet} = \SI{30.5}{cm})
+\end{enumerate}
+
+\section{Concetti Teorici di Base}
+Prima di affrontare il problema, introduciamo alcuni concetti fondamentali:
+
+\subsection*{Potenza e Decibel (dB, dBm, dBi)}
+\begin{itemize}
+    \item \textbf{Watt (W) o milliwatt (mW):} Unità di misura assolute della potenza.
+    \item \textbf{Decibel (dB):} Un'unità logaritmica che esprime il rapporto tra due valori di potenza.
+        \begin{itemize}
+            \item \SI{+3}{dB} $\approx$ raddoppio della potenza.
+            \item \SI{-3}{dB} $\approx$ dimezzamento della potenza.
+            \item \SI{+10}{dB} $=$ potenza 10 volte maggiore.
+            \item \SI{-10}{dB} $=$ potenza 10 volte minore.
+        \end{itemize}
+    \item \textbf{dBm:} Decibel relativi a \SI{1}{mW}. Misura di potenza assoluta.
+        \begin{itemize}
+            \item $\SI{0}{dBm} = \SI{1}{mW}$
+            \item Formula: $P_{\text{dBm}} = 10 \log_{10}\left(\frac{P_{\text{mW}}}{\SI{1}{mW}}\right)$
+        \end{itemize}
+    \item \textbf{dBi:} Decibel relativi a un'antenna isotropica (antenna teorica ideale che irradia uniformemente in tutte le direzioni). Il guadagno di un'antenna in dBi indica quanto concentra la potenza in una direzione specifica.
+\end{itemize}
+
+\subsection*{Link Budget (Bilancio di Collegamento)}
+È il calcolo fondamentale per determinare la potenza del segnale che arriva al ricevitore:
+\begin{equation}
+    P_{rx} = P_{tx} + \sum G - \sum L
+\end{equation}
+dove $P_{rx}$ è la potenza ricevuta, $P_{tx}$ la potenza trasmessa, $\sum G$ la somma dei guadagni (es. antenne), e $\sum L$ la somma delle perdite (es. path loss). Tutti i valori sono in dB o dBm.
+
+\subsection*{Receiver Sensitivity (RS - Sensibilità del Ricevitore)}
+Minima potenza del segnale (in dBm) che il ricevitore deve ricevere per decodificare correttamente l'informazione.
+
+\subsection*{Path Loss (Perdita di Percorso)}
+Diminuzione della potenza del segnale mentre viaggia attraverso lo spazio. Dipende da frequenza, distanza e ambiente.
+
+\subsection*{Fade Operating Margin (FOM - Margine Operativo di Fading)}
+Un "cuscinetto" di potenza extra per assicurare che, nonostante fluttuazioni del segnale (fading) dovute a condizioni atmosferiche o ostacoli, la potenza ricevuta rimanga sopra la sensibilità del ricevitore.
+
+\section{Dati Forniti dal Problema}
+\begin{itemize}
+    \item Distanza ($d$): \SI{5}{miglia} = $5 \times \SI{1.609}{km} = \SI{8.045}{km}$
+    \item Frequenza ($f$): \SI{1.9}{GHz} = \SI{1900}{MHz}
+    \item Guadagno antenna trasmittente ($G_{tx}$): \SI{+7}{dBi}
+    \item Guadagno antenna ricevente ($G_{rx}$): \SI{+7}{dBi}
+    \item Receiver Sensitivity (RS): \SI{-97}{dBm}
+    \item Nessuna ostruzione della zona di Fresnel.
+\end{itemize}
+
+\section{Parte A: Calcolo Potenza Trasmittente ($P_{tx}$)}
+
+\begin{enumerate}[label=\textbf{Step \arabic*:}, wide, labelwidth=!, labelindent=0pt]
+    \item \textbf{Calcolo del Path Loss (Decay):}
+    La soluzione fornita indica:
+    \begin{equation}
+        \text{decay} = - (36.6 + 20\log_{10}(1900) + 20\log_{10}(5))
+    \end{equation}
+    dove 1900 è la frequenza in MHz e 5 è la distanza in miglia.
+    \begin{equation}
+        \text{decay} = \SI{-116.5}{dB}
+    \end{equation}
+    Questa è la perdita di segnale dovuta alla propagazione nello spazio.
+
+    \item \textbf{Calcolo della Potenza Ricevuta ($P_{rx}$) in termini di $P_{tx}$:}
+    Utilizzando il link budget (tutti i valori in dB, $P_{tx}$ e $P_{rx}$ saranno in dBm se $P_{tx}$ è in dBm):
+    \begin{align}
+        P_{rx} &= P_{tx} + G_{tx} + G_{rx} + \text{decay} \\
+        P_{rx} &= P_{tx} + \SI{7}{dBi} + \SI{7}{dBi} + (\SI{-116.5}{dB}) \\
+        P_{rx} &= P_{tx} + \SI{14}{dB} - \SI{116.5}{dB} \\
+        P_{rx} &= P_{tx} - \SI{102.5}{dB}
+    \end{align}
+    La soluzione dell'esame riporta $P_{rx} = P_{tx} - \SI{102.15}{dB}$. Useremo questo valore per coerenza con i passaggi successivi della soluzione fornita, assumendo una piccola discrepanza nel calcolo del decay o un arrotondamento intermedio.
+    Quindi: $P_{rx\text{(dBm)}} = P_{tx\text{(dBm)}} - 102.15$.
+
+    \item \textbf{Impostare la Condizione per Comunicazione Affidabile:}
+    Per una comunicazione affidabile, la potenza ricevuta deve superare la sensibilità del ricevitore di un margine operativo di fading (FOM). Il problema specifica un FOM di almeno \SI{10}{dB} per tollerare cadute da attenuazione (es. nebbia).
+    \begin{equation}
+        P_{rx\text{(dBm)}} - \text{RS}_{\text{(dBm)}} \geq \text{FOM}_{\text{(dB)}}
+    \end{equation}
+    Sostituendo i valori:
+    \begin{align}
+        (P_{tx\text{(dBm)}} - 102.15) - (\SI{-97}{dBm}) &\geq \SI{10}{dB} \\
+        P_{tx\text{(dBm)}} - 102.15 + 97 &\geq 10 \\
+        P_{tx\text{(dBm)}} - 5.15 &\geq 10 \\
+        P_{tx\text{(dBm)}} &\geq 10 + 5.15 \\
+        P_{tx\text{(dBm)}} &\geq \SI{15.15}{dBm}
+    \end{align}
+    La potenza trasmessa deve essere almeno \SI{15.15}{dBm}.
+
+    \item \textbf{Convertire $P_{tx}$ da dBm a mW:}
+    Sappiamo che $\SI{0}{dBm} = \SI{1}{mW}$.
+    La soluzione dell'esame usa un'approssimazione: $\SI{15}{dBm} = \SI{0}{dBm} + 5 \times \SI{3}{dB}$.
+    Poiché $\SI{+3}{dB}$ corrisponde a un raddoppio di potenza:
+    \begin{equation}
+        P_{tx} \approx \SI{1}{mW} \times 2 \times 2 \times 2 \times 2 \times 2 = \SI{1}{mW} \times 2^5 = \SI{32}{mW}
+    \end{equation}
+    Per un calcolo più preciso di \SI{15.15}{dBm}:
+    \begin{equation}
+        P_{\text{mW}} = 10^{(P_{\text{dBm}} / 10)} = 10^{(15.15 / 10)} = 10^{1.515} \approx \SI{32.73}{mW}
+    \end{equation}
+    La soluzione dell'esame si accontenta di "circa \SI{32}{mW}".
+\end{enumerate}
+
+\subsection*{Teoria Spiegata per la Parte A}
+\begin{itemize}
+    \item \textbf{Link Budget:} Utilizzato per calcolare la potenza ricevuta.
+    \item \textbf{dB/dBm:} Unità logaritmiche per semplificare i calcoli di guadagni e perdite.
+    \item \textbf{Receiver Sensitivity:} Soglia minima di potenza per il ricevitore.
+    \item \textbf{Fade Margin:} Margine di sicurezza per garantire l'affidabilità in condizioni avverse (es. nebbia, che causa attenuazione aggiuntiva).
+\end{itemize}
+
+\section{Parte B: Raddoppio della Distanza}
+
+\begin{enumerate}[label=\textbf{Step \arabic*:}, wide, labelwidth=!, labelindent=0pt]
+    \item \textbf{Effetto della Distanza sul Path Loss (Regola dei 6 dB):}
+    Il Path Loss nello spazio libero (FSPL) aumenta con il quadrato della distanza. In dB, raddoppiare la distanza aumenta la perdita di:
+    \begin{equation}
+        20 \log_{10}(2) \approx 20 \times 0.30103 \approx \SI{6.02}{dB}
+    \end{equation}
+    Quindi, raddoppiando la distanza, il segnale si attenua di circa ulteriori \SI{6}{dB}.
+
+    \item \textbf{Valutare l'impatto sul Fade Margin:}
+    Il FOM originale era di \SI{10}{dB}. Se la distanza raddoppia, la potenza ricevuta $P_{rx}$ diminuisce di \SI{6}{dB}. Di conseguenza, il FOM si riduce:
+    \begin{equation}
+        \text{Nuovo FOM} = \text{FOM originale} - \text{Perdita aggiuntiva}
+    \end{equation}
+    \begin{equation}
+        \text{Nuovo FOM} = \SI{10}{dB} - \SI{6}{dB} = \SI{4}{dB}
+    \end{equation}
+
+    \item \textbf{Conclusione:}
+    Poiché il nuovo FOM è \SI{4}{dB} (che è $> \SI{0}{dB}$), la potenza ricevuta è ancora \SI{4}{dB} al di sopra della soglia minima per una comunicazione (RS + margine zero).
+    Quindi, la comunicazione è \textbf{ancora possibile}. Tuttavia, il margine di sicurezza si è ridotto, rendendo il collegamento più vulnerabile a ulteriori disturbi o attenuazioni.
+\end{enumerate}
+
+\subsection*{Teoria Spiegata per la Parte B}
+\begin{itemize}
+    \item \textbf{Free Space Path Loss e Distanza:} La potenza del segnale diminuisce con $d^2$. La "regola dei 6 dB" per il raddoppio della distanza è una conseguenza diretta.
+\end{itemize}
+
+\section{Parte C: Raggio della Zona di Fresnel}
+
+\begin{enumerate}[label=\textbf{Step \arabic*:}, wide, labelwidth=!, labelindent=0pt]
+    \item \textbf{Concetto di Zona di Fresnel:}
+    La Zona di Fresnel è una serie di ellissoidi concentrici attorno alla linea di vista diretta (Line of Sight, LoS) tra trasmittente e ricevente. Le onde radio si espandono e le riflessioni su ostacoli vicini alla LoS possono causare interferenze. La prima zona di Fresnel ($F_1$) è la più importante. Per una buona comunicazione, si raccomanda che almeno il 60\% (idealmente il 100\%) del raggio della prima zona di Fresnel sia libero da ostacoli.
+
+    \item \textbf{Formula Fornita (per il raggio $R$ al centro del collegamento):}
+    \begin{equation}
+        R_{100\% \text{ (feet)}} = 72.2 \times \sqrt{\frac{\text{distanza (miglia)}}{4 \times \text{frequenza (GHz)}}}
+    \end{equation}
+    Dati: distanza = \SI{5}{miglia}, frequenza = \SI{1.9}{GHz}.
+
+    \item \textbf{Calcolo del Raggio in Feet:}
+    \begin{align}
+        R_{100\% \text{ (feet)}} &= 72.2 \times \sqrt{\frac{5}{4 \times 1.9}} \\
+        &= 72.2 \times \sqrt{\frac{5}{7.6}} \\
+        &= 72.2 \times \sqrt{0.65789\dots} \\
+        &= 72.2 \times 0.8111\dots \\
+        &\approx \SI{58.56}{feet}
+    \end{align}
+
+    \item \textbf{Conversione in Metri:}
+    Dato: \SI{1}{feet} = \SI{30.5}{cm} = \SI{0.305}{m}.
+    \begin{align}
+        R_{100\% \text{ (metri)}} &= \SI{58.56}{feet} \times \SI{0.305}{\frac{m}{feet}} \\
+        &\approx \SI{17.8608}{m}
+    \end{align}
+    La soluzione dell'esame riporta \SI{17.86}{cm}, che è quasi certamente un errore di battitura nell'unità di misura. Il risultato corretto con i dati forniti è \textbf{\SI{17.86}{metri}}. Un raggio di Fresnel di soli \SI{17}{cm} per un link di \SI{5}{miglia} sarebbe irrealisticamente piccolo.
+\end{enumerate}
+
+\subsection*{Teoria Spiegata per la Parte C}
+\begin{itemize}
+    \item \textbf{Zona di Fresnel:} Concetto cruciale per la pianificazione dei collegamenti radio LoS. Garantire la "clearance" (libertà da ostacoli) della prima zona di Fresnel è essenziale per minimizzare le perdite dovute a diffrazione e riflessioni.
+\end{itemize}
+
+\section*{Riepilogo e Punti Chiave}
+\begin{itemize}
+    \item \textbf{Parte A:} La potenza trasmessa necessaria si calcola partendo dalla sensibilità del ricevitore, aggiungendo un fade margin e compensando perdite di percorso e guadagni delle antenne tramite il link budget.
+    \item \textbf{Parte B:} Raddoppiare la distanza comporta un aumento del path loss di circa \SI{6}{dB}. La comunicazione resta possibile se il fade margin iniziale è sufficiente ad assorbire questa perdita, sebbene con un margine ridotto.
+    \item \textbf{Parte C:} La zona di Fresnel definisce lo spazio tridimensionale attorno alla linea di vista diretta che deve essere mantenuto libero da ostacoli per una propagazione ottimale del segnale.
+\end{itemize}
+
+\end{document}

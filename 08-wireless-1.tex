@@ -1064,27 +1064,60 @@ Uso di più antenne per combattere il multipath fading.
 
 \section{Path Loss e Link Budget}
 
-\subsection{Path Loss (Perdita di Percorso)}
-Il Path Loss, o perdita di percorso, descrive come la potenza di un segnale wireless si attenua (diminuisce) mentre si propaga attraverso lo spazio. È un concetto fondamentale per capire fino a che distanza un segnale può viaggiare e rimanere utilizzabile.
 
-\subsubsection{Fattori che Influenzano il Path Loss}
-Diversi fattori contribuiscono all'attenuazione del segnale:
+\subsection{Path Loss (Attenuazione del Percorso)}
+
+Il Path Loss, o attenuazione del percorso, descrive la riduzione della densità di potenza (o attenuazione) di un segnale elettromagnetico mentre si propaga attraverso lo spazio. Questa attenuazione è una funzione di diversi fattori, tra cui la frequenza del segnale, la distanza tra trasmettitore e ricevitore, e l'ambiente di propagazione.
+
+\subsubsection{Free Space Path Loss (FSPL)}
+
+Il modello più semplice per stimare il path loss è il Free Space Path Loss (FSPL), che assume una propagazione ideale in spazio libero, senza ostacoli, riflessioni o assorbimenti atmosferici significativi (condizioni ideali).
+La formula generale per il FSPL in decibel (dB) è:
+\begin{equation}
+L_{FSPL} \text{ (dB)} = K + 20 \log_{10}(F) + 20 \log_{10}(D)
+\label{eq:fspl_general}
+\end{equation}
+dove:
 \begin{itemize}
-    \item \textbf{Distanza:} Questo è il fattore più intuitivo. Più il segnale viaggia lontano dalla sorgente, più diventa debole. L'energia del segnale si disperde su un'area più vasta.
-    \item \textbf{Frequenza del Segnale:} Segnali a frequenze più alte tendono ad attenuarsi più rapidamente rispetto a segnali a frequenze più basse, specialmente quando attraversano ostacoli.
-    \item \textbf{Ambiente di Propagazione:} Gli ostacoli fisici (muri, edifici, alberi, colline) assorbono, riflettono, diffrangono o disperdono il segnale, causandone un'ulteriore perdita di potenza. Lo spazio aperto (``free space'') presenta la minore attenuazione, mentre ambienti urbani densi o interni con molti muri causano perdite maggiori.
+    \item $L_{FSPL}$ è l'attenuazione del percorso in spazio libero, espressa in dB.
+    \item $F$ è la frequenza del segnale.
+    \item $D$ è la distanza tra il trasmettitore e il ricevitore.
+    \item $K$ è una costante che dipende dalle unità di misura utilizzate per $F$ e $D$, e dalla velocità della luce.
 \end{itemize}
 
-\subsubsection{Calcolo del Path Loss (Free Space Path Loss - FSPL)}
-In condizioni ideali, senza ostacoli (spazio libero), il Path Loss può essere stimato con formule specifiche. Una formula comune è:
-\[ \text{FSPL (dB)} = 32.44 + 20 \log_{10}(f_{\text{MHz}}) + 20 \log_{10}(d_{\text{km}}) \]
-Dove:
+\subsubsection{Formule Specifiche e Costanti Utilizzate}
+
+Nel corso, vengono presentate due varianti della formula FSPL che differiscono per il valore della costante $K$. Questa differenza è tipicamente legata alle unità di misura impiegate per la distanza $D$, mantenendo la frequenza $F$ in Megahertz (MHz).
+
+\begin{enumerate}
+    \item \textbf{Costante 32.4 (Distanza in chilometri):}
+    Quando la distanza $D$ è espressa in chilometri (km) e la frequenza $F$ in Megahertz (MHz), la formula diventa:
+    \begin{equation}
+    L_{FSPL} \text{ (dB)} = 32.4 + 20 \log_{10}(F_{\text{MHz}}) + 20 \log_{10}(D_{\text{km}})
+    \label{eq:fspl_km}
+    \end{equation}
+    Questa costante (circa 32.448) deriva da $20 \log_{10}\left(\frac{4\pi}{c}\right)$ con le opportune conversioni di unità per frequenza in MHz e distanza in km.
+
+    \item \textbf{Costante 36.6 (Distanza in miglia):}
+    Quando la distanza $D$ è espressa in miglia terrestri (miles) e la frequenza $F$ in Megahertz (MHz), la formula è:
+    \begin{equation}
+    L_{FSPL} \text{ (dB)} = 36.6 + 20 \log_{10}(F_{\text{MHz}}) + 20 \log_{10}(D_{\text{miles}})
+    \label{eq:fspl_miles}
+    \end{equation}
+    Questa costante (circa 36.58, arrotondata a 36.6) deriva analogamente alla precedente, ma con la conversione della distanza in miglia (1 miglio $\approx$ 1.60934 km).
+\end{enumerate}
+
+\textbf{Interpretazione delle Costanti e Condizioni Ambientali:}
+Il professore suggerisce che la costante 36.6 (associata alle miglia) possa essere più adatta quando le condizioni meteorologiche non sono buone, mentre l'altra (32.4, associata ai km) quando sono migliori.
+È importante notare che la derivazione teorica del FSPL non include direttamente fattori meteorologici nella costante $K$. Le condizioni atmosferiche (pioggia, nebbia, neve) introducono tipicamente attenuazioni \textit{aggiuntive} al FSPL, che dipendono dalla frequenza e dall'intensità del fenomeno.
+
+L'approccio del professore potrebbe essere interpretato come:
 \begin{itemize}
-    \item $\text{FSPL (dB)}$ è la perdita di percorso in decibel (dB). I decibel sono un'unità logaritmica comoda per esprimere rapporti di potenza. Un valore negativo o maggiore in dB indica una perdita più alta.
-    \item $f_{\text{MHz}}$ è la frequenza del segnale in MegaHertz (MHz).
-    \item $d_{\text{km}}$ è la distanza tra trasmettitore e ricevitore in chilometri (km).
+    \item Una \textbf{semplificazione didattica}: per associare intuitivamente valori di attenuazione leggermente diversi a scenari diversi, pur utilizzando formule FSPL standard (ma con unità diverse).
+    \item L'inclusione di un \textbf{margine implicito}: la formula con 36.6 (per le miglia) produce, a parità di valore numerico della distanza, un'attenuazione maggiore di quella con 32.4 (per i km) se non si converte correttamente l'unità di distanza. Se il professore intendesse utilizzare la stessa unità (es. km) per entrambe le formule, allora la costante 36.6 includerebbe circa 4.2 dB di margine aggiuntivo rispetto alla formula con 32.4. Questo margine potrebbe rappresentare una stima forfettaria per perdite addizionali in condizioni non ideali.
+    \item L'utilizzo di \textbf{modelli empirici specifici}: in alcuni contesti, si potrebbero usare formule modificate che inglobano effetti medi ambientali direttamente nella costante, ma questo si discosta dal FSPL puro.
 \end{itemize}
-Questa formula mostra che il Path Loss aumenta con l'aumentare della frequenza e della distanza.
+In generale, per una progettazione accurata, le attenuazioni dovute a fattori ambientali specifici (come pioggia, fogliame, ostacoli) vengono calcolate separatamente e sommate al FSPL.
 
 \subsubsection{Regola Pratica dei 6 dB}
 Una regola empirica utile, derivata dalle formule di Path Loss (in particolare dall'attenuazione proporzionale a $d^2$ in spazio libero), è la ``regola dei 6 dB'':
@@ -1151,14 +1184,14 @@ Il seguente grafico illustra come la potenza del segnale diminuisce con la dista
     % Se assumiamo una potenza trasmessa normalizzata, la potenza ricevuta sarà come -20*log10(d) per spazio libero.
     % Per semplicità illustrativa, usiamo pendenze diverse.
     
-    \draw[red, thick] plot[domain=0.5:12, samples=50] (\x,{-2 - 2*10*log10(\x/0.5)}) node[right, font=\tiny, black] {Spazio libero};
-    \draw[blue, thick] plot[domain=0.5:10, samples=50] (\x,{-2 - 3.5*10*log10(\x/0.5)}) node[right, font=\tiny, black] {Ambiente urbano};
-    \draw[green, thick] plot[domain=0.5:7, samples=50] (\x,{-2 - 5*10*log10(\x/0.5)}) node[right, font=\tiny, black] {Indoor (con ostacoli)};
+    \draw[red, thick] plot[domain=0.5:12, samples=50] (\x,{max(-8, min(4, -2 - 1.5*log10(\x/0.5)))}) node[right, font=\tiny, black] {Spazio libero};
+    \draw[themeblue, thick] plot[domain=0.5:10, samples=50] (\x,{max(-8, min(4, -2 - 2.5*log10(\x/0.5)))}) node[right, font=\tiny, black] {Ambiente urbano};
+    \draw[green, thick] plot[domain=0.5:7, samples=50] (\x,{max(-8, min(4, -2 - 3.5*log10(\x/0.5)))}) node[right, font=\tiny, black] {Indoor (con ostacoli)};
     
     % Legenda esplicativa
     \node[draw, align=left, font=\small] at (9,3) {
         \textcolor{red}{— Spazio libero}: minor attenuazione\\
-        \textcolor{blue}{— Ambiente urbano}: attenuazione media\\
+        \textcolor{themeblue}{— Ambiente urbano}: attenuazione media\\
         \textcolor{green}{— Indoor}: massima attenuazione
     };
     
@@ -1168,19 +1201,20 @@ Il seguente grafico illustra come la potenza del segnale diminuisce con la dista
 
 \begin{table}[H]
 \centering
-\caption{Esempio Path Loss a \SI{2.4}{\giga\hertz} vs Distanza (FSPL, valori indicativi)}
 \begin{tabular}{|c|c|c|}
 \hline
-\textbf{Distanza} & \textbf{Path Loss (dB)} & \textbf{Variazione approx. dalla precedente} \\ \hline
-\SI{100}{\meter} (\SI{0.1}{\kilo\meter}) & \SI{-80.4}{dB} & - \\ \hline % 32.44 + 20*log10(2400) + 20*log10(0.1) = 32.44 + 67.6 - 20 = 80.04
-\SI{200}{\meter} (\SI{0.2}{\kilo\meter}) & \SI{-86.4}{dB} & $\approx \SI{-6}{dB}$ \\ \hline % 32.44 + 67.6 + 20*log10(0.2) = 100.04 - 13.98 = 86.06
-\SI{500}{\meter} (\SI{0.5}{\kilo\meter}) & \SI{-94.0}{dB} & $\approx \SI{-7.6}{dB}$ \\ \hline % 100.04 + 20*log10(0.5) = 100.04 - 6.02 = 94.02
-\SI{1000}{\meter} (\SI{1}{\kilo\meter}) & \SI{-100.0}{dB} & $\approx \SI{-6}{dB}$ \\ \hline % 100.04 + 0 = 100.04
+\textbf{Distanza} & \textbf{Path Loss} & \textbf{Variazione} \\ \hline
+\SI{100}{\meter} & \SI{-80.23}{dB} & - \\ \hline
+\SI{200}{\meter} & \SI{-86.25}{dB} & \SI{-6}{dB} \\ \hline
+\SI{500}{\meter} & \SI{-94.21}{dB} & \SI{-8}{dB} \\ \hline
+\SI{1000}{\meter} & \SI{-100.23}{dB} & \SI{-6}{dB} \\ \hline
+\SI{2000}{\meter} & \SI{-106.25}{dB} & \SI{-6}{dB} \\ \hline
+\SI{5000}{\meter} & \SI{-114.21}{dB} & \SI{-8}{dB} \\ \hline
+\SI{10000}{\meter} & \SI{-120.23}{dB} & \SI{-6}{dB} \\ \hline
 \end{tabular}
-\label{tab:path_loss_example} % Modificato label per evitare duplicati
+\label{tab:path_loss_example}
+\caption{Path Loss a \SI{2.4}{\giga\hertz} vs Distanza}
 \end{table}
-\textit{Nota: I valori nella tabella sono calcolati usando la formula FSPL per \SI{2.4}{\giga\hertz} e mostrano come raddoppiare la distanza aumenti il path loss di circa \SI{6}{dB}.}
-
 
 \subsection{Calcolo del Link Budget (System Operating Margin)}
 Il Link Budget (o bilancio di collegamento) è un calcolo completo che tiene conto di tutti i guadagni e le perdite di potenza che un segnale RF subisce dal trasmettitore fino al ricevitore. L'obiettivo è determinare se il segnale ricevuto sarà sufficientemente forte per una comunicazione affidabile.
