@@ -314,7 +314,21 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
         \item Data Rate = $\text{N}_{\text{subcarriers}} \times \text{R}_{\text{symbol}} \times \text{bits}_{\text{per\_symbol}} \times \text{coding\_rate}$
     \end{itemize}
     \item \textbf{PSK/QAM:} Tecniche di modulazione digitale (BPSK: 1 bit/simbolo, QPSK: 2 bit/simbolo, 16-QAM: 4 bit/simbolo, etc.).
-    \item \textbf{Zona di Fresnel:} Regione ellissoidale attorno al percorso diretto tra due antenne. Per una buona comunicazione, almeno il 60\% della prima zona di Fresnel dovrebbe essere libera da ostacoli.
+    \item \textbf{Zona di Fresnel:} Regione ellissoidale attorno al percorso diretto tra due antenne. Per una buona comunicazione, almeno il 60\% della prima zona di Fresnel dovrebbe essere libera da ostacoli. Il raggio massimo ($R_{F1}$) della prima Zona di Fresnel (al centro del collegamento) può essere calcolato con:
+    \[ R_{F1_{\text{100\%}}} (\text{piedi}) = 72.2 \times \sqrt{\frac{D (\text{miglia})}{4 \times F (\text{GHz})}} \]
+    Oppure, in modo equivalente:
+    \[ R_{F1_{\text{100\%}}} (\text{piedi}) = 36.1 \times \sqrt{\frac{D (\text{miglia})}{F (\text{GHz})}} \]
+    Dove:
+    \begin{itemize}
+        \item $R_{F1_{\text{100\%}}}$ è il raggio del 100\% della prima Zona di Fresnel in \textbf{piedi (feet)}.
+        \item $D$ è la distanza totale del collegamento in \textbf{miglia (miles)}.
+        \item $F$ è la frequenza del segnale in \textbf{Gigahertz (GHz)}.
+    \end{itemize}
+    Conversioni utili: $1 \text{ piede} \approx 0.305 \text{ metri}$, $1 \text{ miglio} \approx 1.609 \text{ chilometri}$.
+    \item \textbf{Path Loss:} Attenuazione del segnale con la distanza. Formula FSPL (Free Space Path Loss):
+    \[ L_{FSPL} = K + 20\log_{10}(F) + 20\log_{10}(D) \]
+    dove $K = 32.4$ (distanza in km) o $K = 36.6$ (distanza in miglia), $F$ in MHz, $D$ in km o miglia.
+    \textit{Nota: Per qualche strana ragione il prof considera $K = 32.4$ come buono scenario (buone condizioni) e $K = 36.6$ come brutto scenario (cattive condizioni, tipo nebbia, pioggia, ecc.).}
 \end{itemize}
 
 \subsection{Formule Utili}
@@ -324,7 +338,6 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
         \item $\text{P}(\text{dBm}) = 10 \times \log_{10}( \text{P}(\text{mW}) / 1\text{mW} )$
         \item $\text{P}(\text{mW}) = 1\text{mW} \times 10^{( \text{P}(\text{dBm}) / 10 )}$
     \end{itemize}
-    \item Path Loss Friis (spazio libero): $\text{L}_{\text{path}}(\text{dB}) = 20\log_{10}(d) + 20\log_{10}(f) + 20\log_{10}(4\pi/c) - \text{G}_{\text{tx}} - \text{G}_{\text{rx}}$ (se $\text{G}_{\text{tx}}, \text{G}_{\text{rx}}$ non sono nel budget a parte). Spesso viene data una formula semplificata o un valore.
     \item Bitrate (semplificato): $\text{Bitrate} = \text{SymbolRate} \times \text{bits}_{\text{per\_symbol}}$
     \item Tempo trasferimento: $\text{DimensioneFile (bit)} / \text{Bitrate (bit/s)}$
 \end{itemize}
