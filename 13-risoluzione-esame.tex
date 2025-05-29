@@ -340,6 +340,185 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
 \section{Comunicazioni Wireless (Link Budget, OFDM, Fresnel)}
 \label{sec:wireless}
 
+\subsection{Esempi Python (Concettuale)}
+\subsubsection{UDPClient.py}
+\begin{minted}{python}
+from socket import * # Importa tutti i simboli dal modulo socket
+
+serverName = 'hostname'   # Nome del server a cui connettersi
+serverPort = 12000        # Porta del server
+
+# Crea un socket UDP
+# AF_INET indica IPv4, SOCK_DGRAM indica UDP (datagram)
+clientSocket = socket(AF_INET, SOCK_DGRAM)
+
+# Ottieni input dall'utente
+message = input('Input lowercase sentence:')
+
+# Invia il messaggio al server
+# encode() converte la stringa in bytes per la trasmissione
+# sendto() richiede l'indirizzo del destinatario, a differenza di TCP
+clientSocket.sendto(message.encode(), (serverName, serverPort))
+
+# Ricevi la risposta dal server
+# recvfrom() restituisce sia i dati che l'indirizzo del mittente
+# 2048 è la dimensione massima del buffer di ricezione in bytes
+modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
+
+# Stampa il messaggio ricevuto (decodificato da bytes a stringa)
+print(modifiedMessage.decode())
+
+# Chiudi il socket (UDP è stateless, ma è buona pratica)
+clientSocket.close()
+\end{minted}
+
+\subsubsection{UDPServer.py}
+\begin{minted}{python}
+from socket import *
+serverPort = 12000
+
+# Crea un socket UDP
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+
+# Associa il socket alla porta specificata
+# '' indica che accetta connessioni su tutte le interfacce disponibili
+serverSocket.bind(('', serverPort))
+
+print("The server is ready to receive")
+
+# Loop infinito per servire i client
+while True:
+    # Attendi un messaggio (bloccante)
+    # UDP è connectionless - ogni recvfrom() può essere da un client diverso
+    message, clientAddress = serverSocket.recvfrom(2048)
+    
+    # Elabora il messaggio (converte in maiuscolo)
+    modifiedMessage = message.decode().upper()
+    
+    # Invia la risposta al client specifico che ha inviato il messaggio
+    serverSocket.sendto(modifiedMessage.encode(), clientAddress)
+    # UDP non tiene traccia delle connessioni, quindi non si chiude mai
+\end{minted}
+
+\subsubsection{TCPClient.py}
+\begin{minted}{python}
+from socket import *
+serverName = 'servername'
+serverPort = 12000
+
+# Crea un socket TCP
+# AF_INET indica IPv4, SOCK_STREAM indica TCP (stream)
+clientSocket = socket(AF_INET, SOCK_STREAM)
+
+# Stabilisce una connessione TCP con il server
+# In TCP, la connessione deve essere stabilita prima di inviare dati (3-way handshake)
+clientSocket.connect((serverName, serverPort))
+
+sentence = input('Input lowercase sentence:')
+
+# Invia i dati - non è necessario specificare l'indirizzo
+# perché la connessione è già stabilita
+clientSocket.send(sentence.encode())
+
+# Riceve la risposta - non è necessario l'indirizzo del mittente
+# perché il socket è già associato a una connessione specifica
+modifiedSentence = clientSocket.recv(1024)
+
+print('From Server:', modifiedSentence.decode())
+
+# Chiude la connessione
+clientSocket.close()
+\end{minted}
+
+\subsubsection{TCPServer.py}
+\begin{minted}{python}
+from socket import *
+serverPort = 12000
+
+# Crea un socket TCP di benvenuto (welcoming socket)
+serverSocket = socket(AF_INET, SOCK_STREAM)
+
+# Associa il socket alla porta specificata
+serverSocket.bind(('', serverPort))
+
+# Mette il socket in ascolto per connessioni in entrata
+# Il parametro indica la dimensione massima della coda di connessioni pendenti
+serverSocket.listen(1)
+
+print('The server is ready to receive')
+
+while True:
+    # Accetta una connessione in entrata
+    # Crea un nuovo socket (connection socket) dedicato a questo client
+    # addr contiene l'indirizzo (IP, porta) del client
+    connectionSocket, addr = serverSocket.accept()
+    
+    # Riceve i dati dal client tramite il socket di connessione
+    sentence = connectionSocket.recv(1024).decode()
+    
+    # Elabora i dati (converte in maiuscolo)
+    capitalizedSentence = sentence.upper()
+    
+    # Invia la risposta al client
+    connectionSocket.send(capitalizedSentence.encode())
+    
+    # Chiude il socket di connessione per questo client
+    # Il socket di benvenuto rimane aperto per accettare nuove connessioni
+    connectionSocket.close()
+\end{minted}
+
+\subsubsection{Differenze Chiave tra UDP e TCP}
+\begin{itemize}
+    \item \textbf{Connessione:} TCP è connection-oriented (richiede connessione), UDP è connectionless (senza stato).
+    \item \textbf{Affidabilità:} TCP garantisce la consegna e l'ordine dei pacchetti, UDP no.
+    \item \textbf{Overhead:} TCP ha maggiore overhead per garantire affidabilità (header più grandi, handshake, ACK).
+    \item \textbf{Socket Server:} In TCP, il server crea un socket di benvenuto e poi un socket specifico per ogni client. In UDP, usa un singolo socket per tutti i client.
+    \item \textbf{Invio dati:} In TCP si usa \texttt{send()}, in UDP \texttt{sendto()} con indirizzo destinatario.
+    \item \textbf{Ricezione:} In TCP si usa \texttt{recv()}, in UDP \texttt{recvfrom()} che restituisce anche l'indirizzo mittente.
+    \item \textbf{Chiusura:} In TCP è fondamentale chiudere il socket, in UDP è opzionale.
+    \item \textbf{Velocità:} UDP è più veloce per applicazioni che tollerano perdite (streaming, giochi).
+    \item \textbf{Casi d'uso:} TCP per applicazioni che richiedono affidabilità (web, email), UDP per applicazioni time-sensitive (VoIP, giochi online).
+\end{itemize}
+
+\subsubsection{Parametri dei Socket}
+Quando si crea un socket con \texttt{socket(famiglia, tipo, protocollo)}, è possibile utilizzare diverse combinazioni di parametri:
+
+\begin{itemize}
+    \item \textbf{Parametro famiglia} (primo parametro):
+    \begin{itemize}
+        \item \texttt{AF\_INET}: IPv4 - il più comune, usato negli esempi sopra
+        \item \texttt{AF\_INET6}: IPv6 - versione più recente del protocollo IP
+        \item \texttt{AF\_UNIX}/\texttt{AF\_LOCAL}: Socket per comunicazione locale tra processi sullo stesso sistema
+        \item \texttt{AF\_BLUETOOTH}: Per comunicazione Bluetooth
+        \item \texttt{AF\_CAN}: Per bus CAN (Controller Area Network), usato in automotive
+    \end{itemize}
+    
+    \item \textbf{Parametro tipo} (secondo parametro):
+    \begin{itemize}
+        \item \texttt{SOCK\_STREAM}: TCP - comunicazione orientata alla connessione, affidabile, bidirezionale
+        \item \texttt{SOCK\_DGRAM}: UDP - datagram, connectionless, non affidabile
+        \item \texttt{SOCK\_RAW}: Accesso diretto a livello IP, consente di costruire header personalizzati
+        \item \texttt{SOCK\_SEQPACKET}: Fornisce un canale bidirezionale affidabile per datagram di lunghezza fissa (come SCTP)
+        \item \texttt{SOCK\_RDM}: Fornisce un servizio di datagram affidabile (Reliable Datagram Mode)
+    \end{itemize}
+    
+    \item \textbf{Parametro protocollo} (terzo parametro, opzionale):
+    \begin{itemize}
+        \item Generalmente impostato a \texttt{0} (default) quando si usano le combinazioni standard
+        \item Per \texttt{SOCK\_RAW}, specifico protocollo IP (es. \texttt{IPPROTO\_ICMP} per ping, \texttt{IPPROTO\_TCP} per TCP raw)
+    \end{itemize}
+\end{itemize}
+
+\textbf{Esempi di combinazioni comuni:}
+\begin{itemize}
+    \item \texttt{socket(AF\_INET, SOCK\_STREAM, 0)}: Socket TCP IPv4 (usato in TCPClient.py e TCPServer.py)
+    \item \texttt{socket(AF\_INET, SOCK\_DGRAM, 0)}: Socket UDP IPv4 (usato in UDPClient.py e UDPServer.py)
+    \item \texttt{socket(AF\_INET6, SOCK\_STREAM, 0)}: Socket TCP IPv6
+    \item \texttt{socket(AF\_INET, SOCK\_RAW, IPPROTO\_ICMP)}: Socket raw per ping ICMP
+\end{itemize}
+
+\textbf{Nota:} La creazione di alcuni tipi di socket (come \texttt{SOCK\_RAW}) può richiedere privilegi amministrativi su molti sistemi.
+
 \subsection{Concetti Chiave}
 \begin{itemize}
     \item \textbf{Link Budget:} Bilancio delle potenze e delle perdite in un collegamento radio.
@@ -356,9 +535,115 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \item \textbf{6\text{dB} Rule:} Dimezzando la distanza, il segnale aumenta di 6\text{dB}. Raddoppiando la distanza, diminuisce di 6\text{dB} (approssimazione per spazio libero).
     \item \textbf{OFDM (Orthogonal Frequency Division Multiplexing):} Tecnica di modulazione che usa multiple sottoportanti ortogonali.
     \begin{itemize}
-        \item Data Rate = $\text{N}_{\text{subcarriers}} \times \text{R}_{\text{symbol}} \times \text{bits}_{\text{per\_symbol}} \times \text{coding\_rate}$
+        \item Data Rate [\si{bit/s}] = $\text{N}_{\text{subcarriers}} \times \text{R}_{\text{symbol}}$ [\si{simboli/s}] $\times \text{bits}_{\text{per\_symbol}} \times \text{coding\_rate}$
     \end{itemize}
     \item \textbf{PSK/QAM:} Tecniche di modulazione digitale (BPSK: 1 bit/simbolo, QPSK: 2 bit/simbolo, 16-QAM: 4 bit/simbolo, etc.).
+    \item \textbf{Tecniche di Modulazione Digitale:} Le principali tecniche sono:
+    \begin{itemize}
+        \item \textbf{ASK (Amplitude Shift Keying):}
+            \begin{itemize}
+                \item Modula l'ampiezza del segnale per rappresentare i bit
+                \item È la tecnica \textbf{più semplice} ma anche la \textbf{più vulnerabile} al rumore e all'interferenza
+                \item Molto sensibile alle variazioni di ampiezza del canale
+                \item \textbf{Esempio:} presenza di segnale = 1, assenza = 0
+                \item Segnale ASK: $s(t) = A_c(t) \cos(2\pi f_c t)$ dove:
+                    \begin{itemize}
+                        \item $A_c(t)$ è l'ampiezza che varia con i dati [\si{V}]
+                        \item $f_c$ è la frequenza della portante [\si{Hz}]
+                    \end{itemize}
+                \item Usata raramente nelle moderne comunicazioni wireless
+            \end{itemize}
+        
+        \item \textbf{FSK (Frequency Shift Keying):}
+            \begin{itemize}
+                \item Modula la frequenza del segnale
+                \item \textbf{Più robusta} di ASK contro il rumore
+                \item Segnale FSK: $s(t) = A_c \cos(2\pi f_i t)$ dove:
+                    \begin{itemize}
+                        \item $f_i$ è la frequenza per il simbolo i-esimo [\si{Hz}]
+                        \item $A_c$ è l'ampiezza costante [\si{V}]
+                    \end{itemize}
+                \item Richiede maggiore larghezza di banda rispetto ad ASK
+                \item Meno efficiente in termini di utilizzo dello spettro
+                \item Usata in applicazioni che richiedono affidabilità più che velocità
+            \end{itemize}
+        
+        \item \textbf{PSK (Phase Shift Keying):}
+            \begin{itemize}
+                \item Modula la fase del segnale
+                \item \textbf{Molto più robusta} di ASK contro il rumore
+                \item Segnale PSK: $s(t) = A_c \cos(2\pi f_c t + \phi_i)$ dove:
+                    \begin{itemize}
+                        \item $\phi_i$ è la fase per il simbolo i-esimo [\si{rad}]
+                        \item Per BPSK: $\phi_i \in \{0, \pi\}$
+                        \item Per QPSK: $\phi_i \in \{0, \pi/2, \pi, 3\pi/2\}$
+                    \end{itemize}
+                \item Mantiene ampiezza costante (vantaggio per amplificatori)
+                \item Varianti comuni: BPSK (2 fasi), QPSK (4 fasi), 8-PSK (8 fasi)
+                \item Ampiamente usata in comunicazioni wireless moderne
+            \end{itemize}
+        
+        \item \textbf{QAM (Quadrature Amplitude Modulation):}
+            \begin{itemize}
+                \item Combina modulazione di ampiezza e fase
+                \item Segnale QAM: $s(t) = I(t)\cos(2\pi f_c t) - Q(t)\sin(2\pi f_c t)$ dove:
+                    \begin{itemize}
+                        \item $I(t)$ è la componente in fase [\si{V}]
+                        \item $Q(t)$ è la componente in quadratura [\si{V}]
+                        \item $f_c$ è la frequenza della portante [\si{Hz}]
+                    \end{itemize}
+                \item Permette di trasmettere più bit per simbolo (alta efficienza spettrale)
+                \item Varianti comuni: 16-QAM, 64-QAM, 256-QAM
+                \item Richiede un \textbf{SNR più alto} per funzionare correttamente
+                \item Più sensibile al rumore delle modulazioni più semplici
+                \item Usata in Wi-Fi, 4G, 5G per alte velocità di trasmissione
+            \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Resistenza all'Interferenza (dal più robusto al più vulnerabile):}
+    \begin{enumerate}
+        \item FSK e BPSK (più robusti)
+        \item QPSK
+        \item QAM (16-QAM, 64-QAM, etc.)
+        \item ASK (più vulnerabile)
+    \end{enumerate}
+    
+    \textbf{Nota:} All'aumentare dell'efficienza spettrale (più bit per simbolo), diminuisce la robustezza contro l'interferenza. Per questo motivo, i sistemi moderni spesso utilizzano modulazioni adattive che cambiano schema in base alle condizioni del canale.
+
+    \item \textbf{Calcoli Pratici per Modulazioni Digitali:}
+    \begin{itemize}
+        \item \textbf{Formule Fondamentali:}
+        \begin{itemize}
+            \item Data Rate [\si{bit/s}] = Symbol Rate [\si{simboli/s}] × Bits per Simbolo
+            \item Tempo di Trasmissione [\si{s}] = Dimensione File [\si{bit}] / Data Rate [\si{bit/s}]
+            \item Bits per Simbolo per modulazione:
+                \begin{itemize}
+                    \item BPSK: 1 [\si{bit/simbolo}]
+                    \item QPSK: 2 [\si{bit/simbolo}]
+                    \item 8-PSK: 3 [\si{bit/simbolo}]
+                    \item 16-QAM: 4 [\si{bit/simbolo}]
+                    \item 64-QAM: 6 [\si{bit/simbolo}]
+                    \item 256-QAM: 8 [\si{bit/simbolo}]
+                \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{Esempio Pratico:} Trasmissione file 16 Mbit con QPSK
+        \begin{itemize}
+            \item Symbol Rate = 500.000 Sym/sec
+            \item QPSK → 2 bit/simbolo
+            \item Data Rate = 500.000 × 2 = 1.000.000 bit/sec = 1 Mbps
+            \item Tempo Base = 16 Mbit / 1 Mbps = 16 secondi
+        \end{itemize}
+        
+        \item \textbf{Correzione Errori:}
+        \begin{itemize}
+            \item Per correggere 1 bit ogni n bit → servono circa log₂(n) bit di parità
+            \item Esempio: 1 errore ogni 256 bit → 8 bit di parità
+            \item Overhead = (n + log₂(n))/n
+            \item Tempo Effettivo = Tempo Base × (1 + Overhead)
+        \end{itemize}
+    \end{itemize}
+
     \item \textbf{Zona di Fresnel:} Regione ellissoidale attorno al percorso diretto tra due antenne. Per una buona comunicazione, almeno il 60\% della prima zona di Fresnel dovrebbe essere libera da ostacoli. Il raggio massimo ($R_{F1}$) della prima Zona di Fresnel (al centro del collegamento) può essere calcolato con:
     \[ R_{F1_{\text{100\%}}} (\text{piedi}) = 72.2 \times \sqrt{\frac{D (\text{miglia})}{4 \times F (\text{GHz})}} \]
     Oppure, in modo equivalente:
@@ -466,12 +751,33 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
 
 \subsection{Formule Utili}
 \begin{itemize}
+    \item \textbf{dB (Decibel):} Rappresenta il rapporto tra due potenze:
+    \begin{itemize}
+        \item $\text{dB} = 10 \times \log_{10}( \frac{P_1}{P_2} )$, con $P_1 > P_2$ (se $P_1 < P_2$ allora $\text{dB} < 0$)
+        \item $P_1 = P_2 \times 10^{( \text{dB} / 10 )}$
+    \end{itemize}
     \item Conversione \text{mW} $\leftrightarrow$ \text{dBm}:
     \begin{itemize}
-        \item $\text{P}(\text{dBm}) = 10 \times \log_{10}( \text{P}(\text{mW}) / 1\text{mW} )$
-        \item $\text{P}(\text{mW}) = 1\text{mW} \times 10^{( \text{P}(\text{dBm}) / 10 )}$
+        \item $\text{P}(\text{dBm}) = 10 \times \log_{10}\left(\frac{\text{P}(\text{mW})}{1\text{mW}}\right)$ (se $\text{P}(\text{mW}) < 1\text{mW}$ allora $\text{P}(\text{dBm}) < 0$)
+        \item $\text{P}(\text{mW}) = 1\text{mW} \times 10^{\frac{\text{P}(\text{dBm})}{10}}$
     \end{itemize}
     \item Bitrate (semplificato): $\text{Bitrate} = \text{SymbolRate} \times \text{bits}_{\text{per\_symbol}}$
+    \item \textbf{Formule Bitrate e Capacità:}
+    \begin{itemize}
+        \item Teorema di Shannon-Hartley: $C = B \times \log_2(1 + \text{SNR})$
+        \begin{itemize}
+            \item $C$: capacità del canale in bit/s
+            \item $B$: larghezza di banda in Hz
+            \item $\text{SNR}$: rapporto segnale-rumore (lineare, non in dB)
+        \end{itemize}
+        \item Nyquist Rate: $\text{Bitrate}_{\text{max}} = 2B \times \log_2(M)$
+        \begin{itemize}
+            \item $B$: larghezza di banda in Hz
+            \item $M$: numero di livelli del segnale
+        \end{itemize}
+        \item SNR in dB: $\text{SNR}_{\text{dB}} = 10 \times \log_{10}(\text{SNR})$
+        \item Symbol Rate (Baud Rate): $\text{SR} = \frac{\text{Bitrate}}{\log_2(M)}$
+    \end{itemize}
     \item Tempo trasferimento: $\text{DimensioneFile (bit)} / \text{Bitrate (bit/s)}$
     \item Conversioni di unità di misura:
     \begin{itemize}
@@ -505,6 +811,11 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
         \end{itemize}
         \item \textbf{Regola pratica:} Se $\frac{\Delta d}{\lambda}$ è intero $\to$ in fase (costruttiva), se è $n.5$ $\to$ opposizione di fase (distruttiva)
         \item \textbf{Nota bene:} Aumentare potenza TX non risolve interferenza distruttiva!
+    \end{itemize}
+    \item \textbf{Valore Atteso:}
+    \begin{itemize}
+        \item $E[X] = \sum_{i} x_i \cdot p(x_i)$ (caso discreto)
+        \item $E[X] = \int_{-\infty}^{+\infty} x \cdot f(x) \, dx$ (caso continuo)
     \end{itemize}
 \end{itemize}
 
