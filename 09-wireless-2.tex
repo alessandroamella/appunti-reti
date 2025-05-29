@@ -870,6 +870,101 @@ Processo di variare proprietà di un segnale portante con un segnale modulante.
 \caption{Esempio Riassuntivo OFDM (IEEE 802.11a/g - valori indicativi)}
 \end{table}
 
+\section{Approfondimento sulla Modulazione Digitale}
+
+\subsection{M-PSK (Phase Shift Keying)}
+\begin{itemize}
+    \item In M-PSK, M rappresenta il numero di simboli possibili (es. 4-PSK = QPSK, 8-PSK, 16-PSK).
+    \item Ogni simbolo codifica $\log_2(M)$ bit.
+    \item I simboli sono disposti uniformemente su un cerchio (ampiezza costante).
+    \item \textbf{Separazione angolare} tra simboli adiacenti = $360°/M$.
+    \item \textbf{Regione di decisione} per ogni simbolo = $\pm(360°/(2M))$ attorno alla fase nominale.
+    \item \textbf{Esempio 8-PSK:}
+    \begin{itemize}
+        \item 8 simboli, 3 bit per simbolo ($\log_2(8) = 3$)
+        \item Separazione angolare = $360°/8 = 45°$
+        \item Regione di decisione = $\pm 22.5°$ attorno a ogni simbolo
+    \end{itemize}
+\end{itemize}
+
+\subsection{Distanza di Hamming e Codifica di Gray}
+\begin{itemize}
+    \item \textbf{Distanza di Hamming:} Numero di bit che differiscono tra due sequenze.
+    \begin{itemize}
+        \item Esempio: 000 e 001 hanno distanza 1, 000 e 011 hanno distanza 2
+        \item Maggiore è la distanza, più errori possono essere rilevati/corretti
+    \end{itemize}
+    \item \textbf{Codifica di Gray:} Codifica dove simboli adiacenti differiscono per un solo bit.
+    \begin{itemize}
+        \item \textbf{Vantaggi:} Minimizza gli errori di bit quando c'è un errore di simbolo
+        \item \textbf{Esempio 8-PSK con Gray:} 000 → 001 → 011 → 010 → 110 → 111 → 101 → 100
+        \item Se un simbolo viene interpretato come quello adiacente, solo 1 bit sarà errato
+    \end{itemize}
+\end{itemize}
+
+\subsection{Analisi degli Errori in Modulazioni Digitali}
+\begin{itemize}
+    \item \textbf{Symbol Error Rate (SER):} Probabilità di errore nel riconoscimento di un simbolo
+    \begin{itemize}
+        \item Dipende dalla deviazione di fase/ampiezza rispetto alle regioni di decisione
+        \item Aumenta con il numero di simboli (M) nella costellazione
+    \end{itemize}
+    \item \textbf{Bit Error Rate (BER):} Probabilità di errore di un singolo bit
+    \begin{itemize}
+        \item Con codifica di Gray: BER $\approx$ SER / $\log_2(M)$ (caso peggiore)
+        \item Con codifica di Gray e errori solo tra simboli adiacenti: BER $\approx$ SER
+    \end{itemize}
+    \item \textbf{Cause di Errore:}
+    \begin{itemize}
+        \item Rumore del canale
+        \item Interferenza
+        \item Distorsione di fase
+        \item Attenuazione del segnale
+    \end{itemize}
+\end{itemize}
+
+\subsection{Tecniche di Rilevamento e Correzione Errori}
+\begin{itemize}
+    \item \textbf{Bit di Parità:}
+    \begin{itemize}
+        \item Aggiunge un bit extra per rendere pari/dispari il numero di '1'
+        \item Può rilevare errori singoli ma non correggerli
+    \end{itemize}
+    \item \textbf{Codici di Hamming:}
+    \begin{itemize}
+        \item Aggiungono bit di controllo in posizioni specifiche
+        \item Possono rilevare e correggere errori singoli
+        \item Esempio: Hamming(7,4) - 4 bit di dati, 3 bit di controllo
+    \end{itemize}
+    \item \textbf{Codici CRC (Cyclic Redundancy Check):}
+    \begin{itemize}
+        \item Usano polinomi per generare checksum
+        \item Ottimi per rilevare burst di errori
+    \end{itemize}
+\end{itemize}
+
+\subsection{Considerazioni Pratiche per gli Esercizi}
+\begin{itemize}
+    \item \textbf{Analisi della Modulazione:}
+    \begin{itemize}
+        \item Identificare tipo (M-PSK, M-QAM) e numero di simboli (M)
+        \item Calcolare bit per simbolo ($\log_2(M)$)
+        \item Determinare separazione angolare ($360°/M$)
+    \end{itemize}
+    \item \textbf{Valutazione degli Errori:}
+    \begin{itemize}
+        \item Confrontare deviazione massima con regione di decisione
+        \item Considerare probabilità di superamento delle soglie
+        \item Con Gray coding, errori tra simboli adiacenti = 1 bit errato
+    \end{itemize}
+    \item \textbf{Formule Utili:}
+    \begin{itemize}
+        \item Separazione angolare = $360°/M$
+        \item Regione di decisione = $\pm(360°/(2M))$
+        \item Bit per simbolo = $\log_2(M)$
+        \item BER $\approx$ SER con Gray coding e errori adiacenti
+    \end{itemize}
+\end{itemize}
 
 \section{Conclusione Generale}
 La differenza tra trasmissioni wireless "buone" e "cattive", a parità di condizioni fisiche, risiede principalmente nelle \textbf{scelte intelligenti} riguardanti:
