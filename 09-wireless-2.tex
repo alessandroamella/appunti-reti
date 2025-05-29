@@ -152,32 +152,32 @@ La copertura dipende dalla potenza di trasmissione (Tx power) e dalla sensibilit
 \begin{tikzpicture}[scale=0.7, transform shape]
     % Host Isolati
     \node (A1) [circle, draw, fill=green!20, minimum size=2cm, label=center:A] at (0,0) {};
-    \node (PC_A1) [scale=0.7] at (A1.center) {\includegraphics[width=1.2cm]{example-image-a}}; % Increased size
+    \node (PC_A1) [rectangle, draw, fill=white, minimum width=0.8cm, minimum height=0.6cm] at (A1.center) {PC};
     \shade[ball color=green!30, opacity=0.3] (A1.center) circle (1cm);
 
     \node (B1) [circle, draw, fill=yellow!20, minimum size=3cm, label=center:B] at (4,0) {};
-    \node (PC_B1) [scale=0.7] at (B1.center) {\includegraphics[width=1.2cm]{example-image-b}}; % Increased size
+    \node (PC_B1) [rectangle, draw, fill=white, minimum width=0.8cm, minimum height=0.6cm] at (B1.center) {PC};
     \shade[ball color=yellow!30, opacity=0.3] (B1.center) circle (1.5cm);
     \node at (2,-2) {(a) Host Isolati};
 
     % Link Unidirezionale
     \node (A2) [circle, draw, fill=green!20, minimum size=2cm, label=center:A] at (0,-4) {};
-    \node (PC_A2) [scale=0.7] at (A2.center) {\includegraphics[width=1.2cm]{example-image-a}}; % Increased size
+    \node (PC_A2) [rectangle, draw, fill=white, minimum width=0.8cm, minimum height=0.6cm] at (A2.center) {PC};
     \shade[ball color=green!30, opacity=0.3] (A2.center) circle (1cm);
 
     \node (B2) [circle, draw, fill=yellow!20, minimum size=3cm, label=center:B] at (3,-4) {};
-    \node (PC_B2) [scale=0.7] at (B2.center) {\includegraphics[width=1.2cm]{example-image-b}}; % Increased size
+    \node (PC_B2) [rectangle, draw, fill=white, minimum width=0.8cm, minimum height=0.6cm] at (B2.center) {PC};
     \shade[ball color=yellow!30, opacity=0.3] (B2.center) circle (1.5cm);
     \draw[-latex, thick] (B2) -- (A2);
     \node at (1.5,-6) {(b) Link Unidirezionale (B$\rightarrow$A)};
 
     % Link Bidirezionale
     \node (A3) [circle, draw, fill=green!20, minimum size=2.5cm, label=center:A] at (0,-8) {};
-    \node (PC_A3) [scale=0.7] at (A3.center) {\includegraphics[width=1.2cm]{example-image-a}}; % Increased size
+    \node (PC_A3) [rectangle, draw, fill=white, minimum width=0.8cm, minimum height=0.6cm] at (A3.center) {PC};
     \shade[ball color=green!30, opacity=0.3] (A3.center) circle (1.25cm);
 
     \node (B3) [circle, draw, fill=yellow!20, minimum size=2.5cm, label=center:B] at (3,-8) {};
-    \node (PC_B3) [scale=0.7] at (B3.center) {\includegraphics[width=1.2cm]{example-image-b}}; % Increased size
+    \node (PC_B3) [rectangle, draw, fill=white, minimum width=0.8cm, minimum height=0.6cm] at (B3.center) {PC};
     \shade[ball color=yellow!30, opacity=0.3] (B3.center) circle (1.25cm);
     \draw[latex-latex, thick, red] (A3) -- (B3);
     \node at (1.5,-10) {(c) Link Bidirezionale};
