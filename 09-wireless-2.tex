@@ -96,31 +96,51 @@
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[scale=1.0, transform shape]
-    % Channel A - Higher data rate channel
-    \node[anchor=east] at (-0.5, 4) {freq.};
-    \draw[->] (0,3.5) -- (0,4.5);
-    \draw[->] (0,2.5) -- (5,2.5) node[right] {tempo};
-    \node[anchor=east] at (-0.2, 3) {\textbf{Canale A}};
-    \foreach \i in {0,1,...,4} {
-        \fill[yellow!80!black] (\i*0.8, 2.8) rectangle (\i*0.8+0.4, 3.2);
-        \draw (\i*0.8, 2.8) rectangle (\i*0.8+0.4, 3.2);
-    }
-    \node[anchor=west] at (4.2, 3) {$10 \text{ bit/s}$ (più lento)};
-
-    % Channel B - Lower data rate channel
-    \node[anchor=east] at (-0.2, 0.5) {\textbf{Canale B}};
-    \foreach \i in {0,1,...,9} {
-        \fill[yellow!80!black] (\i*0.4, 0.3) rectangle (\i*0.4+0.2, 0.7);
-        \draw (\i*0.4, 0.3) rectangle (\i*0.4+0.2, 0.7);
-    }
-    \node[anchor=west] at (4.2, 0.5) {$20 \text{ bit/s}$ (più veloce)};
+\begin{tikzpicture}[scale=1.2]
+    % Canale A - Banda stretta
+    \node at (-1, 4.5) {\textbf{Canale A}};
     
-    % Time marker
-    \draw[thick] (2, 2.4) -- (2, 2.6);
-    \node[anchor=north] at (2,2.3) {1 secondo};
+    % Assi per Canale A 
+    \draw[->] (0,3.5) -- (0,5.5) node[above] {freq};
+    \draw[->] (0,3.5) -- (6,3.5) node[right] {tempo};
+    
+    % Bit del Canale A (banda stretta - altezza piccola)
+    \foreach \i in {0,1,2,3,4} {
+        \fill[blue!70] (\i*1 + 0.5, 4) rectangle (\i*1 + 1, 4.3);
+        \draw (\i*1 + 0.5, 4) rectangle (\i*1 + 1, 4.3);
+    }
+    
+    % Indicatore larghezza banda A
+    \draw[<->] (6.2, 4) -- (6.2, 4.3);
+    \node[right] at (6.4, 4.15) {\small Banda stretta};
+    
+    \node[right] at (6, 4.7) {10 bit/s};
+    
+    % Canale B - Banda larga  
+    \node at (-1, 2) {\textbf{Canale B}};
+    
+    % Assi per Canale B
+    \draw[->] (0,1) -- (0,3) node[above] {freq};
+    \draw[->] (0,1) -- (6,1) node[right] {tempo};
+    
+    % Bit del Canale B (banda larga - altezza grande)
+    \foreach \i in {0,1,2,3,4} {
+        \fill[red!70] (\i*1 + 0.5, 1.3) rectangle (\i*1 + 1, 2.3);
+        \draw (\i*1 + 0.5, 1.3) rectangle (\i*1 + 1, 2.3);
+    }
+    
+    % Indicatore larghezza banda B
+    \draw[<->] (6.2, 1.3) -- (6.2, 2.3);
+    \node[right] at (6.4, 1.8) {\small Banda larga};
+    
+    \node[right] at (6, 2.5) {20 bit/s};
+    
+    % Marcatore temporale
+    \draw[dashed] (5, 0.5) -- (5, 5.8);
+    \node at (5, 0.2) {1 secondo};
+    
 \end{tikzpicture}
-\caption{Confronto larghezza di banda: il Canale B trasmette il doppio dei bit al secondo rispetto al Canale A.}
+\caption{Confronto larghezza di banda: il Canale B ha una banda più larga (maggiore estensione spettrale) e trasmette il doppio dei bit al secondo rispetto al Canale A.}
 \label{fig:bandwidth_comparison}
 \end{figure}
 

@@ -181,7 +181,22 @@ Data la rete di Classe C \texttt{212.11.24.0/24}.
     \end{itemize}
 \end{enumerate}
 
-\section{Instradamento dei Pacchetti (Routing)}
+\subsection{Supernetting (Superrete)}
+Il supernetting, o superrete, è il processo inverso al subnetting. Consiste nel combinare più reti più piccole e contigue in un unico blocco di indirizzi più grande, rappresentato da una singola route (route aggregation/summarization).
+\begin{itemize}
+    \item \textbf{Scopo:} Ridurre la dimensione delle tabelle di routing nei router. Se un router ha più rotte verso reti contigue che possono essere aggregate, può sostituirle con una singola route "supernet".
+    \item \textbf{Come Funziona:} Si "restituiscono" bit dalla parte di rete alla parte host, diminuendo la lunghezza del prefisso della maschera (es. da \texttt{/24} a \texttt{/22}).
+    \item \textbf{Esempio:} Le reti \texttt{192.168.0.0/24} e \texttt{192.168.1.0/24} possono essere aggregate in \texttt{192.168.0.0/23}.
+    Per farlo, si identificano i bit comuni nella parte di rete.
+    \begin{minted}{text}
+192.168.0.0 = 11000000.10101000.00000000.00000000
+192.168.1.0 = 11000000.10101000.00000001.00000000
+    \end{minted}
+    I primi 23 bit sono uguali. Quindi, la super-rete è \texttt{192.168.0.0/23}, che copre gli indirizzi da \texttt{192.168.0.0} a \texttt{192.168.1.255}.
+    La nuova maschera \texttt{/23} è \texttt{255.255.254.0}.
+\end{itemize}
+
+\section{Routing (Instradamento dei Pacchetti)}
 
 \subsection{Decisione Iniziale del Mittente}
 Quando un host (mittente) deve inviare un pacchetto:
@@ -225,7 +240,7 @@ Quando un router riceve un pacchetto, segue questo processo decisionale:
     \cline{3-3}
     & & \textbf{c)} Cerca corrispondenza più specifica (\textit{longest prefix match}) \\
     \cline{3-3}
-    & & \textbf{d)} Se nessuna corrispondenza: usa rotta di default o scarta \\
+    & & \textbf{d)} Se nessuna corrispondenza: usa route di default o scarta \\
     \hline
     \end{tabular}
     \caption{Processo decisionale del router per l'instradamento}
@@ -337,13 +352,13 @@ Quando un router riceve un pacchetto, segue questo processo decisionale:
     \begin{itemize}
         \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.0.0}) = \texttt{130.136.0.0}.
         \item Rete di Ry è \texttt{140.217.0.0}. Sono diverse.
-        \item Ry consulta la sua tabella: trova rotta per \texttt{130.136.0.0/16} via router Rz (\texttt{190.89.0.254}). Inoltra a Rz.
+        \item Ry consulta la sua tabella: trova route per \texttt{130.136.0.0/16} via router Rz (\texttt{190.89.0.254}). Inoltra a Rz.
     \end{itemize}
     \item \textbf{Router Rz (IP interf. es. \texttt{190.89.0.254}, mask interf. \texttt{255.255.0.0}):}
     \begin{itemize}
         \item Destinazione (\texttt{130.136.2.33}) AND Mask interfaccia (\texttt{255.255.0.0}) = \texttt{130.136.0.0}.
         \item Rete di Rz è \texttt{190.89.0.0}. Sono diverse.
-        \item Rz consulta la tabella: trova rotta per \texttt{130.136.0.0/16} via router Rk (\texttt{130.136.0.254}). Inoltra a Rk.
+        \item Rz consulta la tabella: trova route per \texttt{130.136.0.0/16} via router Rk (\texttt{130.136.0.254}). Inoltra a Rk.
     \end{itemize}
     \item \textbf{Router Rk (IP interf. \texttt{130.136.0.254}, mask interf. \texttt{255.255.0.0}):}
     \begin{itemize}

@@ -69,30 +69,53 @@
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|}
 \hline
 \rowcolor{bg_custom}
-\textbf{CIDR} & \textbf{Subnet Mask} & \textbf{Host Bits} & \textbf{Host Disponibili} \\
+\textbf{CIDR} & \textbf{Subnet Mask} & \textbf{Host Bits} & \textbf{Host Disp.} & \textbf{Classe} & \textbf{Range Pattern} \\
 \hline
-/8  & 255.0.0.0 & 24 & 16777214 \\
-/16 & 255.255.0.0 & 16 & 65534 \\
-/17 & 255.255.128.0 & 15 & 32766 \\
-/18 & 255.255.192.0 & 14 & 16382 \\
-/19 & 255.255.224.0 & 13 & 8190 \\
-/20 & 255.255.240.0 & 12 & 4094 \\
-/21 & 255.255.248.0 & 11 & 2046 \\
-/22 & 255.255.252.0 & 10 & 1022 \\
-/23 & 255.255.254.0 & 9  & 510 \\
-/24 & 255.255.255.0 & 8  & 254 \\
-/25 & 255.255.255.128 & 7  & 126 \\
-/26 & 255.255.255.192 & 6  & 62 \\
-/27 & 255.255.255.224 & 5  & 30 \\
-/28 & 255.255.255.240 & 4  & 14 \\
-/29 & 255.255.255.248 & 3  & 6 \\
-/30 & 255.255.255.252 & 2  & 2 \\
+\rowcolor{bg_custom_2}
+/8  & 255.0.0.0 & 24 & 16777214 & A & x.[0-255].[0-255].[0-255] \\
+\hline
+/16 & 255.255.0.0 & 16 & 65534 & B & x.x.[0-255].[0-255] \\
+\hline
+\rowcolor{bg_custom_2}
+/17 & 255.255.128.0 & 15 & 32766 & & x.x.[0-127/128-255].[0-255] \\
+\hline
+/18 & 255.255.192.0 & 14 & 16382 & & x.x.[0,64,128,192].[0-255] \\
+\hline
+\rowcolor{bg_custom_2}
+/19 & 255.255.224.0 & 13 & 8190 & & x.x.[0,32,64,...,224].[0-255] \\
+\hline
+/20 & 255.255.240.0 & 12 & 4094 & & x.x.[0,16,32,...,240].[0-255] \\
+\hline
+\rowcolor{bg_custom_2}
+/21 & 255.255.248.0 & 11 & 2046 & & x.x.[0,8,16,...,248].[0-255] \\
+\hline
+/22 & 255.255.252.0 & 10 & 1022 & & x.x.[0,4,8,...,252].[0-255] \\
+\hline
+\rowcolor{bg_custom_2}
+/23 & 255.255.254.0 & 9  & 510 & & x.x.y.[0-255] (y pari) \\
+\hline
+/24 & 255.255.255.0 & 8  & 254 & C & x.x.x.[0-255] \\
+\hline
+\rowcolor{bg_custom_2}
+/25 & 255.255.255.128 & 7  & 126 & & x.x.x.[0-127/128-255] \\
+\hline
+/26 & 255.255.255.192 & 6  & 62 & & x.x.x.[0,64,128,192] \\
+\hline
+\rowcolor{bg_custom_2}
+/27 & 255.255.255.224 & 5  & 30 & & x.x.x.[0,32,64,...,224] \\
+\hline
+/28 & 255.255.255.240 & 4  & 14 & & x.x.x.[0,16,32,...,240] \\
+\hline
+\rowcolor{bg_custom_2}
+/29 & 255.255.255.248 & 3  & 6 & & x.x.x.[0,8,16,...,248] \\
+\hline
+/30 & 255.255.255.252 & 2  & 2 & & x.x.x.[0,4,8,...,252] \\
 \hline
 \end{tabular}
-\caption{Mappatura CIDR a subnet mask e numero di host ($2^h - 2$ dove $h$ = bit host)}
+\caption{Mappatura CIDR a subnet mask e numero di host ($2^h - 2$ dove $h$ = bit host). La x indica qualsiasi valore valido (0-255).}
 \end{table}
 
 \subsection{Esempio Svolto (basato su Esercizio 9, "Scritto 26 Maggio 2023" e "Scritto Reti Di Calcolatori 2024-30-31")}
@@ -202,20 +225,42 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \end{itemize}
     \item \textbf{Costruisci i Messaggi:} Combina gli strumenti per soddisfare i requisiti.
     \begin{itemize}
-        \item Es: Alice invia M a Bob, confidenziale, autenticato, integro: $K_B^+( M, K_A^-(H(M)) )$. (Non ideale per M grande)
-        \item Meglio per M grande: Alice invia a Bob:
+        % \item Es: Alice invia M a Bob, confidenziale, autenticato, integro: $K_B^+( M, K_A^-(H(M)) )$. (Non ideale per M grande)
+        \item Es: Alice invia M a Bob, confidenziale, autenticato, integro:
         \begin{itemize}
-            \item $K_B^+(K_s)$: Chiave simmetrica cifrata con la chiave pubblica di Bob
-            \item $K_s(M, K_A^-(H(M)))$: Messaggio e firma cifrati con la chiave simmetrica
+            \item $K_B^+(M)$: Cifratura di M con la chiave pubblica di Bob.
+            \item $K_A^-(H(M))$: Firma digitale di Alice dell'hash di M. Chiunque con $K_A^+$ può verificarla.
         \end{itemize}
-        O più spesso:
+        \item Meglio per M grande (approccio del professore): Alice invia a Bob:
         \begin{itemize}
-            \item $K_B^+(K_s)$: Chiave simmetrica cifrata con la chiave pubblica di Bob
+            \item $K_B^+(K_A^-(K_s))$: Chiave simmetrica firmata da Alice e cifrata con la chiave pubblica di Bob
             \item $K_s(M)$: Messaggio cifrato con la chiave simmetrica
-            \item $K_A^-(H( K_s(M) ))$: Firma del messaggio cifrato
+            \item $K_A^-(H(M))$: Firma digitale di Alice dell'hash del messaggio originale
         \end{itemize}
     \end{itemize}
-    \item \textbf{Gestisci i Replay:} Includi Nonce (N) o Timestamp (T) nel messaggio, tipicamente firmati o cifrati insieme al messaggio per proteggerli.
+    \item \textbf{Gestisci i Replay:} Includi un nonce R firmato dal mittente: $K_A^-(R)$.
+
+    \item \textbf{Garanzie di Sicurezza - Cosa Aggiungere:}
+    \begin{itemize}
+        \item \textbf{Mittente (Autenticazione):} Aggiungi $K_A^-(H(M))$ - la firma digitale di Alice dimostra che lei è la mittente.
+        \item \textbf{Integrità:} L'hash $H(M)$ garantisce che il messaggio non è stato modificato. La firma di Alice $K_A^-(H(M))$ garantisce che l'hash stesso non sia stato alterato.
+        \item \textbf{Confidenzialità:} 
+        \begin{itemize}
+            \item Per messaggi piccoli: usa $K_B^+(M)$ - cifratura con chiave pubblica del destinatario.
+            \item Per messaggi grandi: usa $K_B^+(K_A^-(K_s))$ e $K_s(M)$ - chiave simmetrica firmata e cifrata, più messaggio cifrato simmetricamente.
+        \end{itemize}
+        \item \textbf{Non Replay:} Aggiungi un nonce R firmato dal mittente: $K_A^-(R)$. Il nonce deve essere nuovo per ogni messaggio.
+        \item \textbf{Inoltro (es. Bob inoltra a Charlie):} È sufficiente includere la firma originale $K_A^-(H(M))$ insieme al messaggio. Questo dimostra che il messaggio originale veniva effettivamente da Alice.
+    \end{itemize}
+
+    \item \textbf{Esempio Completo (con tutte le garanzie):}
+    Alice invia a Bob un messaggio M grande con tutte le garanzie:
+    \begin{itemize}
+        \item $K_B^+(K_A^-(K_s))$ - confidenzialità della chiave + autenticazione mittente
+        \item $K_s(M)$ - confidenzialità del messaggio
+        \item $K_A^-(H(M))$ - autenticazione mittente + integrità
+        \item $K_A^-(R)$ - protezione da replay
+    \end{itemize}
     \item \textbf{Considera Trudy (Attaccante):}
     \begin{itemize}
         \item \textbf{DoS (Denial of Service):} Trudy può bloccare i messaggi. Difficile da prevenire a livello protocollare senza ridondanza o "i militari".
@@ -341,6 +386,84 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \textit{\textbf{Nota bene:} Per qualche strana ragione il prof considera $K = 32.4$ come buono scenario (buone condizioni) e $K = 36.6$ come brutto scenario (cattive condizioni, tipo nebbia, pioggia, ecc.), mentre invece la distanza la considera \textbf{sempre in miglia!!}.}
 \end{itemize}
 
+
+\subsection{Esempio Svolto (OFDM Bitrate - Esercizio 7 ripasso finale)}
+\textbf{Domanda:} Se uso una OFDM da 40 subcarrier con QPSK con 1000 simboli al secondo per subcarrier, a quanto ammonta il bitrate nominale del canale?
+
+\textbf{Soluzione:}
+\begin{itemize}
+    \item Numero di subcarrier ($N_{\text{subcarriers}}$) = 40.
+    \item Symbol rate per subcarrier ($R_{\text{symbol\_per\_subcarrier}}$) = 1000 simboli/secondo.
+    \item Modulazione: QPSK (Quadrature Phase Shift Keying).
+    \begin{itemize}
+        \item QPSK ha 4 possibili stati di fase, quindi può codificare $\log_2(4) = 2$ bit per simbolo.
+        \item Bits per simbolo ($bits_{\text{per\_symbol}}$) = 2.
+    \end{itemize}
+    \item Il bitrate totale del canale si calcola come:
+    \[ \text{Bitrate} = N_{\text{subcarriers}} \times R_{\text{symbol\_per\_subcarrier}} \times bits_{\text{per\_symbol}} \]
+    \[ \text{Bitrate} = 40 \times 1000 \text{ simboli/s} \times 2 \text{ bit/simbolo} \]
+    \[ \text{Bitrate} = 80000 \text{ bit/s} = 80 \text{ Kbps (kilobit al secondo)} \]
+\end{itemize}
+
+\subsection{Esempio Svolto (Link Budget e Distanza Massima - Esercizio 8 ripasso finale)}
+\textbf{Domanda:} A quale distanza massima posso ricevere una comunicazione wireless se il link budget a 200 metri è di 8 dB?
+
+\textbf{Soluzione:}
+\begin{itemize}
+    \item \textbf{Link Budget (LB):} Il link budget fornito (8 dB a 200m) rappresenta il margine di potenza ricevuta ($\text{P}_{\text{rx}}$) rispetto alla sensibilità minima del ricevitore (RS): $\text{LB} = \text{P}_{\text{rx}} - \text{RS}$.
+    \item \textbf{Fade Operating Margin (FOM):} Solitamente si desidera un FOM di almeno 10-20 dB per garantire un collegamento stabile nonostante le fluttuazioni del segnale.
+    \item \textbf{Analisi:}
+    \begin{itemize}
+        \item Se \textit{non} possiamo rinunciare al FOM (es. un FOM minimo richiesto di 10 dB), allora un link budget di 8 dB è già insufficiente (8 dB $<$ 10 dB). In questo scenario, non solo non possiamo aumentare la distanza, ma il collegamento a 200m è già considerato a rischio o non operativo secondo i requisiti di margine.
+        \item Se possiamo rinunciare completamente al FOM (operando al limite della sensibilità, $\text{P}_{\text{rx}} \approx \text{RS}$, quindi $\text{LB} > 0\text{dB}$), allora abbiamo un margine di 8 dB con cui "giocare".
+    \end{itemize}
+    \item \textbf{Regola dei 6 dB:} Raddoppiando la distanza, si perdono circa 6 dB di segnale (in spazio libero). Viceversa, guadagnare 6 dB permette di raddoppiare la distanza (o dimezzando la distanza si guadagnano 6 dB).
+    \item \textbf{Calcolo Distanza (rinunciando al FOM):}
+    \begin{itemize}
+        \item A 200 m, abbiamo un margine di 8 dB.
+        \item Possiamo "spendere" 6 dB di questo margine per raddoppiare la distanza.
+        \item Nuova distanza = $200 \text{ m} \times 2 = 400 \text{ m}$.
+        \item Margine rimanente a 400 m = $8 \text{ dB} - 6 \text{ dB} = 2 \text{ dB}$.
+        \item Con 2 dB di margine rimanente, non abbiamo abbastanza per un altro raddoppio (che richiederebbe altri 6 dB).
+        \item Quindi, la distanza massima sarà di poco superiore a 400 m (poiché abbiamo ancora 2 dB di margine), ma certamente inferiore a 800 m.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Esempio Svolto (Impatto Antenna Gain su Distanza - Esercizio 9 ripasso finale, seguito Es. 8)}
+\textbf{Domanda:} E se usassi un'antenna con un guadagno di 3 dBi sia sul trasmittente che sul ricevente, partendo dalla situazione dell'esercizio precedente (Link Budget 8 dB a 200m)?
+
+\textbf{Soluzione:}
+\begin{itemize}
+    \item \textbf{Guadagno Aggiuntivo:}
+    \begin{itemize}
+        \item Guadagno antenna trasmittente ($\text{G}_{\text{tx\_add}}$) = +3 dBi.
+        \item Guadagno antenna ricevente ($\text{G}_{\text{rx\_add}}$) = +3 dBi.
+        \item Il guadagno totale aggiunto al link budget è $\text{G}_{\text{tx\_add}} + \text{G}_{\text{rx\_add}} = 3\text{dBi} + 3\text{dBi} = 6\text{dB}$.
+        \item \textit{Nota:} dBi significa "dB rispetto a un'antenna isotropica". Quando si sommano i guadagni nel link budget, si usano i valori in dB.
+    \end{itemize}
+    \item \textbf{Nuovo Link Budget Iniziale:}
+    \begin{itemize}
+        \item Link Budget precedente a 200m = 8 dB.
+        \item Nuovo Link Budget a 200m = $8 \text{ dB} + 6 \text{ dB} = 14 \text{ dB}$.
+    \end{itemize}
+    \item \textbf{Calcolo Nuova Distanza Massima (rinunciando al FOM, usando il nuovo LB):}
+    \begin{itemize}
+        \item A 200 m, abbiamo un margine di 14 dB.
+        \item \textbf{Primo raddoppio:} Spendiamo 6 dB per raddoppiare la distanza a 400 m.
+        \begin{itemize}
+            \item Nuova distanza = $200 \text{ m} \times 2 = 400 \text{ m}$.
+            \item Margine rimanente a 400 m = $14 \text{ dB} - 6 \text{ dB} = 8 \text{ dB}$.
+        \end{itemize}
+        \item \textbf{Secondo raddoppio:} Abbiamo ancora 8 dB di margine. Spendiamo altri 6 dB per raddoppiare nuovamente la distanza.
+        \begin{itemize}
+            \item Nuova distanza = $400 \text{ m} \times 2 = 800 \text{ m}$.
+            \item Margine rimanente a 800 m = $8 \text{ dB} - 6 \text{ dB} = 2 \text{ dB}$.
+        \end{itemize}
+        \item Con 2 dB di margine rimanente a 800 m, non possiamo raddoppiare ulteriormente la distanza (servirebbero altri 6 dB).
+        \item Quindi, con le nuove antenne, la distanza massima di trasmissione supererebbe gli 800 m (grazie ai 2 dB di margine residuo), ma sarebbe inferiore a 1600 m.
+    \end{itemize}
+\end{itemize}
+
 \subsection{Formule Utili}
 \begin{itemize}
     \item Conversione \text{mW} $\leftrightarrow$ \text{dBm}:
@@ -443,21 +566,20 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
 
 \hrule % Linea orizzontale come separatore
 
-% --- Sezione 4: Configurazione Tabelle OpenFlow ---
-\section{Configurazione Tabelle OpenFlow}
-\label{sec:openflow}
+% --- Sezione 4: Access Control Lists (ACL) ---
+\section{Access Control Lists (ACL)}
+\label{sec:acl}
 
 \subsection{Concetti Chiave}
 \begin{itemize}
-    \item \textbf{OpenFlow:} Protocollo che permette a un controller SDN (Software Defined Networking) di gestire le tabelle di flusso di uno switch.
-    \item \textbf{Regola di Flusso:} Consiste in:
+    \item \textbf{ACL (Access Control List):} Lista ordinata di regole che definiscono quali pacchetti possono attraversare un'interfaccia di rete e quali devono essere bloccati.
+    \item \textbf{Regola ACL:} Consiste in:
     \begin{itemize}
-        \item \textbf{Match Fields (Campi di Corrispondenza):} Criteri per identificare i pacchetti (es. MAC src/dst, IP src/dst, porta TCP/UDP, VLAN ID, porta di ingresso switch). Un \texttt{*} significa "qualsiasi valore".
-        \item \textbf{Priority:} Se più regole matchano, quella con priorità più alta vince.
+        \item \textbf{Match Fields (Campi di Corrispondenza):} Criteri per identificare i pacchetti (es. MAC src/dst, IP src/dst, porta TCP/UDP, interfaccia di ingresso). Un \texttt{*} significa "qualsiasi valore".
+        \item \textbf{Priority/Order:} Le regole vengono valutate in ordine. La prima regola che matcha viene applicata (implicit deny alla fine).
+        \item \textbf{Action:} Azione da eseguire sui pacchetti che matchano (\texttt{permit}/\texttt{deny}).
         \item \textbf{Counters:} Statistiche sui pacchetti che matchano la regola.
-        \item \textbf{Instructions/Actions:} Cosa fare con i pacchetti che matchano (es. \texttt{drop}, \texttt{forward} a una porta, \texttt{modify field}).
     \end{itemize}
-    \item \textbf{Pipeline:} Un pacchetto può attraversare più tabelle di flusso.
 \end{itemize}
 
 \subsection{Procedura di Svolgimento (Interpretazione regole)}
@@ -465,61 +587,61 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
     \item Analizza ogni regola riga per riga.
     \item Identifica i \textbf{Match Fields}: quali pacchetti verranno "catturati" da questa regola?
     \begin{itemize}
-        \item Porta di ingresso switch (Switch Port)
-        \item MAC sorgente/destinazione
-        \item EtherType (es. IPv4, ARP)
-        \item VLAN ID
-        \item IP sorgente/destinazione
-        \item Protocollo IP (TCP, UDP, ICMP)
-        \item Porte TCP/UDP sorgente/destinazione
+        \item Indirizzo IP sorgente/destinazione e wildcard mask
+        \item Protocollo (TCP, UDP, ICMP, etc.)
+        \item Porte sorgente/destinazione per TCP/UDP
+        \item Interfaccia di applicazione (ingresso/uscita)
     \end{itemize}
     \item Identifica l'\textbf{Action}: cosa succede a questi pacchetti?
     \begin{itemize}
-        \item \texttt{drop}: scarta il pacchetto.
-        \item \texttt{portX}: inoltra il pacchetto alla porta fisica X.
-        \item \texttt{mod\_vlan\_vid}: modifica l'ID VLAN.
-        \item Altre azioni più complesse.
+        \item \texttt{permit}: il pacchetto viene inoltrato
+        \item \texttt{deny}: il pacchetto viene scartato
     \end{itemize}
     \item Descrivi in linguaggio naturale la politica implementata dalla regola.
+    \item Ricorda che le regole vengono valutate in ordine e c'è sempre un "implicit deny" alla fine.
 \end{enumerate}
 
-\subsection{Esempio Svolto (basato su Esercizio 5, "Scritto 26 Maggio 2023", pagina 1-2)}
+\subsection{Esempio Svolto (basato su tipici esercizi d'esame)}
 \begin{itemize}
     \item \textbf{Regola 1:}
     \begin{itemize}
         \item Match: IP Dst \texttt{100.2.3.4}, TCP dport \texttt{80} (HTTP). Altri campi \texttt{*}.
-        \item Action: \texttt{drop}.
-        \item \textbf{Interpretazione:} Blocca tutto il traffico HTTP (porta 80) diretto all'IP \texttt{100.2.3.4}, indipendentemente dalla sorgente o dalla porta di ingresso.
+        \item Action: \texttt{deny}
+        \item \textbf{Interpretazione:} Blocca tutto il traffico HTTP (porta 80) diretto all'IP \texttt{100.2.3.4}, indipendentemente dalla sorgente.
     \end{itemize}
 
     \item \textbf{Regola 2:}
     \begin{itemize}
-        \item Match: VLAN ID \texttt{12}, IP Dst \texttt{100.2.3.5}, TCP dport \texttt{25} (SMTP).
-        \item Action: \texttt{port3}.
-        \item \textbf{Interpretazione:} Inoltra sulla porta fisica 3 i pacchetti appartenenti alla VLAN 12, destinati al server SMTP \texttt{100.2.3.5} (porta 25).
+        \item Match: IP Src \texttt{192.168.1.0 0.0.0.255}, IP Dst \texttt{10.0.0.0 0.255.255.255}, TCP dport \texttt{25} (SMTP)
+        \item Action: \texttt{permit}
+        \item \textbf{Interpretazione:} Permette il traffico SMTP (porta 25) dalla rete \texttt{192.168.1.0/24} verso qualsiasi host nella rete \texttt{10.0.0.0/8}.
     \end{itemize}
 
     \item \textbf{Regola 3:}
     \begin{itemize}
-        \item Match: IP Src \texttt{100.2.3.6}, IP Dst \texttt{100.2.3.7}, TCP sport \texttt{3918}, TCP dport \texttt{4233}. IP Prot \texttt{*} (ma è TCP dalle porte).
-        \item Action: \texttt{drop}.
+        \item Match: IP Src \texttt{100.2.3.6}, IP Dst \texttt{100.2.3.7}, TCP sport \texttt{3918}, TCP dport \texttt{4233}
+        \item Action: \texttt{deny}
         \item \textbf{Interpretazione:} Blocca la comunicazione TCP specifica dalla socket \texttt{<100.2.3.6:3918>} alla socket \texttt{<100.2.3.7:4233>}.
     \end{itemize}
 
     \item \textbf{Regola 4:}
     \begin{itemize}
-        \item Match: MAC Dst \texttt{FF:FF:FF:FF:FF:FF} (Broadcast MAC).
-        \item Action: \texttt{port5}.
-        \item \textbf{Interpretazione:} Inoltra tutti i frame di broadcast a livello MAC che arrivano su qualsiasi porta dello switch, sulla porta fisica 5. (Questo potrebbe essere per un segmento specifico collegato a port5).
+        \item Match: ICMP type \texttt{8} (echo request)
+        \item Action: \texttt{deny}
+        \item \textbf{Interpretazione:} Blocca tutti i ping (ICMP echo request) indipendentemente da sorgente e destinazione.
     \end{itemize}
 \end{itemize}
 
 \subsection{Consigli e Errori Comuni}
 \begin{itemize}
-    \item \textbf{Wildcard \texttt{*}:} Ricorda che \texttt{*} significa "qualsiasi".
-    \item \textbf{Priorità:} Se non specificata, l'ordine potrebbe avere importanza, o c'è una priorità di default.
-    \item \textbf{Completezza:} Descrivi tutti i campi di match rilevanti e l'azione esatta.
+    \item \textbf{Ordine delle Regole:} L'ordine è fondamentale. Una regola più specifica dopo una più generale potrebbe non essere mai raggiunta.
+    \item \textbf{Wildcard Mask:} Nei match IP, un bit 1 nella wildcard mask significa "ignora il bit corrispondente nell'indirizzo". È l'opposto della subnet mask.
+    \item \textbf{Implicit Deny:} Se un pacchetto non matcha nessuna regola, viene automaticamente scartato.
+    \item \textbf{Porte Comuni:} Ricorda le porte più comuni (HTTP 80, HTTPS 443, SMTP 25, DNS 53, etc.).
+    \item \textbf{Direzione ACL:} Un'ACL può essere applicata in ingresso o in uscita su un'interfaccia. La direzione influenza l'interpretazione di "source" e "destination".
 \end{itemize}
+
+\hrule % Linea orizzontale come separatore
 
 \section{Analisi e Interpretazione di Output/Configurazioni di Rete (DNS, PING, URL)}
 
@@ -741,6 +863,54 @@ Se l'output fosse stato \texttt{ping: cannot resolve flora.cs.unibo.it: Unknown 
         (L'esame dice 97\%ms, ma 97\% è un hit rate, non una latenza. Forse intendeva "ritardo medio di 97ms".)
 \end{itemize}
 
+\subsection{Esempio Svolto (Congestione Router con K Flussi - Esercizio 10 Ripasso Finale)}
+\begin{itemize}
+    \item \textbf{Domanda:} Se ho un router R con link di uscita a 100 MB/s, sul quale entrano K flussi ognuno da Y pacchetti/s, quale deve essere il limite massimo D di dimensione media dei pacchetti (in bit) per evitare la congestione?
+    \item \textbf{Soluzione:}
+    \begin{enumerate}
+        \item \textbf{Capacità del link di uscita (R):}
+        La capacità è data in MB/s (MegaByte al secondo). Convertiamola in Mbps (Megabit al secondo):
+        \[ R = 100 \text{ MB/s} = 100 \times 8 \text{ Mb/s} = 800 \text{ Mbps} = 800 \times 10^6 \text{ bit/s} \]
+        (Assumendo M = $10^6$)
+        \item \textbf{Carico totale in ingresso al router ($C_r$):}
+        Ci sono K flussi, ognuno dei quali invia Y pacchetti al secondo.
+        Il numero totale di pacchetti in ingresso al secondo è:
+        \[ \text{Pacchetti\_al\_secondo} = K \times Y \text{ pacchetti/s} \]
+        \item \textbf{Condizione per evitare la congestione:}
+        Per evitare la congestione, il tasso di dati in ingresso deve essere inferiore al tasso di dati che il link di uscita può smaltire.
+        Il tasso di dati in ingresso è dato da (numero totale di pacchetti in ingresso al secondo) $\times$ (dimensione media dei pacchetti in bit D).
+        \[ (K \times Y) \times D < R \]
+        \item \textbf{Calcolo del limite D:}
+        Sostituendo i valori:
+        \[ K \cdot Y \cdot D < 800 \times 10^6 \text{ bit/s} \]
+        Risolvendo per D (assumendo K e Y positivi, il che è logico):
+        \[ D < \frac{800 \times 10^6}{K \cdot Y} \text{ bit} \]
+        Quindi, la dimensione media dei pacchetti D deve essere inferiore a $\frac{800 \times 10^6}{K \cdot Y}$ bit per evitare la congestione.
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Esempio Svolto (Impatto Buffer su Congestione - Esercizio 11 Ripasso Finale, seguito Es. 10)}
+\begin{itemize}
+    \item \textbf{Domanda:} E se il router avesse un buffer da 50 MB, come cambierebbe la situazione descritta nell'Esercizio 10?
+    \item \textbf{Soluzione:}
+    \begin{enumerate}
+        \item \textbf{Ruolo del Buffer:}
+        Un buffer non previene la congestione se il tasso di arrivo medio è costantemente superiore al tasso di servizio. Tuttavia, può assorbire picchi temporanei di traffico, ritardando la perdita di pacchetti. Se il tasso di ingresso $K \cdot Y \cdot D$ è cronicamente maggiore di $R$, il buffer si riempirà e alla fine i pacchetti verranno persi.
+        \item \textbf{Dimensione del Buffer in bit:}
+        \[ \text{Buffer\_size} = 50 \text{ MB} = 50 \times 8 \text{ Mbit} = 400 \text{ Mbit} = 400 \times 10^6 \text{ bit} \]
+        \item \textbf{Tempo di "resistenza" del buffer (se $K \cdot Y \cdot D > R$):}
+        Se il tasso di dati in ingresso supera la capacità del link di uscita, il buffer inizia a riempirsi. Il tasso di riempimento del buffer è:
+        \[ \text{Tasso\_riempimento} = (K \cdot Y \cdot D) - R = (K \cdot Y \cdot D) - 800 \times 10^6 \text{ bit/s} \]
+        Questo valore deve essere positivo perché il buffer si riempia.
+        Il tempo per cui il router può sostenere questo sovraccarico prima che il buffer sia pieno ("tempo di resistenza") è:
+        \[ \text{Tempo\_resistenza} = \frac{\text{Buffer\_size}}{\text{Tasso\_riempimento}} \]
+        \[ \text{Tempo\_resistenza} = \frac{400 \times 10^6 \text{ bit}}{(K \cdot Y \cdot D) - 800 \times 10^6 \text{ bit/s}} \text{ secondi} \]
+        Questo calcolo è valido solo se $(K \cdot Y \cdot D) > 800 \times 10^6 \text{ bit/s}$. Se il tasso di ingresso è inferiore o uguale alla capacità di uscita, il buffer (in condizioni ideali e medie) non si riempie indefinitamente.
+        \item \textbf{Conclusione:}
+        L'esistenza di un buffer, anche grande ma finito, significa solo che la congestione (e la perdita di pacchetti) sarà ritardata, ma non evitata, se il carico in ingresso supera cronicamente la capacità di uscita.
+    \end{enumerate}
+\end{itemize}
+
 \subsection{Consigli e Errori Comuni:}
 \begin{itemize}
     \item \textbf{Bit vs Byte:} Estrema attenzione alle unità. Capacità di rete spesso in bit/s, dimensione file in Byte.
@@ -886,6 +1056,58 @@ Prendiamo l'Encoding K dell'esame del 18 Feb 2021 e la sequenza esadecimale OEAF
     \item \textbf{Fase 0 vs 180:} $\sin(t)$ a fase 0\textdegree{} inizia da 0 e va positivo. $\sin(t)$ a fase 180\textdegree{} inizia da 0 e va negativo.
     \item \textbf{Fase 90 Anticipo/Ritardo:} Anticipo (es. +90\textdegree) significa che l'onda è "spostata a sinistra" rispetto al riferimento; inizia prima nel suo ciclo. Ritardo (es. -90\textdegree{} o +270\textdegree) è spostata a destra. $\sin(t+90\textdegree) = \cos(t)$ (inizia dal picco). $\sin(t-90\textdegree) = -\cos(t)$ (inizia dal minimo).
     \item \textbf{Ampiezza:} Assicurati di distinguere i livelli di ampiezza correttamente.
+\end{itemize}
+
+\hrule % Linea orizzontale come separatore
+
+\subsection{Esempio Svolto (Calcolo EIRP e Potenza IR - Esercizio 12 Ripasso Finale)}
+\begin{itemize}
+    \item \textbf{Concetto Chiave: EIRP (Effective Isotropic Radiated Power)}
+    L'EIRP è la potenza totale che dovrebbe essere irradiata da un'antenna isotropica (che irradia uniformemente in tutte le direzioni) per produrre la stessa intensità di segnale (densità di potenza) nella direzione di massimo guadagno di un'antenna direzionale.
+    Si calcola come: $\text{EIRP} = \text{Potenza\_trasmettitore} + \text{Guadagno\_antenna} - \text{Perdite\_cavo}$.
+    Se espresso in dB: $\text{EIRP(dBm)} = \text{P}_{\text{tx}}\text{(dBm)} + \text{G}_{\text{antenna}}\text{(dBi)} - \text{L}_{\text{cavi}}\text{(dB)}$. (Assumiamo perdite cavo = 0 se non specificato).
+
+    \item \textbf{Domanda 1:} Qual è il valore EIRP di un intentional radiator (IR) che fornisce 2W di segnale a un'antenna direzionale con guadagno di 18 dBi?
+    \item \textbf{Soluzione 1:}
+    \begin{enumerate}
+        \item \textbf{Potenza dell'Intentional Radiator ($\text{P}_{\text{IR}}$) in dBm:}
+        $\text{P}_{\text{IR}} = 2\text{W} = 2000\text{mW}$.
+        Usando la conversione $P(\text{dBm}) = 10 \log_{10}(P(\text{mW}))$:
+        \[ \text{P}_{\text{IR}}(\text{dBm}) = 10 \log_{10}(2000) = 10 \times (\log_{10}(2) + \log_{10}(1000)) \]
+        \[ = 10 \times (0.301 + 3) = 10 \times 3.301 \approx 33.01 \text{ dBm} \]
+        Oppure, con il metodo approssimato: $1\text{mW} = 0\text{dBm}$. $2000\text{mW} = 1\text{mW} \times 2 \times 10 \times 10 \times 10$.
+        In scala dB: $0\text{dBm} + 3\text{dB} + 10\text{dB} + 10\text{dB} + 10\text{dB} = 33\text{dBm}$.
+        \item \textbf{Guadagno antenna ($\text{G}_{\text{antenna}}$):}
+        \[ \text{G}_{\text{antenna}} = 18 \text{ dBi} \]
+        \item \textbf{Calcolo EIRP:}
+        Assumendo perdite nei cavi trascurabili.
+        \[ \text{EIRP(dBm)} = \text{P}_{\text{IR}}(\text{dBm}) + \text{G}_{\text{antenna}}(\text{dBi}) \]
+        \[ \text{EIRP} = 33 \text{ dBm} + 18 \text{ dBi} = 51 \text{ dBm} \]
+        \item \textbf{EIRP in Watt (per riferimento):}
+        \[ \text{EIRP(mW)} = 10^{(\text{EIRP(dBm)}/10)} = 10^{(51/10)} = 10^{5.1} \text{ mW} \]
+        \[ = 125892.5 \text{ mW} \approx 125.9 \text{ W} \]
+        (L'approssimazione $2^{17} \text{mW} \approx 131 \text{W}$ è basata su diverse approssimazioni di dB). Il valore calcolato con la formula diretta è $125.9 \text{W}$.
+    \end{enumerate}
+
+    \item \textbf{Domanda 2:} E se il limite EIRP fosse di 40 mW, a quanto dovrebbe limitarsi il segnale IR (potenza fornita all'antenna) in tale sistema?
+    \item \textbf{Soluzione 2:}
+    \begin{enumerate}
+        \item \textbf{Limite EIRP in dBm:}
+        Limite EIRP $= 40\text{mW}$.
+        \[ \text{Limite\_EIRP(dBm)} = 10 \log_{10}(40) = 10 \times (\log_{10}(4) + \log_{10}(10)) \]
+        \[ = 10 \times (0.602 + 1) = 10 \times 1.602 \approx 16.02 \text{ dBm} \]
+        Oppure, con il metodo approssimato: $40\text{mW} = 1\text{mW} \times 2 \times 2 \times 10$.
+        In scala dB: $0\text{dBm} + 3\text{dB} + 3\text{dB} + 10\text{dB} = 16\text{dBm}$.
+        \item \textbf{Calcolo potenza IR massima ($\text{P}_{\text{IR\_max}}$):}
+        Sappiamo che $\text{EIRP(dBm)} = \text{P}_{\text{IR}}(\text{dBm}) + \text{G}_{\text{antenna}}(\text{dBi})$.
+        Quindi, per rispettare il limite:
+        \[ \text{P}_{\text{IR\_max}}(\text{dBm}) = \text{Limite\_EIRP(dBm)} - \text{G}_{\text{antenna}}(\text{dBi}) \]
+        \[ \text{P}_{\text{IR\_max}} = 16 \text{ dBm} - 18 \text{ dBi} = -2 \text{ dBm} \]
+        \item \textbf{Potenza IR massima in mW:}
+        \[ \text{P}_{\text{IR\_max}}(\text{mW}) = 10^{(-2/10)} = 10^{-0.2} \text{ mW} \approx 0.631 \text{ mW} \]
+        (L'approssimazione $1\text{mW} \times 10 / (2^4) = 0.625 \text{mW}$ data nell'esempio del prof è basata sul metodo approssimato: $-2\text{dBm} = (10 - 3 - 3 - 3 - 3)\text{dBm}$ rispetto a $0\text{dBm}$).
+        Quindi, la potenza massima che l'IR può fornire all'antenna è circa $0.631 \text{mW}$ (o $0.625 \text{mW}$ con il metodo approssimato).
+    \end{enumerate}
 \end{itemize}
 
 \end{document}

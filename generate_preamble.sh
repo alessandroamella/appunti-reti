@@ -38,7 +38,10 @@ NODE_STYLE_TEXT="black"
 BG_CUSTOM_FILL="gray!20"
 BG_CUSTOM_TEXT="black"
 BG_CUSTOM_RGB="0.9,0.9,0.9" # RGB equivalente a gray!20 (per \rowcolor)
-PRIMARY_TEXT_RGB="0,0,0"    # Colore primario del testo (per light theme)
+BG_CUSTOM_2_FILL="gray!15"
+BG_CUSTOM_2_TEXT="black"
+BG_CUSTOM_2_RGB="0.925,0.925,0.925" # RGB equivalente a gray!15 (per \rowcolor)
+PRIMARY_TEXT_RGB="0,0,0"            # Colore primario del testo (per light theme)
 
 COLOR_DEF_LIGHTTEXT="\\definecolor{lighttext}{rgb}{0.98,0.98,0.98}"
 COLOR_DEF_DARKTEXT="\\definecolor{darktext}{rgb}{0.1,0.1,0.1}" # Solo per light
@@ -84,6 +87,9 @@ while [[ $# -gt 0 ]]; do
     BG_CUSTOM_FILL="gray!80!black"
     BG_CUSTOM_TEXT="white"
     BG_CUSTOM_RGB="0.2,0.2,0.2"
+    BG_CUSTOM_2_FILL="gray!85!black"
+    BG_CUSTOM_2_TEXT="white"
+    BG_CUSTOM_2_RGB="0.15,0.15,0.15"
     PRIMARY_TEXT_RGB="255,255,255"
     THEME_BLUE_RGB="102,178,255"
 
@@ -200,6 +206,7 @@ ${COLOR_DEF_PRIMARYTEXT}
 
 % Definizione del colore di sfondo personalizzato per tabelle
 \\definecolor{bg_custom}{rgb}{${BG_CUSTOM_RGB}} % Colore personalizzato per tabelle
+\\definecolor{bg_custom_2}{rgb}{${BG_CUSTOM_2_RGB}} % Colore personalizzato per tabelle (variante)
 
 % Stili TikZ
 \\tikzset{
@@ -239,7 +246,8 @@ ${COLOR_DEF_PRIMARYTEXT}
     info_box/.style={rectangle, draw=accentcolor, fill=bgcolor, rounded corners, inner sep=5pt, text width=6cm, font=\\sffamily\\footnotesize, text=maintext},
     zone_style/.style={rectangle, draw=accentcolor, dashed, fill=nodecolor!30, fill opacity=0.5, rounded corners, minimum width=3cm, minimum height=2cm},
     % Nuovo stile con il colore di sfondo personalizzato
-    bg_custom/.style={rectangle, draw, fill=${BG_CUSTOM_FILL}, text=${BG_CUSTOM_TEXT}, rounded corners, inner sep=5pt}
+    bg_custom/.style={rectangle, draw, fill=${BG_CUSTOM_FILL}, text=${BG_CUSTOM_TEXT}, rounded corners, inner sep=5pt},
+    bg_custom_2/.style={rectangle, draw, fill=${BG_CUSTOM_2_FILL}, text=${BG_CUSTOM_2_TEXT}, rounded corners, inner sep=5pt}
 }
 
 % --- Tabelle Avanzate ---

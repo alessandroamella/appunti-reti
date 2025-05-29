@@ -1,0 +1,294 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{geometry}
+\usepackage{enumitem} % Per personalizzare itemize/enumerate
+\usepackage{listings} % Mantenuto se usato in altre parti del documento
+\usepackage{hyperref}
+\usepackage{textcomp} % For degree symbol (\textdegree)
+\usepackage{minted} % Per formattare il codice Python
+
+% Rimuoviamo la duplicazione di fontenc
+% \usepackage[T1]{fontenc} 
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault} % Setta sans-serif come font di default
+
+\geometry{a4paper, margin=1in}
+
+\newcommand{\blankline}[1][1cm]{\underline{\hspace{#1}}}
+\newcommand{\TT}[1]{\texttt{#1}}
+
+\begin{document}
+
+\begin{center}
+    \Large\textbf{ATTENZIONE / DISCLAIMER} \\[0.5em]
+    \normalsize Questo documento NON è il file ufficiale fornito dal docente. \\
+    È una ricostruzione basata sulla trascrizione (automatica con OCR) della traccia d'esame \\
+    e della soluzione, basata sulla registrazione della correzione d'esame. \\
+    Alcune soluzioni non sono state inserite. Il file potrebbe contenere errori.
+\end{center}
+
+\vspace{1cm}
+
+\noindent Nome e cognome: \blankline[6cm]
+
+\noindent Numero di Matricola: \blankline[6cm]
+
+\begin{center}
+    \Large\textbf{Prova Scritta del corso di Reti di Calcolatori (Computer Networks)} \\[0.5em]
+    \normalsize 15 Settembre 2023 \\[0.5em]
+    Docente: Luciano Bononi
+\end{center}
+
+\vspace{0.5cm}
+\noindent\textit{Rispondere alle domande scrivendo solo nello spazio consentito, oppure nel retro del foglio. Fornire sempre una breve motivazione o il procedimento di calcolo della risposta, ove previsto.}
+\vspace{0.5cm}
+
+\begin{enumerate}[label=\textbf{\arabic*.}, wide, labelindent=0pt, leftmargin=*]
+    \item \textbf{(5 punti)} A quale tipologia appartiene e come funziona il meccanismo di crittografia DES?
+    % Soluzione non fornita nel testo
+
+    \item \textbf{(5 punti)} Perché TCP richiede il timeout di attesa massima dell'acknowledgment e non richiede invece l'acknowledgment dell'acknowledgment?
+    % Soluzione non fornita nel testo
+
+    \item \textbf{(5 punti)} Quali proprietà deve avere una funzione di Hashing ideale per la non modificabilità dei messaggi? Fornire alcuni esempi.
+    % Soluzione non fornita nel testo
+
+    \item \textbf{(15 punti)} Alice vuole spedire a Bob un messaggio M molto grande e Bob deve spedire a Charlie lo stesso messaggio M in modo che: Bob abbia garanzia di mittente (Alice) e di integrità e confidenzialità del messaggio, mentre Charlie vuole garanzia di mittente (Alice per invio e Bob per inoltro) e di integrità e confidenzialità del messaggio, oltre che non replay.
+    \newline\textbf{Soluzione:}
+    \par (Notazione: $K_X^+$ cifratura con chiave pubblica di X, $K_X^-$ firma con chiave privata di X)
+    \begin{itemize}
+        \item Tutte le chiavi RSA eventuali sono richieste alla CA.
+        \item M è grande (RSA inefficiente, preferibile $K_s$ chiave simmetrica).
+        \item \textbf{Requisiti per Bob (da Alice):} Garanzia mittente (Alice), integrità, confidenzialità.
+        \item Alice genera $K_s$.
+        \item Alice spedisce a Bob $K_s$ cifrata (confidenzialità) e garantita provenire dal mittente Alice:
+        \[ A \rightarrow B: K_B^+(K_A^-(K_s)) \]
+        \item Alice invia a Bob il messaggio:
+        \[ A \rightarrow B: K_s(M), K_A^-(H(M)) \]
+        \item \textbf{Requisiti per Charlie (da Bob, inoltrando M da Alice):} Garanzia mittente (Alice per invio e Bob per inoltro), integrità, confidenzialità, non replay.
+        \item Bob genera una nuova chiave simmetrica $K_s'$.
+        \item Bob spedisce a Charlie $K_s'$ cifrata (confidenzialità) e garantita provenire da Bob:
+        \[ B \rightarrow C: K_C^+(K_B^-(K_s')) \]
+        \item Bob invia a Charlie il messaggio e le firme:
+        \[ B \rightarrow C: K_s'(M), K_A^-(H(M)), K_B^-(H(M), R) \quad \text{(R è un nonce per non-replay)} \]
+    \end{itemize}
+
+    \item \textbf{(12 punti)} Un dominio di rete locale N di classe C (IPv4) è divisa in 3 sottoreti ed è dotata di 4 router: A è il router principale dell'intera rete e B, C, D sono i tre router delle tre sottoreti di A.
+    \begin{enumerate}[label=\alph*)]
+        \item Quale è il numero massimo di host che possono essere contenuti nelle tre sottoreti uguali di BCD se tutte sono di dimensione massima ma uguale tra loro?
+        \item E quale sarebbe invece la dimensione massima di una delle tre sottoreti B, C, D, se non esistessero vincoli di dimensione uguale?
+    \end{enumerate}
+    \textbf{Soluzione:}
+    \begin{itemize}
+        \item Rete di classe C: /24 (256 indirizzi totali).
+        \item Router A principale, router B, C, D per 3 sottoreti.
+    \end{itemize}
+    \begin{enumerate}[label=\alph*), wide, labelindent=0pt, leftmargin=*]
+        \item \textbf{Max host in B, C, D se uguali tra loro:}
+        Per avere almeno 3 sottoreti, dobbiamo prendere in prestito bit dagli host bits.
+        $2^n \ge 3 \implies n=2$ bits per le sottoreti. Questo crea $2^2=4$ sottoreti.
+        La maschera diventa /24+2 = /26.
+        Gli 8 bit originali per gli host diventano $8-2=6$ bit per gli host per sottorete.
+        Numero di host per sottorete = $2^6 - 2 = 64 - 2 = 62$ host.
+        Quindi, 62 host per ciascuna delle sottoreti B, C, e D.
+
+        \item \textbf{Max dimensione di una sottorete se possono essere diverse:}
+        Abbiamo 256 indirizzi totali nella rete di classe C. Dobbiamo creare 3 sottoreti (per B, C, D).
+        Supponiamo che la sottorete B sia la più grande possibile. Per massimizzare B, dobbiamo lasciare spazio minimo per C e D.
+        La sottorete più grande possibile che possiamo creare da una /24, pur dovendo allocare altre due sottoreti, è una /25.
+        Una sottorete /25 ha $2^{(32-25)} - 2 = 2^7 - 2 = 128 - 2 = 126$ host.
+        Questo lascia un altro blocco /25 (128 indirizzi) dal quale possiamo creare le sottoreti C e D.
+        Ad esempio, C e D potrebbero essere /30 ciascuna (2 host per LAN o point-to-point links, utilizzando 4 indirizzi per ciascuna).
+        Quindi la dimensione massima di una delle tre sottoreti è 126 host.
+    \end{enumerate}
+
+    \item \textbf{(8 punti)} Una rete senza fili usa una codifica 8-PSK (ad ampiezza costante) e l'interferenza del canale genera una deviazione massima di fase pari a $\pm$25 gradi di ogni simbolo. Fornire un esempio di etichettatura della codifica ottimale per contrastare l'errore sul canale e quantificare il rischio probabilistico di errore di un bit se il valore di sfasamento di un simbolo supera i $\pm$22,5 gradi nel 3\% dei casi e i $\pm$20 gradi nel 5\% dei casi. Giustificare la risposta.
+    \newline\textbf{Soluzione:}
+    \begin{itemize}
+        \item 8-PSK: 8 simboli, 3 bit per simbolo. Variazione solo in fase, ampiezza costante.
+        \item \textbf{Etichettatura ottimale (Gray coding):} Assegnare sequenze di bit ai simboli adiacenti in modo che differiscano per un solo bit (distanza di Hamming minima = 1). Esempio di codifica di Gray per 3 bit (disposti sequenzialmente attorno al cerchio PSK):
+        \begin{center}
+            000 $\rightarrow$ 001 $\rightarrow$ 011 $\rightarrow$ 010 $\rightarrow$ 110 $\rightarrow$ 111 $\rightarrow$ 101 $\rightarrow$ 100 ($\rightarrow$ 000)
+        \end{center}
+        \item \textbf{Rischio di errore:}
+        In 8-PSK, gli 8 simboli sono equispaziati angolarmente. La separazione angolare tra simboli adiacenti è $360^\circ / 8 = 45^\circ$.
+        La regione di decisione per un simbolo si estende $\pm (45^\circ / 2) = \pm 22.5^\circ$ attorno alla fase nominale del simbolo.
+        Un errore di simbolo si verifica se la deviazione di fase supera $\pm 22.5^\circ$.
+        Il testo dice: "il valore di sfasamento di un simbolo supera i $\pm$22,5 gradi nel 3\% dei casi".
+        Quindi, la probabilità di errore di simbolo (SER) è del 3\%.
+        Con la codifica di Gray, un errore di simbolo (passaggio a un simbolo adiacente, che è il caso più probabile) causa tipicamente un solo errore di bit.
+        Pertanto, il Bit Error Rate (BER) è approssimativamente SER / (numero di bit per simbolo) se tutti gli errori di simbolo fossero a simboli non adiacenti, o più semplicemente, se la maggior parte degli errori di simbolo porta a un solo errore di bit, il BER $\approx$ SER.
+        Dato che un superamento di $\pm 22.5^\circ$ (che avviene nel 3\% dei casi) causa un errore di simbolo, e questo errore di simbolo con Gray coding molto probabilmente cambia un solo bit, la probabilità di errore di un bit è strettamente legata a questo 3\%.
+        Quindi, il rischio probabilistico di errore di un bit è circa il 3\%.
+        (L'informazione sui $\pm 20^\circ$ nel 5\% dei casi non è direttamente utilizzata per calcolare l'errore se la soglia critica è $\pm 22.5^\circ$).
+    \end{itemize}
+
+    \item \textbf{(5 punti)} Cosa rappresenta questo statement python?
+    \begin{minted}{python}
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+    \end{minted}
+    \textbf{Soluzione:}
+    Lo statement Python \TT{serverSocket = socket(AF\_INET, SOCK\_DGRAM)} crea un oggetto socket.
+    \begin{itemize}
+        \item \TT{AF\_INET}: Specifica la famiglia di indirizzi Address Family Internet, cioè IPv4.
+        \item \TT{SOCK\_DGRAM}: Specifica il tipo di socket, in questo caso un socket per datagrammi, che corrisponde al protocollo UDP (User Datagram Protocol).
+    \end{itemize}
+    In sintesi, crea un socket UDP per comunicazioni di rete su IPv4.
+
+    \item \textbf{(10 punti)} Una rete locale Ethernet con topologia a stella e Hub centrale connette N dispositivi periferici. Se la tecnologia è Fast Ethernet a 100 Mbps quale è il tempo minimo necessario per completare il trasferimento di N file da 10 MByte (considerando un MAC protocol ideale)? E se invece dell'Hub centrale fosse presente uno Switch con buffer superiore a N * 10 MByte quanto sarebbe il tempo minimo necessario? Esiste un caso nel quale i due tempi limite si equivalgono? Spiegare.
+    \newline\textbf{Soluzione:}
+    \begin{itemize}
+        \item N dispositivi, N file da 10 MByte.
+        \item 10 MByte = $10 \times 8 \text{ Mbit} = 80 \text{ Mbit}$ (assumendo $1 \text{ Byte} = 8 \text{ bit}$ e $1 \text{ M} = 10^6$).
+        \item Velocità Fast Ethernet = 100 Mbps.
+    \end{itemize}
+    \begin{enumerate}[label=\alph*), wide, labelindent=0pt, leftmargin=*]
+        \item \textbf{Con Hub centrale (MAC ideale):}
+        Un Hub opera come un ripetitore multiporta; il dominio è di collisione unico (condiviso). I trasferimenti sono serializzati.
+        Tempo per trasferire un file = $\frac{80 \text{ Mbit}}{100 \text{ Mbps}} = 0.8 \text{ secondi}$.
+        Tempo totale per N file = $N \times 0.8 \text{ secondi}$.
+
+        \item \textbf{Con Switch centrale (buffer $>$ N * 10 MByte):}
+        Uno Switch permette comunicazioni parallele tra porte diverse. Assumiamo N sorgenti e N destinazioni distinte.
+        \begin{itemize}
+            \item \textbf{Fase 1: Invio allo Switch.} Tutti gli N host possono inviare i loro file allo switch contemporaneamente (ciascuno sulla propria porta a 100 Mbps). Il tempo per questa fase è il tempo di trasmissione di un singolo file:
+            \[ T_1 = \frac{80 \text{ Mbit}}{100 \text{ Mbps}} = 0.8 \text{ secondi}. \]
+            \item \textbf{Fase 2: Inoltro dallo Switch.} Lo switch, avendo bufferizzato i dati (store-and-forward), inoltra i file alle rispettive destinazioni. Se le destinazioni sono distinte e capaci di ricevere a 100 Mbps, anche questa fase può avvenire in parallelo per tutti i file.
+            \[ T_2 = \frac{80 \text{ Mbit}}{100 \text{ Mbps}} = 0.8 \text{ secondi}. \]
+        \end{itemize}
+        Il tempo minimo totale, se le fasi sono sequenziali per il completamento di tutti i trasferimenti (tutti i file ricevuti dallo switch prima che l'ultimo pacchetto dell'ultimo file sia inoltrato), è $T_{\text{switch}} = T_1 + T_2 = 0.8\text{s} + 0.8\text{s} = 1.6 \text{ secondi}$.
+        (Questa è una semplificazione; in realtà, lo switch inizia a inoltrare non appena ha abbastanza informazioni e buffer. Se consideriamo il tempo fino a quando l'ultimo bit dell'ultimo file arriva alla destinazione finale, e tutti gli invii/inoltri possono essere massimamente parallelizzati e pipelinati, il tempo potrebbe essere $0.8\text{s} + \text{piccolo ritardo di switch} \approx 0.8\text{s}$ se $N$ è grande e lo switch è ideale. Tuttavia, la risposta $2 \times 0.8\text{s} = 1.6\text{s}$ è comune per modelli store-and-forward completi).
+
+        \item \textbf{Caso di equivalenza dei tempi limite:}
+        Per $T_{\text{hub}} = T_{\text{switch}}$:
+        \[ N \times 0.8 \text{ s} = 1.6 \text{ s} \]
+        \[ N = \frac{1.6}{0.8} = 2. \]
+        I tempi si equivalgono se $N=2$.
+    \end{enumerate}
+
+    \item \textbf{(25 punti)} Progettare la seguente rete IPv4. Usare lo spazio sul foglio per fornire traccia del procedimento e calcoli.
+    \newline \textit{(Interpretazione basata sulla spiegazione testuale fornita nel testo, che chiarisce la gerarchia e l'allocazione progressiva degli indirizzi. Gli indirizzi di Router IP sono intesi come Default Gateway per gli host di quella subnet).}
+
+    \textbf{Soluzione:}
+
+    \textbf{Network N \TT{157.137.252.0/23}}
+    \begin{itemize}[label=\textbullet]
+        \item \textbf{Netmask:} \TT{255.255.254.0}
+        \item \textbf{Router IP (di N, es. per uplink Internet):} \TT{157.137.253.254} (ultimo IP utilizzabile del range /23)
+        \item \textbf{First host:} \TT{157.137.252.1}
+        \item \textbf{Last host:} \TT{157.137.253.253}
+        \item \textbf{Broadcast:} \TT{157.137.253.255}
+    \end{itemize}
+
+    \textbf{Subnet B (max 177 host $\implies$ servono 8 bit per host $\implies$ /24)}
+    \begin{itemize}[label=\textbullet]
+        \item \textbf{Network Address:} \TT{157.137.252.0/24} (primo /24 disponibile in N)
+        \item \textbf{Default Gateway (Router IP per host in B):} \TT{157.137.252.254}
+        \item \textbf{Netmask:} \TT{255.255.255.0}
+        \item \textbf{First host:} \TT{157.137.252.1}
+        \item \textbf{Last host:} \TT{157.137.252.253}
+        \item \textbf{Broadcast:} \TT{157.137.252.255}
+        \item \textit{Default Gateway del Router B (verso N):} \TT{157.137.253.254}
+    \end{itemize}
+
+    \textbf{Subnet B1 of B (max 56 host $\implies$ servono 6 bit per host $\implies$ /26)}
+    \begin{itemize}[label=\textbullet]
+        \item \textbf{Network Address:} \TT{157.137.252.0/26} (primo /26 disponibile in B)
+        \item \textbf{Default Gateway (Router IP per host in B1):} \TT{157.137.252.62}
+        \item \textbf{Netmask:} \TT{255.255.255.192}
+        \item \textbf{First host:} \TT{157.137.252.1}
+        \item \textbf{Last host:} \TT{157.137.252.61}
+        \item \textbf{Broadcast:} \TT{157.137.252.63}
+        \item \textit{Default Gateway del Router B1 (verso Router B):} \TT{157.137.252.254}
+    \end{itemize}
+
+    \textbf{Subnet B1a of B1 (max 5 host $\implies$ servono 3 bit per host $\implies$ /29)}
+    \begin{itemize}[label=\textbullet]
+        \item \textbf{Network Address:} \TT{157.137.252.0/29} (primo /29 disponibile in B1)
+        \item \textbf{Default Gateway (Router IP per host in B1a):} \TT{157.137.252.6}
+        \item \textbf{Netmask:} \TT{255.255.255.248}
+        \item \textbf{First host:} \TT{157.137.252.1}
+        \item \textbf{Last host:} \TT{157.137.252.5}
+        \item \textbf{Broadcast:} \TT{157.137.252.7}
+        \item \textit{Default Gateway del Router B1a (verso Router B1):} \TT{157.137.252.62}
+    \end{itemize}
+    \textit{Nota: Le subnet B, B1, B1a sono nidificate. B1 usa \TT{157.137.252.0-63}. B1a usa \TT{157.137.252.0-7}. Gli host "di B" non in B1 userebbero \TT{157.137.252.64-253}. Gli host "di B1" non in B1a userebbero \TT{157.137.252.8-61}.}
+
+
+    \textbf{Subnet A (max 87 host $\implies$ servono 7 bit per host $\implies$ /25)}
+    \begin{itemize}[label=\textbullet]
+        \item \textbf{Network Address:} \TT{157.137.253.0/25} (prossimo blocco disponibile in N, dopo B)
+        \item \textbf{Default Gateway (Router IP per host in A):} \TT{157.137.253.126}
+        \item \textbf{Netmask:} \TT{255.255.255.128}
+        \item \textbf{First host:} \TT{157.137.253.1}
+        \item \textbf{Last host:} \TT{157.137.253.125}
+        \item \textbf{Broadcast:} \TT{157.137.253.127}
+        \item \textit{Default Gateway del Router A (verso N):} \TT{157.137.253.254}
+    \end{itemize}
+
+    \textbf{Subnet A1 of A (max 44 host $\implies$ servono 6 bit per host $\implies$ /26)}
+    \begin{itemize}[label=\textbullet]
+        \item \textbf{Network Address:} \TT{157.137.253.0/26} (primo /26 disponibile in A)
+        \item \textbf{Default Gateway (Router IP per host in A1):} \TT{157.137.253.62}
+        \item \textbf{Netmask:} \TT{255.255.255.192}
+        \item \textbf{First host:} \TT{157.137.253.1}
+        \item \textbf{Last host:} \TT{157.137.253.61}
+        \item \textbf{Broadcast:} \TT{157.137.253.63}
+        \item \textit{Default Gateway del Router A1 (verso Router A):} \TT{157.137.253.126}
+    \end{itemize}
+    \textit{Nota: Subnet A1 è nidificata in A. A1 usa \TT{157.137.253.0-63}. Gli host "di A" non in A1 userebbero \TT{157.137.253.64-125}.}
+
+    \textbf{Spiegazione del procedimento:}
+    Si parte allocando l'intera rete N \TT{157.137.252.0/23}.
+    Si alloca Subnet B (la più grande richiesta tra A e B, o la prima alfabeticamente) \TT{157.137.252.0/24}.
+    Da B si ricava B1 \TT{157.137.252.0/26}.
+    Da B1 si ricava B1a \TT{157.137.252.0/29}.
+    Poi si alloca Subnet A nello spazio rimanente di N, cioè \TT{157.137.253.0/25}.
+    Da A si ricava A1 \TT{157.137.253.0/26}.
+    I router IP sono scelti tipicamente come l'ultimo (o il primo) IP utilizzabile della rispettiva subnet e fungono da default gateway per gli host in quella subnet. Il default gateway \textit{del router} di una subnet interna punta all'IP del router gerarchicamente superiore che lo connette al resto della rete.
+
+    \item \textbf{(10 punti)} Un sistema di comunicazione wireless trasmette 10 mW di potenza (senza perdite fino all'intentional radiator) e ha un dispositivo ricevente con Receiver Sensitivity pari a -80 dBm. Tale sistema riesce a garantire l'esistenza del link fino al limite di distanza massima pari a 14 miglia.
+    \begin{enumerate}[label=\alph*)]
+        \item Se volessimo garantire un fade operating margin (FOM) di 18 dB a quanto ammonterebbe la distanza massima della comunicazione tollerata in questo sistema?
+        \item Se invece volessimo comunicare ancora fino a 14 miglia ma volessimo aumentare la potenza del trasmettitore fino a garantire 18 dB di fade operating margin a quanto ammonterebbe la nuova potenza del trasmettitore in mW?
+    \end{enumerate}
+    \textbf{Soluzione:}
+    \begin{itemize}
+        \item Potenza trasmessa $P_{tx} = 10 \text{ mW} = 10 \log_{10}(10 \text{ mW} / 1 \text{ mW}) \text{ dBm} = 10 \text{ dBm}$.
+        \item Sensibilità del ricevitore (RS) = -80 dBm.
+        \item Distanza massima attuale ($D_0$) = 14 miglia (con Fade Operating Margin (FOM) = 0 dB, cioè $P_{rx} = RS$).
+        \item Path Loss attuale ($PL_0$) a 14 miglia:
+        \[ P_{tx} - PL_0 = RS \]
+        \[ 10 \text{ dBm} - PL_0 = -80 \text{ dBm} \]
+        \[ PL_0 = 10 \text{ dBm} - (-80 \text{ dBm}) = 90 \text{ dB}. \]
+    \end{itemize}
+    \begin{enumerate}[label=\alph*), wide, labelindent=0pt, leftmargin=*]
+        \item \textbf{Nuova distanza massima con FOM = 18 dB:}
+        Il segnale ricevuto deve essere 18 dB sopra la sensibilità del ricevitore:
+        \[ P_{rx,new} = RS + \text{FOM} = -80 \text{ dBm} + 18 \text{ dB} = -62 \text{ dBm}. \]
+        Il Path Loss massimo consentito diventa:
+        \[ PL_{new} = P_{tx} - P_{rx,new} = 10 \text{ dBm} - (-62 \text{ dBm}) = 72 \text{ dB}. \]
+        Dobbiamo ridurre il Path Loss di $90 \text{ dB} - 72 \text{ dB} = 18 \text{ dB}$.
+        La regola dei 6 dB afferma che dimezzando la distanza si guadagnano 6 dB (cioè si riduce il Path Loss di 6 dB).
+        Per ridurre il Path Loss di 18 dB ($= 3 \times 6 \text{ dB}$), dobbiamo dimezzare la distanza 3 volte.
+        Nuova distanza $D_{new} = D_0 / (2^3) = 14 \text{ miglia} / 8 = 1.75 \text{ miglia}$.
+
+        \item \textbf{Nuova potenza del trasmettitore per D=14 miglia e FOM = 18 dB:}
+        Distanza = 14 miglia $\implies PL = PL_0 = 90 \text{ dB}$.
+        Segnale ricevuto desiderato:
+        \[ P_{rx,new} = RS + \text{FOM} = -80 \text{ dBm} + 18 \text{ dB} = -62 \text{ dBm}. \]
+        Nuova potenza di trasmissione $P_{tx,new}$ (in dBm):
+        \[ P_{tx,new} - PL = P_{rx,new} \]
+        \[ P_{tx,new} - 90 \text{ dB} = -62 \text{ dBm} \]
+        \[ P_{tx,new} = 90 \text{ dB} - 62 \text{ dBm} = 28 \text{ dBm}. \]
+        Conversione di $P_{tx,new}$ in mW:
+        \[ P_{tx,new} (\text{mW}) = 10^{(28/10)} = 10^{2.8} \approx 630.96 \text{ mW}. \]
+        (Nota: L'approssimazione $10 \text{ mW} \times 2^6 = 10 \text{ mW} \times 64 = 640 \text{ mW}$ deriva da $18 \text{ dB} \approx 6 \times 3 \text{ dB}$, che significa che la potenza deve aumentare di $2^{18/6} \times 2^{18/6} \times 2^{18/6} = 2^3 \times 2^3 \times 2^3$, o più semplicemente $18 \text{ dB} = \log_{10}(P_{new}/P_{old}) \times 10$, quindi $1.8 = \log_{10}(P_{new}/P_{old})$, e $P_{new}/P_{old} = 10^{1.8} \approx 63.09$. Quindi $10 \text{ mW} \times 63.09 = 630.9 \text{ mW}$).
+    \end{enumerate}
+
+\end{enumerate}
+
+\end{document}

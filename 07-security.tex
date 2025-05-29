@@ -378,10 +378,13 @@ Crittografare messaggi lunghi con chiave pubblica è costoso.
     \item Si applica una \textbf{funzione hash $H$} al messaggio $m$ per ottenere un digest $H(m)$.
     \item \textbf{Proprietà delle Funzioni Hash Crittografiche:}
     \begin{itemize}
-        \item Output di lunghezza fissa.
-        \item \textbf{Resistenza alla preimmagine (One-way):} Dato $H(m)$, difficile trovare $m$.
-        \item \textbf{Resistenza alla seconda preimmagine:} Dato $m_1$, difficile trovare $m_2 \neq m_1$ t.c. $H(m_1) = H(m_2)$.
-        \item \textbf{Resistenza alle collisioni:} Difficile trovare $m_1 \neq m_2$ t.c. $H(m_1) = H(m_2)$.
+        \item \textbf{Efficienza Computazionale:} La funzione deve essere facilmente calcolabile (efficace ed efficiente).
+        \item \textbf{Output di lunghezza fissa:} Indipendentemente dalla dimensione dell'input.
+        \item \textbf{Natura molti-a-uno:} Più elementi del dominio possono mappare allo stesso output (inevitabile data la compressione), ma questo non deve compromettere la sicurezza.
+        \item \textbf{Resistenza alla preimmagine (One-way):} Dato $H(m)$, deve essere computazionalmente arduo (non impossibile, ma impraticabile) trovare qualsiasi $m$ che produca quel valore.
+        \item \textbf{Resistenza alla seconda preimmagine:} Dato $m_1$, deve essere computazionalmente arduo trovare $m_2 \neq m_1$ tale che $H(m_1) = H(m_2)$.
+        \item \textbf{Resistenza alle collisioni:} Deve essere computazionalmente arduo trovare qualsiasi coppia di input distinti $(m_1, m_2)$ tali che $H(m_1) = H(m_2)$.
+        \item \textbf{Effetto valanga (Avalanche effect):} Una minima variazione nell'input (anche un solo bit) deve produrre una variazione impredicibile e significativa nell'output. Non deve esistere correlazione osservabile tra le variazioni dell'input e dell'output.
     \end{itemize}
     \item \textbf{Internet Checksum:} NON è una funzione hash crittografica (debole).
     \item \textbf{Firma Digitale con Message Digest:}
