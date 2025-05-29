@@ -614,7 +614,7 @@ Quando si crea un socket con \texttt{socket(famiglia, tipo, protocollo)}, è pos
     \begin{itemize}
         \item \textbf{Formule Fondamentali:}
         \begin{itemize}
-            \item Data Rate [\si{bit/s}] = Symbol Rate [\si{simboli/s}] × Bits per Simbolo
+            \item Data Rate [\si{bit/s}] = Symbol Rate [\si{simboli/s}] $\times$ Bits per Simbolo
             \item Tempo di Trasmissione [\si{s}] = Dimensione File [\si{bit}] / Data Rate [\si{bit/s}]
             \item Bits per Simbolo per modulazione:
                 \begin{itemize}
@@ -630,17 +630,17 @@ Quando si crea un socket con \texttt{socket(famiglia, tipo, protocollo)}, è pos
         \item \textbf{Esempio Pratico:} Trasmissione file 16 Mbit con QPSK
         \begin{itemize}
             \item Symbol Rate = 500.000 Sym/sec
-            \item QPSK → 2 bit/simbolo
-            \item Data Rate = 500.000 × 2 = 1.000.000 bit/sec = 1 Mbps
+            \item QPSK $\rightarrow$ 2 bit/simbolo
+            \item Data Rate = 500.000 $\times$ 2 = 1.000.000 bit/sec = 1 Mbps
             \item Tempo Base = 16 Mbit / 1 Mbps = 16 secondi
         \end{itemize}
         
         \item \textbf{Correzione Errori:}
         \begin{itemize}
-            \item Per correggere 1 bit ogni n bit → servono circa log₂(n) bit di parità
+            \item Per correggere 1 bit ogni n bit → servono circa $\log_2(n)$ bit di parità
             \item Esempio: 1 errore ogni 256 bit → 8 bit di parità
-            \item Overhead = (n + log₂(n))/n
-            \item Tempo Effettivo = Tempo Base × (1 + Overhead)
+            \item Overhead = (n + $\log_2(n)$)/n
+            \item Tempo Effettivo = Tempo Base $\times$ (1 + Overhead)
         \end{itemize}
     \end{itemize}
 
