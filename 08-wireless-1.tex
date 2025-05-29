@@ -528,6 +528,73 @@ Il segnale raggiunge il ricevitore tramite percorsi multipli.
     \item \textbf{Distorsione del Segnale:} Il segnale risultante è la somma di copie con fasi e ampiezze diverse.
 \end{itemize}
 
+
+
+\subsection{Interferenza da Multipath e Fase dei Segnali}
+\label{sec:multipath-fase}
+
+Quando un segnale radio si propaga da un trasmettitore a un ricevitore, può seguire percorsi multipli a causa di riflessioni su ostacoli (edifici, terreno, ecc.). Questo fenomeno è noto come \textbf{multipath propagation}. Se due o più copie dello stesso segnale arrivano al ricevitore con fasi diverse, possono interferire costruttivamente o distruttivamente.
+
+\textbf{Concetti Chiave:}
+\begin{itemize}
+    \item \textbf{Lunghezza d'onda ($\lambda$):} La distanza percorsa dall'onda durante un ciclo completo. Si calcola come $\lambda = c/f$, dove $c$ è la velocità della luce (circa $3 \times 10^8$ m/s) e $f$ è la frequenza del segnale.
+    \item \textbf{Differenza di Percorso ($\Delta d$):} Se un segnale arriva attraverso un percorso lungo $d_1$ e un altro attraverso un percorso $d_2$, la differenza di percorso è $\Delta d = |d_2 - d_1|$.
+    \item \textbf{Fase Relativa:} La differenza di fase tra i segnali all'arrivo dipende da $\Delta d$ e $\lambda$:
+    \begin{itemize}
+        \item Se $\Delta d = n \cdot \lambda$ (dove $n = 0, 1, 2, \ldots$ è un intero), i segnali arrivano \textbf{in fase}. L'interferenza è \textbf{costruttiva}, e le loro ampiezze si sommano.
+        \item Se $\Delta d = (n + \frac{1}{2}) \cdot \lambda$ (dove $n = 0, 1, 2, \ldots$ è un intero), i segnali arrivano in \textbf{opposizione di fase} (sfasati di $180^\circ$). L'interferenza è \textbf{distruttiva}. Se le ampiezze sono simili, i segnali possono annullarsi.
+        \item Per altri valori di $\Delta d$, l'interferenza sarà parziale.
+    \end{itemize}
+    \item La \textbf{differenza di fase} $\Delta\phi$ in gradi può essere calcolata come: $\Delta\phi = \left( \frac{\Delta d}{\lambda} \right) \times 360^\circ$. Una differenza di $k \cdot 360^\circ$ (per $k$ intero) significa in fase, mentre $(k+0.5) \cdot 360^\circ$ significa opposizione di fase.
+\end{itemize}
+
+\textbf{Esempio Pratico: Interferenza da Segnale Diretto e Riflesso}
+
+Consideriamo un trasmettitore (T) che emette un segnale radio alla frequenza $f = 37.5 \text{ MHz}$. Un ricevitore (R) è posto in modo tale da ricevere il segnale attraverso due percorsi:
+\begin{enumerate}
+    \item Un percorso diretto T-R di lunghezza $d_{\text{diretto}} = 29 \text{ metri}$.
+    \item Un percorso riflesso: il segnale viaggia da T per $21 \text{ metri}$ fino a un punto di rimbalzo B, dove viene riflesso (supponiamo con un angolo tale che T, B, e R formino un triangolo rettangolo con angolo retto in B) e prosegue fino al ricevitore R.
+\end{enumerate}
+
+\textbf{Domande:}
+\begin{enumerate}[label=\Alph*)]
+    \item La copia del segnale che ha subito il rimbalzo arriva al ricevitore in anticipo o in ritardo rispetto al segnale giunto in linea retta?
+    \item Come interferiscono i due segnali? La risultante consente una buona comunicazione?
+    \item Se la potenza di trasmissione fosse di $20 \text{ mW}$, un suo aumento garantirebbe una comunicazione ottimale?
+\end{enumerate}
+
+\textbf{Svolgimento:}
+
+\textit{A) Ritardo del segnale riflesso:}
+\begin{itemize}
+    \item Il percorso diretto è $d_{\text{diretto}} = 29 \text{ m}$.
+    \item Per il percorso riflesso T-B-R, conosciamo $d_{T-B} = 21 \text{ m}$. Essendo TBR un triangolo rettangolo in B con ipotenusa TR, possiamo calcolare la distanza B-R:
+    \[ d_{B-R} = \sqrt{d_{\text{diretto}}^2 - d_{T-B}^2} = \sqrt{29^2 - 21^2} = \sqrt{841 - 441} = \sqrt{400} = 20 \text{ m} \]
+    \item La lunghezza totale del percorso riflesso è $d_{\text{riflesso}} = d_{T-B} + d_{B-R} = 21 \text{ m} + 20 \text{ m} = 41 \text{ m}$.
+    \item Poiché $d_{\text{riflesso}} (41 \text{ m}) > d_{\text{diretto}} (29 \text{ m})$, il segnale riflesso percorre una distanza maggiore e quindi arriva \textbf{in ritardo} rispetto al segnale diretto.
+\end{itemize}
+
+\textit{B) Analisi dell'interferenza:}
+\begin{itemize}
+    \item Calcoliamo la differenza di percorso:
+    \[ \Delta d = d_{\text{riflesso}} - d_{\text{diretto}} = 41 \text{ m} - 29 \text{ m} = 12 \text{ m} \]
+    \item Calcoliamo la lunghezza d'onda del segnale:
+    La frequenza $f = 37.5 \text{ MHz} = 37.5 \times 10^6 \text{ Hz}$. La velocità della luce $c \approx 3 \times 10^8 \text{ m/s}$.
+    \[ \lambda = \frac{c}{f} = \frac{3 \times 10^8 \text{ m/s}}{37.5 \times 10^6 \text{ Hz}} = 8 \text{ m} \]
+    \item Confrontiamo la differenza di percorso con la lunghezza d'onda:
+    \[ \frac{\Delta d}{\lambda} = \frac{12 \text{ m}}{8 \text{ m}} = 1.5 \]
+    \item Poiché $\Delta d = 1.5 \lambda = (1 + \frac{1}{2})\lambda$, i due segnali arrivano al ricevitore in \textbf{opposizione di fase} (sfasati di $1.5 \times 360^\circ = 540^\circ$, che equivale a $180^\circ$).
+    \item Questo causa interferenza distruttiva. Se le ampiezze dei due segnali sono comparabili (il segnale riflesso è solitamente un po' più debole, ma può essere significativo), possono annullarsi a vicenda. Di conseguenza, la comunicazione \textbf{non sarà buona} e potrebbe risultare impossibile.
+\end{itemize}
+
+\textit{C) Impatto dell'aumento della potenza di trasmissione:}
+\begin{itemize}
+    \item Se i due segnali arrivano in opposizione di fase e hanno ampiezze simili, la loro somma tenderà a zero.
+    \item Aumentare la potenza di trasmissione (es. da $20 \text{ mW}$ a un valore superiore) farebbe aumentare l'ampiezza di \textit{entrambi} i segnali (diretto e riflesso) in modo proporzionale.
+    \item Anche se i singoli segnali sono più forti, la loro \textit{differenza} (dovuta all'opposizione di fase) rimarrebbe proporzionalmente la stessa, risultando comunque in un segnale ricevuto molto debole o nullo.
+    \item Pertanto, un semplice aumento della potenza di trasmissione \textbf{non è una soluzione efficace} in questo scenario di forte interferenza distruttiva. Sarebbero necessarie altre strategie, come l'uso di antenne direttive per ridurre il segnale riflesso, tecniche di equalizzazione del canale, o sistemi a diversità di antenna.
+\end{itemize}
+
 \subsection{Effetti della Mobilità}
 Il movimento cambia le caratteristiche del canale.
 \begin{itemize}

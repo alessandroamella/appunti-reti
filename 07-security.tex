@@ -144,6 +144,7 @@ La sicurezza di rete si basa su alcuni pilastri fondamentali:
     \item Alice e Bob condividono la \textbf{stessa chiave segreta ($K_S$)}.
     \item \textit{Problema:} Come fanno Alice e Bob a concordare la chiave $K_S$ in modo sicuro?
 \end{itemize}
+\textit{Flusso (Alice invia a Bob):} plaintext ($m$) $\xrightarrow{K_S}$ ciphertext ($K_S(m)$) $\xrightarrow{K_S}$ plaintext ($m$)
 
 \subsubsection{Notazione Formale Crittografia Simmetrica}
 \label{ssubsec:notazione_simmetrica}
@@ -165,16 +166,24 @@ Nelle slide viene spesso usato $K_S(m)$ per indicare $E_{K_S}(m)$.
 
 \subsubsection{DES (Data Encryption Standard)}
 \begin{itemize}
+    \item \textbf{Tipologia e Meccanismo:} DES è un algoritmo a chiave simmetrica che utilizza una cifratura a blocchi. Opera su blocchi di 64 bit di plaintext usando una chiave da 56 bit. Il processo prevede una permutazione iniziale, seguita da 16 round di cifratura identici (ognuno con una sotto-chiave derivata dalla chiave principale), e una permutazione finale. La struttura ciclica dei round rende l'algoritmo simmetrico, permettendo di usare lo stesso processo per cifratura e decifratura.
     \item Standard USA (NIST 1993), ora obsoleto per molte applicazioni.
     \item Chiave simmetrica a \textbf{56 bit}, input plaintext a 64 bit.
     \item \textbf{Block cipher} con \textbf{cipher block chaining (CBC)}.
     \item \textbf{Sicurezza:} Una chiave a 56 bit può essere trovata con brute force in meno di un giorno.
-    \item \textbf{3DES (Triple DES):} Crittografa 3 volte con 3 chiavi diverse. Più sicuro ma più lento.
     \item \textbf{Funzionamento DES (generale):} Permutazione iniziale, 16 \textit{round} identici con sotto-chiavi diverse, permutazione finale.
+\end{itemize}
+
+\subsubsection{3DES (Triple DES)}
+\begin{itemize}
+    \item \textbf{Tipologia e Meccanismo:} Variante di DES che applica l'algoritmo DES tre volte in sequenza con chiavi diverse ($K_1$, $K_2$, $K_3$). La sequenza è: cifratura con $K_1$, decifratura con $K_2$, cifratura con $K_3$. Questo triplica la lunghezza effettiva della chiave.
+    \item Più sicuro di DES ma significativamente più lento, motivo per cui oggi si preferisce AES.
+    \item Ancora considerato sicuro ma gradualmente sostituito da AES per ragioni di performance.
 \end{itemize}
 
 \subsubsection{AES (Advanced Encryption Standard)}
 \begin{itemize}
+    \item \textbf{Tipologia e Meccanismo:} AES è un algoritmo a chiave simmetrica che utilizza una cifratura a blocchi. Opera su blocchi di 128 bit usando una chiave di 128, 192 o 256 bit. Il processo di cifratura è basato su una serie di trasformazioni (SubBytes, ShiftRows, MixColumns, AddRoundKey) ripetute per un numero di round che dipende dalla lunghezza della chiave (10, 12 o 14 round). La struttura matematica dell'algoritmo garantisce che la decifratura sia l'esatto inverso della cifratura.
     \item Standard NIST che ha sostituito DES (Novembre 2001).
     \item Processa dati in blocchi da \textbf{128 bit}.
     \item Chiavi simmetriche da \textbf{128, 192, o 256 bit}.
@@ -206,6 +215,7 @@ La proprietà fondamentale è $K_B^-(K_B^+(m)) = m$.
 
 \subsubsection{RSA (Rivest, Shamir, Adelson Algorithm)}
 \begin{itemize}
+    \item \textbf{Tipologia e Meccanismo:} RSA è un algoritmo a chiave asimmetrica basato sulla difficoltà computazionale di fattorizzare il prodotto di due numeri primi grandi. La cifratura avviene elevando il messaggio (convertito in numero) a un esponente $e$ modulo $n$, dove $n$ è il prodotto dei due primi. La decifratura usa un esponente $d$ correlato a $e$. La sicurezza si basa sul fatto che, conoscendo solo $n$ ed $e$ (chiave pubblica), è computazionalmente difficile trovare $d$ (chiave privata) senza conoscere i fattori primi di $n$.
     \item L'algoritmo a chiave pubblica più diffuso.
     \item \textbf{Prerequisito: Aritmetica Modulare}
     \begin{itemize}

@@ -324,7 +324,6 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
         \item $D$ è la distanza totale del collegamento in \textbf{miglia (miles)}.
         \item $F$ è la frequenza del segnale in \textbf{Gigahertz (GHz)}.
     \end{itemize}
-    Conversioni utili: $1 \text{ piede} \approx 0.305 \text{ metri}$, $1 \text{ miglio} \approx 1.609 \text{ chilometri}$.
     \item \textbf{Path Loss:} Attenuazione del segnale con la distanza. Formula FSPL (Free Space Path Loss):
     \[ L_{FSPL} = K + 20\log_{10}(F) + 20\log_{10}(D) \]
     dove $K = 32.4$ (distanza in km) o $K = 36.6$ (distanza in miglia), $F$ in MHz, $D$ in km o miglia.
@@ -359,6 +358,30 @@ Si alloca in ordine di grandezza dallo spazio \texttt{177.34.146.0/23}:
             \item 1 piede $\approx$ 0.305 metri $\Longleftrightarrow$ 1 metro $\approx$ 3.28 piedi
             \item 1 miglio = 5280 piedi
         \end{itemize}
+    \end{itemize}
+    \item \textbf{Multipath e Fase:}
+    \begin{itemize}
+        \item Lunghezza d'onda: $\lambda = \frac{c}{f} = \frac{3 \times 10^8}{f \text{ Hz}}$ metri
+        \item Differenza di fase: $\Delta\phi = \left( \frac{\Delta d}{\lambda} \right) \times 360^\circ$
+        \item \textbf{Interferenza:}
+        \begin{itemize}
+            \item Costruttiva: $\Delta d = n\lambda$ ($n = 0,1,2,\ldots$)
+            \begin{itemize}
+                \item In parole semplici: quando la differenza tra i due percorsi è un multiplo esatto della lunghezza d'onda
+                \item I segnali si sommano, rinforzandosi a vicenda
+                \item Si dice che i segnali sono "in fase"
+                \item \textbf{Esempio:} Se $\lambda = 10\text{cm}$ e un segnale arriva dopo aver percorso $50\text{cm}$ e l'altro dopo $70\text{cm}$, la differenza è $\Delta d = 20\text{cm} = 2\lambda$. Essendo un multiplo intero di $\lambda$, i segnali si sommeranno costruttivamente
+            \end{itemize}
+            \item Distruttiva: $\Delta d = (n + \frac{1}{2})\lambda$ ($n = 0,1,2,\ldots$)
+            \begin{itemize}
+                \item In parole semplici: quando la differenza tra i due percorsi è un multiplo dispari di mezza lunghezza d'onda
+                \item I segnali si annullano a vicenda
+                \item Si dice che i segnali sono "in opposizione di fase" o "controfase"
+                \item \textbf{Esempio:} Se $\lambda = 10\text{cm}$ e un segnale arriva dopo aver percorso $50\text{cm}$ e l'altro dopo $55\text{cm}$, la differenza è $\Delta d = 5\text{cm} = \frac{1}{2}\lambda$. Essendo un multiplo dispari di $\frac{1}{2}\lambda$, i segnali si annulleranno
+            \end{itemize}
+        \end{itemize}
+        \item \textbf{Regola pratica:} Se $\frac{\Delta d}{\lambda}$ è intero $\to$ in fase (costruttiva), se è $n.5$ $\to$ opposizione di fase (distruttiva)
+        \item \textbf{Nota bene:} Aumentare potenza TX non risolve interferenza distruttiva!
     \end{itemize}
 \end{itemize}
 
